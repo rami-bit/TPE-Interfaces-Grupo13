@@ -1,7 +1,63 @@
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    margin: 0;
+}
+
+/*COLORES*/
 :root {
     --primario: #FFB8F5;
     --secundario: #061127;
     --acento: #823DE3;
     --textoBlack: #000000;
     --textoWhite: #FFFFFF;
+}
+
+/*FUENTES*/
+h1 {
+    font-weight: bold;
+    font-size: 40px;
+    line-height: 48px;
+    letter-spacing: -0.5px;
+}
+
+h2 {
+    font-weight: 500;
+    font-size: 32px;
+    line-height: 40px;
+    letter-spacing: -0.2px;
+}
+
+h3 {
+    font-weight: bold;
+    font-size: 24px;
+    line-height: 32px;
+    letter-spacing: 0;
+}
+
+h4 {
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 24px;
+    letter-spacing: 0;
+}
+
+.body-base {
+    font-weight: normal;
+    font-size: 16px;
+    line-height: 24px;
+    letter-spacing: 0;
+}
+
+.body-small {
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: 0;
+}
+
+.label {
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: 0.5px;
 }
