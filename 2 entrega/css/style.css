@@ -10,6 +10,8 @@ body {
     --acento: #823DE3;
     --textoBlack: #000000;
     --textoWhite: #FFFFFF;
+    --primarioSombra2: #996E93;
+    --primarioLuz2: #FFD4F9;
 }
 
 /*FUENTES*/
@@ -60,4 +62,28 @@ h4 {
     font-size: 12px;
     line-height: 16px;
     letter-spacing: 0.5px;
+}
+
+/* -----HEADER------ */
+
+/* Boton Hamburguesa */
+.btn-hamburguesa {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.btn-hamburguesa svg {
+    fill: var(--primario);
+    width: 40px;
+    height: 32px;
+}
+
+
+
+.btn-hamburguesa:hover svg {
+    fill: var(--primarioSombra2);
+    stroke: var(--primarioLuz2);
+    stroke-width: 2px;
 }
