@@ -13,6 +13,7 @@ body {
     --primarioSombra2: #996E93;
     --primarioLuz2: #FFD4F9;
     --secundarioSombra1: #050E1F;
+    --secundarioLuz1: #0B1936;
     --secundarioLuz2: #6A707D;
 }
 
@@ -155,4 +156,35 @@ header {
 
 .icono-lupa path {
     fill: var(--textoWhite);
+}
+
+/* ================== */
+/* HEADER DERECHO    */
+/* ================== */
+.header-der {
+    display: flex;
+    align-items: center;
+}
+
+.btn-favoritos {
+    width: 69px;
+    height: 66px;
+    background-color: var(--secundarioLuz1);
+    border-radius: 50%;
+    /* Esto crea la forma circular/ovalada */
+    border: none;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.icono-corazon {
+    width: 43px;
+    height: 43px;
+}
+
+.icono-corazon path {
+    fill: var(--primario);
 }
