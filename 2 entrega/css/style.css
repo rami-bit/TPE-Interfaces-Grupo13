@@ -12,6 +12,7 @@ body {
     --textoWhite: #FFFFFF;
     --primarioSombra2: #996E93;
     --primarioLuz2: #FFD4F9;
+    --secundarioSombra1: #050E1F;
 }
 
 /*FUENTES*/
@@ -66,6 +67,15 @@ h4 {
 
 /* -----HEADER------ */
 
+header {
+    height: 86px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--secundarioSombra1);
+    padding: 0 22px;
+}
+
 /* Boton Hamburguesa */
 .btn-hamburguesa {
     background: transparent;
@@ -76,14 +86,31 @@ h4 {
 
 .btn-hamburguesa svg {
     fill: var(--primario);
-    width: 40px;
-    height: 32px;
+    width: 2.5rem;
+    height: auto;
 }
-
-
 
 .btn-hamburguesa:hover svg {
     fill: var(--primarioSombra2);
     stroke: var(--primarioLuz2);
     stroke-width: 2px;
+}
+
+.header-izq {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    /* Separación entre botón hamburguesa y el logo */
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    /* Separación entre icono y texto del logo */
+    text-decoration: none;
+}
+
+.logo-texto {
+    display: none;
 }
