@@ -3,6 +3,11 @@ body {
     margin: 0;
 }
 
+button,
+input {
+    font-family: inherit;
+}
+
 /*COLORES*/
 :root {
     --primario: #FFB8F5;
@@ -15,6 +20,7 @@ body {
     --secundarioSombra1: #050E1F;
     --secundarioLuz1: #0B1936;
     --secundarioLuz2: #6A707D;
+    --acentoSombra1: #6831B6;
 }
 
 /*FUENTES*/
@@ -164,6 +170,29 @@ header {
 .header-der {
     display: flex;
     align-items: center;
+    gap: 16px;
+    /* Separación entre los botones de la derecha */
+}
+
+.btn-pro {
+    width: 128px;
+    height: 37px;
+    background-color: var(--acento);
+    border-radius: 16px;
+    border: 2px solid transparent;
+    box-sizing: border-box;
+    color: var(--textoWhite);
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: all 0.3s ease;
+}
+
+.btn-pro:hover {
+    background-color: var(--acentoSombra1);
+    border-color: var(--primarioLuz2);
 }
 
 .btn-favoritos {
@@ -178,6 +207,11 @@ header {
     align-items: center;
     justify-content: center;
     padding: 0;
+    transition: background-color 0.3s ease;
+}
+
+.btn-favoritos:hover {
+    background-color: var(--secundarioLuz2);
 }
 
 .icono-corazon {
@@ -187,4 +221,9 @@ header {
 
 .icono-corazon path {
     fill: var(--primario);
+    transition: fill 0.3s ease;
+}
+
+.btn-favoritos:hover .icono-corazon path {
+    fill: var(--primarioLuz2);
 }
