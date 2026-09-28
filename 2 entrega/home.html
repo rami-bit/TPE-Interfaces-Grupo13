@@ -30,15 +30,15 @@
                 <img src="img/logoTexto.svg" alt="Texto de Code Play" class="logo-texto">
             </a>
             <!-- Buscador -->
-            <form class="buscador" action="#">
-
-                <input type="search" class="label" placeholder="Buscar juegos y categorias" aria-label="Buscar">
-                <svg class="icono-lupa" viewBox="0 0 14 14" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    <path
-                        d="M13.7433 12.5097L11.0337 9.7989C13.0612 7.08945 12.5083 3.24936 9.7989 1.22186C7.08945 -0.805644 3.24936 -0.25281 1.22186 2.45664C-0.805644 5.16609 -0.25281 9.00617 2.45664 11.0337C4.6331 12.6623 7.62241 12.6623 9.7989 11.0337L12.5097 13.7445C12.8504 14.0852 13.4027 14.0852 13.7433 13.7445C14.084 13.4038 14.084 12.8515 13.7433 12.5109L13.7433 12.5097ZM6.15036 10.5105C3.74233 10.5105 1.79025 8.55839 1.79025 6.15036C1.79025 3.74233 3.74233 1.79025 6.15036 1.79025C8.55839 1.79025 10.5105 3.74233 10.5105 6.15036C10.5079 8.5573 8.55733 10.5079 6.15036 10.5105Z" />
-                </svg>
-            </form>
         </div>
+        <form class="buscador" action="#">
+
+            <input type="search" class="label" placeholder="Buscar juegos y categorias" aria-label="Buscar">
+            <svg class="icono-lupa" viewBox="0 0 14 14" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path
+                    d="M13.7433 12.5097L11.0337 9.7989C13.0612 7.08945 12.5083 3.24936 9.7989 1.22186C7.08945 -0.805644 3.24936 -0.25281 1.22186 2.45664C-0.805644 5.16609 -0.25281 9.00617 2.45664 11.0337C4.6331 12.6623 7.62241 12.6623 9.7989 11.0337L12.5097 13.7445C12.8504 14.0852 13.4027 14.0852 13.7433 13.7445C14.084 13.4038 14.084 12.8515 13.7433 12.5109L13.7433 12.5097ZM6.15036 10.5105C3.74233 10.5105 1.79025 8.55839 1.79025 6.15036C1.79025 3.74233 3.74233 1.79025 6.15036 1.79025C8.55839 1.79025 10.5105 3.74233 10.5105 6.15036C10.5079 8.5573 8.55733 10.5079 6.15036 10.5105Z" />
+            </svg>
+        </form>
 
         <div class="header-der">
             <!-- Botón Favoritos -->
@@ -64,6 +64,65 @@
         </div>
 
     </header>
+
+    <main>
+        <section class="hero-banner">
+            <!-- Controles Carrusel -->
+            <button id="btn-prev" class="btn-carrusel btn-carrusel--izq" aria-label="Anterior">
+                <svg viewBox="0 0 37 39" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M25.7358 3.73092C25.8413 3.8362 25.925 3.96127 25.9822 4.09895C26.0393 4.23664 26.0687 4.38425 26.0687 4.53332C26.0687 4.6824 26.0393 4.83 25.9822 4.96769C25.925 5.10538 25.8413 5.23045 25.7358 5.33572L12.9359 18.1333L25.7358 30.9309C25.9486 31.1437 26.0681 31.4324 26.0681 31.7333C26.0681 32.0343 25.9486 32.3229 25.7358 32.5357C25.5229 32.7485 25.2343 32.8681 24.9334 32.8681C24.6324 32.8681 24.3438 32.7485 24.131 32.5357L10.531 18.9357C10.4254 18.8304 10.3417 18.7054 10.2845 18.5677C10.2274 18.43 10.198 18.2824 10.198 18.1333C10.198 17.9843 10.2274 17.8366 10.2845 17.699C10.3417 17.5613 10.4254 17.4362 10.531 17.3309L24.131 3.73092C24.2362 3.62538 24.3613 3.54164 24.499 3.48451C24.6367 3.42737 24.7843 3.39796 24.9334 3.39796C25.0824 3.39796 25.23 3.42737 25.3677 3.48451C25.5054 3.54164 25.6305 3.62538 25.7358 3.73092Z" />
+                </svg>
+            </button>
+            <button id="btn-next" class="btn-carrusel btn-carrusel--der" aria-label="Siguiente">
+                <svg viewBox="0 0 37 39" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                        d="M25.7358 3.73092C25.8413 3.8362 25.925 3.96127 25.9822 4.09895C26.0393 4.23664 26.0687 4.38425 26.0687 4.53332C26.0687 4.6824 26.0393 4.83 25.9822 4.96769C25.925 5.10538 25.8413 5.23045 25.7358 5.33572L12.9359 18.1333L25.7358 30.9309C25.9486 31.1437 26.0681 31.4324 26.0681 31.7333C26.0681 32.0343 25.9486 32.3229 25.7358 32.5357C25.5229 32.7485 25.2343 32.8681 24.9334 32.8681C24.6324 32.8681 24.3438 32.7485 24.131 32.5357L10.531 18.9357C10.4254 18.8304 10.3417 18.7054 10.2845 18.5677C10.2274 18.43 10.198 18.2824 10.198 18.1333C10.198 17.9843 10.2274 17.8366 10.2845 17.699C10.3417 17.5613 10.4254 17.4362 10.531 17.3309L24.131 3.73092C24.2362 3.62538 24.3613 3.54164 24.499 3.48451C24.6367 3.42737 24.7843 3.39796 24.9334 3.39796C25.0824 3.39796 25.23 3.42737 25.3677 3.48451C25.5054 3.54164 25.6305 3.62538 25.7358 3.73092Z" />
+                </svg>
+            </button>
+
+            <!-- Contenido de texto a la izquierda -->
+            <div class="hero-contenido">
+                <h1>Peg Solitaire: Boca Juniors</h1>
+
+                <p class="hero-descripcion body-base">
+                    Este no es un juego de mesa, es un ritual. El único objetivo es acomodar la mística para que la
+                    Séptima llegue de una vez por todas. Se juega con el corazón en la mano, un termo abajo del brazo y
+                    la fe intacta.
+                </p>
+
+                <div class="hero-tags body-base">
+                    <span>Estrategia</span> &bull; <span>⭐ 9.6</span> &bull; <span>BocaGames</span>
+                </div>
+
+                <div class="hero-botones">
+                    <button class="btn-primario h3">Jugar</button>
+                    <button class="btn-fav-hero" aria-label="Favoritos">
+                        <svg viewBox="0 0 65 53" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path
+                                d="M32.4652 39.9806L30.4253 38.1236C23.1802 31.5537 18.397 27.2067 18.397 21.9029C18.397 17.5559 21.8015 14.1654 26.1345 14.1654C28.5824 14.1654 30.9318 15.3049 32.4652 17.0916C33.9986 15.3049 36.348 14.1654 38.7959 14.1654C43.1289 14.1654 46.5335 17.5559 46.5335 21.9029C46.5335 27.2067 41.7502 31.5537 34.5051 38.1236L32.4652 39.9806Z" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Imagen 16:9 alineada a la derecha -->
+            <div class="hero-imagen">
+                <img src="img/hero-boca.jpg" alt="Peg Solitaire Boca Juniors">
+            </div>
+
+            <!-- Indicadores de Carrusel (Puntitos) -->
+            <div class="hero-indicadores">
+                <span class="punto activo" aria-label="Slide 1"></span>
+                <span class="punto" aria-label="Slide 2"></span>
+                <span class="punto" aria-label="Slide 3"></span>
+                <span class="punto" aria-label="Slide 4"></span>
+            </div>
+        </section>
+    </main>
+
+
+
 </body>
 
 </html>
