@@ -1,0 +1,568 @@
+body {
+    display: grid;
+    grid-template-areas:
+        "header"
+        "main"
+        "footer";
+    grid-template-rows: auto 1fr auto;
+}
+
+/* Vista de juego */
+
+.juego-main {
+    grid-area: main;
+    padding: 14px 8px 40px;
+}
+
+.migas {
+    margin: 0 0 16px;
+    color: var(--textoWhite);
+    font-family: var(--fuente);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.juego-card {
+    width: min(1023.09px, 100%);
+    margin: 0 auto;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.juego-video {
+    position: relative;
+    aspect-ratio: 1023.09 / 523.48;
+}
+
+.juego-caratula {
+    display: block;
+    width: 100%;
+    height: 100%;
+    opacity: 70%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.juego-play {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+.juego-play__circulo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 126px;
+    height: 111px;
+    border-radius: 50%;
+    background-color: var(--primario);
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.juego-play:hover .juego-play__circulo {
+    background-color: var(--primariosombra2);
+    box-shadow: inset 0 0 0 3px var(--primarioluz2);
+    animation: juego-play-bounce 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes juego-play-bounce {
+    0% {
+        transform: scale(1);
+    }
+    30% {
+        transform: scale(1.1);
+    }
+    50% {
+        transform: scale(0.95);
+    }
+    70% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.juego-play__triangulo {
+    width: 45px;
+    height: 51px;
+    background-color: var(--secundario);
+    -webkit-mask: url("../assets/icons/play-triangulo.svg") no-repeat center / contain;
+    mask: url("../assets/icons/play-triangulo.svg") no-repeat center / contain;
+}
+
+/* Barra inferior */
+
+.juego-barra {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 52.52px;
+    padding: 0 24px;
+    background-color: var(--secundarioluz2);
+}
+
+.juego-barra__nombre {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.juego-barra__icono {
+    width: 33px;
+    height: 50px;
+}
+
+.juego-barra__titulo {
+    color: var(--textoWhite);
+    font-family: var(--fuente);
+    font-size: 40px;
+    font-weight: 500;
+}
+
+.juego-barra__botones {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Botones de la barra */
+
+.btn-juego {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    background-color: var(--secundariosombra);
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.btn-juego__icono {
+    background-color: var(--primario);
+    transition: background-color 0.2s ease;
+    -webkit-mask-repeat: no-repeat; 
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+}
+
+.btn-juego--compartir {
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--textoWhite);
+    border-radius: 5px;
+}
+
+.btn-juego--compartir:hover {
+    background-color: var(--secundarioluz2);
+}
+
+.btn-juego--compartir .btn-juego__icono {
+    width: 20px;
+    height: 21px;
+    -webkit-mask-image: url("../assets/icons/Compartir.svg");
+    mask-image: url("../assets/icons/Compartir.svg");
+}
+
+.btn-juego--fav {
+    width: 50px;
+    height: 40px;
+    border: 1px solid var(--primario);
+    border-radius: 6px;
+}
+
+.btn-juego--fav:hover {
+    background-color: var(--secundarioluz2);
+    border-color: var(--primarioluz2);
+}
+
+.btn-juego--fav .btn-juego__icono {
+    width: 22px;
+    height: 20px;
+    background-color: var(--textoWhite);
+    -webkit-mask-image: url("../assets/icons/favoritos.svg");
+    mask-image: url("../assets/icons/favoritos.svg");
+}
+
+.btn-juego--fav:hover .btn-juego__icono {
+    background-color: var(--primarioluz2);
+}
+
+.btn-juego--fav.activo .btn-juego__icono {
+    background-color: var(--primario);
+}
+
+.btn-juego--full {
+    width: 50px;
+    height: 40px;
+    border: 1px solid var(--textoWhite);
+    border-radius: 6px;
+}
+
+.btn-juego--full:hover {
+    background-color: var(--secundarioluz2);
+}
+
+.btn-juego--full .btn-juego__icono {
+    width: 25px;
+    height: 25px;
+    -webkit-mask-image: url("../assets/icons/fullscreen.svg");
+    mask-image: url("../assets/icons/fullscreen.svg");
+}
+
+.btn-juego--full:hover .btn-juego__icono {
+    background-color: var(--primarioluz1);
+}
+
+
+/* Informacion bajo el juego */
+
+.juego-columnas {
+    display: grid;
+    grid-template-columns: minmax(0, 751px) minmax(0, 392.6px);
+    column-gap: 102px;
+    row-gap: 76px;
+    align-items: start;
+    margin-top: 24px;
+}
+
+.juego-info {
+    grid-area: 1 / 1;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* Carrusel vertical: ver css/carrusel.css */
+
+.info-card {
+    box-sizing: border-box;
+    padding: 32px;
+    background-color: var(--secundariosombra);
+    border-radius: 16px;
+}
+
+.info-card__titulo {
+    margin: 0 0 16px;
+    color: var(--primario);
+    font-family: var(--fuente);
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.info-card__titulo--sub {
+    margin: 56px 0 8px;
+    font-size: 24px;
+}
+
+.info-card__linea {
+    margin: 0 0 12px;
+    color: var(--textoWhite);
+    font-family: var(--fuente);
+    font-size: 14px;
+}
+
+.info-card__texto {
+    margin: 0 0 14px;
+    color: var(--textoWhite);
+    font-family: var(--fuente);
+    font-size: 14px;
+    line-height: 1.55;
+}
+
+.info-card__texto:last-of-type {
+    margin-bottom: 0;
+}
+
+.info-categoria {
+    position: relative;
+    display: block;
+    width: 66px;
+    height: 66px;
+    border-radius: 16px;
+    background-color: var(--primario);
+}
+
+.info-categoria::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 38px;
+    height: 38px;
+    background-color: var(--secundario);
+    -webkit-mask: url("../assets/icons/puzzle.svg") no-repeat center / contain;
+    mask: url("../assets/icons/puzzle.svg") no-repeat center / contain;
+}
+
+/* Controles: raton blanco con flechas + raton con boton rosa */
+
+.info-controles {
+    display: flex;
+    align-items: center;
+    gap: 80px;
+    margin-top: 44px;
+}
+
+.controles-raton {
+    position: relative;
+    display: block;
+    width: 38px;
+    height: 59px;
+}
+
+.controles-raton--flechas {
+    margin-left: 20px;
+}
+
+.raton {
+    display: block;
+    width: 38px;
+    height: 59px;
+}
+
+.flecha {
+    position: absolute;
+    width: 13px;
+    height: 13px;
+    border-top: 3px solid var(--textoWhite);
+    border-right: 3px solid var(--textoWhite);
+    border-radius: 2px;
+}
+
+.flecha--arriba {
+    top: -24px;
+    left: 50%;
+    margin-left: -6.5px;
+    transform: rotate(-45deg);
+}
+
+.flecha--abajo {
+    bottom: -24px;
+    left: 50%;
+    margin-left: -6.5px;
+    transform: rotate(135deg);
+}
+
+.flecha--izquierda {
+    left: -33px;
+    top: 50%;
+    margin-top: -6.5px;
+    transform: rotate(-135deg);
+}
+
+.flecha--derecha {
+    right: -37px;
+    top: 50%;
+    margin-top: -6.5px;
+    transform: rotate(45deg);
+}
+
+/* Video tutorial */
+
+.info-video {
+    position: relative;
+    display: block;
+    width: min(362px, 100%);
+    overflow: hidden;
+    border-radius: 12px;
+    line-height: 0;
+}
+
+.info-video__miniatura {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.info-video__play {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 74px;
+}
+
+/* Comentarios */
+
+.comentarios {
+    grid-area: 2 / 1;
+    box-sizing: border-box;
+    width: min(751px, 100%);
+    padding: 32px;
+    background-color: var(--secundariosombra);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.comentario-card {
+    box-sizing: border-box;
+    width: min(593px, 100%);
+    background-color: #454545;
+    border-radius: 8px;
+}
+
+.comentario-card--nuevo {
+    height: 121.7px;
+    margin-bottom: 24px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.comentario__fila {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.comentario__avatar {
+    display: block;
+    flex-shrink: 0;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.comentario__entrada {
+    flex: 1;
+    min-height: 0;
+    box-sizing: border-box;
+    padding: 8px 0;
+    border: none;
+    background-color: transparent;
+    resize: none;
+    color: var(--textoWhite);
+    font-family: var(--fuente);
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.comentario__entrada::placeholder {
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.comentario__entrada:focus {
+    outline: none;
+}
+
+.comentario__acciones {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 20px;
+}
+
+.comentario__cancelar {
+    padding: 0;
+    border: none;
+    background-color: transparent;
+    color: var(--textoWhite);
+    font-family: var(--fuente);
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.comentario__cancelar:hover {
+    color: var(--primario);
+}
+
+.comentario__comentar {
+    padding: 5px 18px;
+    border: none;
+    border-radius: 999px;
+    background-color: #98A4B0;
+    color: var(--textoWhite);
+    font-family: var(--fuente);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.comentario__comentar:hover {
+    background-color: #AEB8C3;
+}
+
+.comentario {
+    min-height: 111.71px;
+}
+
+.comentario__encabezado {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.85);
+}
+
+.comentario__autor {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.comentario__nombre {
+    color: var(--textoWhite);
+    font-family: var(--fuente);
+    font-size: 14px;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.comentario__megusta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    flex-shrink: 0;
+    color: var(--textoWhite);
+    font-family: var(--fuente);
+    font-size: 13px;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.comentario__megusta:hover {
+    color: var(--primario);
+}
+
+.comentario__icono-like {
+    display: block;
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+}
+
+.comentario__texto {
+    margin: 0;
+    padding: 12px 14px;
+    color: var(--textoWhite);
+    font-family: var(--fuente);
+    font-size: 13px;
+    line-height: 1.5;
+}

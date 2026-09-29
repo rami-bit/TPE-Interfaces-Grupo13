@@ -1,0 +1,67 @@
+/* ---------- Signup (solo particularidades) ---------- */
+
+/* Formulario */
+
+.grupo-formulario {
+    border: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.titulo-grupo {
+    color: var(--textoWhite);
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 600;
+    padding: 0;
+    margin-bottom: 8px;
+}
+
+.campo input {
+    width: 302px;
+}
+
+.campo input[type="date"] {
+    max-width: 130px;
+    color-scheme: dark;
+}
+
+/* Ayuda contraseña */
+
+.ayuda-contrasena {
+    display: flex;
+    align-items: flex-start;
+    gap: 5.7px;
+}
+
+.icono-alerta {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.ayuda-contrasena span {
+    color: var(--textoWhite);
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+/* Checkbox terminos */
+
+.campo-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.campo-checkbox input {
+    width: 14px;
+    height: 14px;
+    accent-color: var(--acento);
+}
+
+.campo-checkbox label {
+    color: var(--textoWhite);
+}
