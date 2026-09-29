@@ -249,10 +249,9 @@ header {
 /*             CARDS CHICAS                */
 /* ======================================= */
 .card-juego {
-    flex: 0 0 260px;
-    /* Obliga a medir 260px siempre */
-    height: 147px;
-    border-radius: 24px;
+    flex: 0 0 200px;
+    height: 112px;
+    border-radius: 16px;
     background-color: var(--secundarioSombra1);
     scroll-snap-align: start;
     position: relative;
@@ -282,21 +281,21 @@ header {
     display: block;
 }
 
-/* Pisamos la etiqueta global para achicarla en las cards chicas */
+/* Pisamos la etiqueta global para achicarla en las cards chicas en mobile */
 .card-juego .etiqueta-pro-carrusel {
     position: absolute;
-    top: 12px;
-    left: 12px;
-    width: 68px;
-    height: 30px;
+    top: 8px;
+    left: 8px;
+    width: 62px;
+    height: 26px;
     z-index: 2;
     /* La clase base ya trae el background, flex, gap, border-radius, etc. */
 }
 
 /* Achicamos el SVG adentro de la card chica */
 .card-juego .etiqueta-pro-carrusel svg {
-    width: 15px;
-    height: 12px;
+    width: 13px;
+    height: 10px;
 }
 
 /* El texto de la etiqueta hereda color primario */
@@ -334,4 +333,24 @@ header {
     /* Corta lo que sobra */
     text-overflow: ellipsis;
     /* Pone los ... */
+}
+
+@media (min-width: 1024px) {
+    .card-juego {
+        flex: 0 0 260px;
+        height: 147px;
+        border-radius: 24px;
+    }
+
+    .card-juego .etiqueta-pro-carrusel {
+        top: 12px;
+        left: 12px;
+        width: 68px;
+        height: 30px;
+    }
+
+    .card-juego .etiqueta-pro-carrusel svg {
+        width: 15px;
+        height: 12px;
+    }
 }

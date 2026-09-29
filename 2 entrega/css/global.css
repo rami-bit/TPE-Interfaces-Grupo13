@@ -95,8 +95,10 @@ h4,
 }
 
 /* BOTONES GLOBALES */
-.btn-primario, .btn-acento {
-    padding: 10px 24px; /* Relleno flexible en lugar de medidas fijas */
+.btn-primario,
+.btn-acento {
+    padding: 10px 24px;
+    /* Relleno flexible en lugar de medidas fijas */
     border: 2px solid transparent;
     border-radius: 50px;
     cursor: pointer;
@@ -112,6 +114,7 @@ h4,
     background-color: var(--primario);
     color: var(--textoBlack);
 }
+
 .btn-primario:hover {
     border: 2px solid var(--primarioLuz2);
     background-color: var(--primarioSombra2);
@@ -122,6 +125,7 @@ h4,
     background-color: var(--acento);
     color: var(--textoWhite);
 }
+
 .btn-acento:hover {
     background-color: var(--acentoSombra1);
     border-color: var(--primarioLuz2);

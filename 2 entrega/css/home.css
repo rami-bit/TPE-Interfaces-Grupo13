@@ -2,7 +2,7 @@
 main {
     display: flex;
     flex-direction: column;
-    gap: 77px;
+    gap: 40px;
 }
 
 /* ======================================= */
@@ -300,14 +300,15 @@ main {
 }
 
 /* ======================================= */
-/*   SECCIÃ“N CARRUSEL CHICO (DEFAULT)      */
+/*   SECCION CARRUSEL CHICO (DEFAULT)      */
 /* ======================================= */
 
 .titulo-seccion {
     color: var(--textoWhite);
-    margin-bottom: 24px;
+    margin-bottom: 8px;
+    /* Reducido en mobile para que no quede lejos */
     padding-left: 16px;
-    /* Mantiene la alineaciÃ³n con el header */
+    /* Mantiene la alineacion con el header */
 }
 
 .carrusel-contenedor {
@@ -323,12 +324,13 @@ main {
 
 .carrusel-track-chico {
     display: flex;
-    gap: 30px;
+    gap: 15px;
+    /* Cartas más juntas en mobile */
     transition: transform 0.5s ease-in-out;
 
     /* PADDINGS CLAVE PARA EL HOVER (304x170) */
     /* La card crece 44px de ancho (22px por lado) y 23px de alto (12px por lado) */
-    padding: 15px 22px;
+    padding: 10px 15px;
 }
 
 .carrusel-track-chico::-webkit-scrollbar {
@@ -338,9 +340,11 @@ main {
 @media (min-width: 1024px) {
     .titulo-seccion {
         padding-left: 22px;
+        margin-bottom: 24px;
     }
 
     .carrusel-track-chico {
+        gap: 30px;
         padding-left: 28px;
         padding-right: 28px;
     }

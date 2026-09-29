@@ -26,6 +26,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // Lo inicializamos pasando el estiloCentrado, el startIndex = 1 y aclarando que esCentrado = true
             inicializarCarruselUniversal('carrusel-grande', 'btn-prev-grande', 'btn-next-grande', estiloCentrado, 1, true);
+
+
+            // --- CARRUSEL Nuevos Juegos (Juegos 22 al 29) ---
+            renderizarCarruselChico(games.slice(22, 30), 'carrusel-populares');
+            inicializarCarruselUniversal('carrusel-populares', 'btn-prev-populares', 'btn-next-populares');
+
+            // --- CARRUSEL Para ti (Juegos 14 al 21) ---
+            renderizarCarruselChico(games.slice(14, 22), 'carrusel-nuevos');
+            inicializarCarruselUniversal('carrusel-nuevos', 'btn-prev-nuevos', 'btn-next-nuevos');
         })
         .catch(error => console.error("Error al cargar los juegos de la API:", error));
 });
