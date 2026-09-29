@@ -375,26 +375,33 @@ body {
 /* Video tutorial */
 
 .info-video {
-    position: relative;
     display: block;
     width: min(362px, 100%);
     overflow: hidden;
     border-radius: 12px;
+    background-color: #000;
     line-height: 0;
 }
 
-.info-video__miniatura {
+.info-video__frame {
     display: block;
     width: 100%;
-    height: auto;
+    aspect-ratio: 16 / 9;
+    border: 0;
 }
 
-.info-video__play {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 74px;
+.info-video__link {
+    display: inline-block;
+    margin-top: 8px;
+    color: var(--primario);
+    font-family: var(--fuente);
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.info-video__link:hover {
+    text-decoration: underline;
 }
 
 /* Comentarios */
