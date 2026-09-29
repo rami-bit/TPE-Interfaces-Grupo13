@@ -12,15 +12,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function alTerminar(ev) {
         if (ev.target !== tarjeta) return;
-        if (ev.propertyName !== "transform") return;
-        tarjeta.removeEventListener("transitionend", alTerminar);
+        if (ev.animationName !== "animated-card") return;
+        tarjeta.removeEventListener("animationend", alTerminar);
         irALoading();
     }
 
     formulario.addEventListener("submit", (e) => {
         e.preventDefault();
         tarjeta.classList.add("animacion");
-        tarjeta.addEventListener("transitionend", alTerminar);
+        tarjeta.addEventListener("animationend", alTerminar);
         setTimeout(irALoading, 600);
     });
 
