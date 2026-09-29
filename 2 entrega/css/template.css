@@ -69,36 +69,7 @@ header {
 /*      BUSCADOR      */
 /* ================== */
 .buscador {
-    width: 334px;
-    height: 36px;
-    background-color: var(--secundarioLuz2);
-    border-radius: 50px;
     display: none;
-    align-items: center;
-    padding: 0 15px;
-    justify-content: space-between;
-    margin-left: 67px;
-}
-
-.buscador input {
-    background: transparent;
-    border: none;
-    outline: none;
-    color: var(--textoWhite);
-    width: 100%;
-}
-
-.buscador input::placeholder {
-    color: var(--textoWhite);
-}
-
-.icono-lupa {
-    width: 14px;
-    height: 14px;
-}
-
-.icono-lupa path {
-    fill: var(--textoWhite);
 }
 
 /* ================== */
@@ -115,47 +86,14 @@ header {
 /* ================== */
 /* Pisamos las medidas del btn-acento global para que encaje en el header */
 .header-der .btn-acento {
-    width: 128px;
-    height: 37px;
-    border-radius: 16px;
-    padding: 0;
     display: none;
-    /* Oculto en mobile */
 }
 
 /* ================== */
 /*     FAVORITOS      */
 /* ================== */
 .btn-favoritos {
-    width: 69px;
-    height: 66px;
-    background-color: var(--secundarioLuz1);
-    border-radius: 50%;
-    border: none;
-    cursor: pointer;
     display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-    transition: background-color 0.3s ease;
-}
-
-.btn-favoritos:hover {
-    background-color: var(--secundarioLuz2);
-}
-
-.icono-corazon {
-    width: 43px;
-    height: 43px;
-}
-
-.icono-corazon path {
-    fill: var(--primario);
-    transition: fill 0.3s ease;
-}
-
-.btn-favoritos:hover .icono-corazon path {
-    fill: var(--primarioLuz2);
 }
 
 /* ================== */
@@ -233,14 +171,77 @@ header {
 
     .buscador {
         display: flex;
+        width: 334px;
         max-width: 334px;
+        height: 36px;
+        background-color: var(--secundarioLuz2);
+        border-radius: 50px;
+        align-items: center;
+        padding: 0 15px;
+        justify-content: space-between;
         margin-left: 10px;
         min-width: 0;
     }
 
-    .btn-favoritos,
+    .buscador input {
+        background: transparent;
+        border: none;
+        outline: none;
+        color: var(--textoWhite);
+        width: 100%;
+    }
+
+    .buscador input::placeholder {
+        color: var(--textoWhite);
+    }
+
+    .icono-lupa {
+        width: 14px;
+        height: 14px;
+    }
+
+    .icono-lupa path {
+        fill: var(--textoWhite);
+    }
+
+    .btn-favoritos {
+        display: flex;
+        width: 69px;
+        height: 66px;
+        background-color: var(--secundarioLuz1);
+        border-radius: 50%;
+        border: none;
+        cursor: pointer;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-favoritos:hover {
+        background-color: var(--secundarioLuz2);
+    }
+
+    .icono-corazon {
+        width: 43px;
+        height: 43px;
+    }
+
+    .icono-corazon path {
+        fill: var(--primario);
+        transition: fill 0.3s ease;
+    }
+
+    .btn-favoritos:hover .icono-corazon path {
+        fill: var(--primarioLuz2);
+    }
+
     .header-der .btn-acento {
         display: flex;
+        width: 128px;
+        height: 37px;
+        border-radius: 16px;
+        padding: 0;
     }
 }
 
