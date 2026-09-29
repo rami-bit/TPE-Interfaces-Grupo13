@@ -1,7 +1,78 @@
 :root {
     --primario: #FFB8F5;
+    --primarioluz1: #FFC6F7;
+    --primarioluz2: #FFD4F9;
+    --primariosombra1: #CC93C4;
+    --primariosombra2: #996E93;
     --secundario: #061127;
+    --secundarioluz1:#0B1936;
+    --secundarioluz2: #6A707D;
+    --secundariosombra:#050E1F;
+    --secundariosombra2:#040A17;
     --acento: #823DE3;
+    --acentosombra:#6831B6;
+    --acentoluz: #9B64E9;
     --textoBlack: #000000;
     --textoWhite: #FFFFFF;
+    --fuente: 'Plus Jakarta Sans', sans-serif;
+}
+
+body {
+    margin: 0;
+    background-color: var(--secundarioluz1);
+    font-family: var(--fuente);
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 400;
+    letter-spacing: 0;
+}
+
+/* Tipografia - Plus Jakarta Sans */
+
+h1 {
+    font-family: var(--fuente);
+    font-weight: 700;
+    font-size: 40px;
+    line-height: 48px;
+    letter-spacing: -0.5px;
+}
+
+h2 {
+    font-family: var(--fuente);
+    font-weight: 500;
+    font-size: 32px;
+    line-height: 40px;
+    letter-spacing: -0.2px;
+}
+
+h3 {
+    font-family: var(--fuente);
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 32px;
+    letter-spacing: 0;
+}
+
+h4 {
+    font-family: var(--fuente);
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 24px;
+    letter-spacing: 0;
+}
+
+label {
+    font-family: var(--fuente);
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: 0.5px;
+}
+
+.body-small {
+    font-family: var(--fuente);
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: 0;
 }
