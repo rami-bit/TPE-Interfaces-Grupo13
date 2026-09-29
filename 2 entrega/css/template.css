@@ -243,3 +243,94 @@ header {
         display: flex;
     }
 }
+
+/* ======================================= */
+/*             CARDS CHICAS                */
+/* ======================================= */
+.card-juego {
+    flex: 0 0 260px;
+    /* Obliga a medir 260px siempre */
+    height: 147px;
+    border-radius: 24px;
+    background-color: var(--secundarioSombra1);
+    scroll-snap-align: start;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    border: 3px solid transparent;
+    /* Transparente para evitar saltos, 3px como en el botón */
+    transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.card-juego:hover {
+    transform: scale(1.16);
+    /* Efecto agrandado (alcanza ~304x170) */
+    border-color: var(--primario);
+    /* Borde rosa brillante */
+}
+
+.card-imagen {
+    width: 100%;
+    height: 100%;
+}
+
+.card-imagen img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Pisamos la etiqueta global para achicarla en las cards chicas */
+.card-juego .etiqueta-pro-carrusel {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    width: 68px;
+    height: 30px;
+    z-index: 2;
+    /* La clase base ya trae el background, flex, gap, border-radius, etc. */
+}
+
+/* Achicamos el SVG adentro de la card chica */
+.card-juego .etiqueta-pro-carrusel svg {
+    width: 15px;
+    height: 12px;
+}
+
+/* El texto de la etiqueta hereda color primario */
+.card-juego .etiqueta-pro-carrusel span {
+    color: var(--primario);
+}
+
+/* OVERLAY NEGRO INFERIOR */
+.card-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    /* Rectángulo con opacidad */
+    padding: 2px 16px;
+    z-index: 2;
+    transform: translateY(100%);
+    /* Escondido hacia abajo inicialmente */
+    transition: transform 0.3s ease;
+}
+
+.card-juego:hover .card-overlay {
+    transform: translateY(0);
+    /* Sube cuando hacés hover */
+}
+
+/* TÍTULO CON PUNTOS SUSPENSIVOS */
+.card-titulo {
+    color: var(--textoWhite);
+    margin: 0;
+    white-space: nowrap;
+    /* Prohíbe salto de línea */
+    overflow: hidden;
+    /* Corta lo que sobra */
+    text-overflow: ellipsis;
+    /* Pone los ... */
+}

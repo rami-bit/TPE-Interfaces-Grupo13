@@ -23,9 +23,7 @@ main {
 .hero-track {
     display: flex;
     height: 100%;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scroll-behavior: smooth;
+    transition: transform 0.5s ease-in-out;
 }
 
 .hero-track::-webkit-scrollbar {
@@ -298,5 +296,55 @@ main {
     .btn-fav-hero.activo:hover {
         background-color: var(--secundarioLuz2);
         border: 2px solid var(--primarioLuz2);
+    }
+}
+
+/* ======================================= */
+/*   SECCIÓN CARRUSEL CHICO (DEFAULT)      */
+/* ======================================= */
+.carrusel-seccion {
+    /* Quitamos el margin general porque ahora lo manejamos por padding para evitar recortes */
+}
+
+.titulo-seccion {
+    color: var(--textoWhite);
+    margin-bottom: 24px;
+    padding-left: 16px;
+    /* Mantiene la alineación con el header */
+}
+
+.carrusel-contenedor {
+    position: relative;
+    width: 100%;
+}
+
+.carrusel-viewport {
+    width: 100%;
+    overflow: hidden;
+    padding-left: 10px;
+}
+
+.carrusel-track-chico {
+    display: flex;
+    gap: 30px;
+    transition: transform 0.5s ease-in-out;
+
+    /* PADDINGS CLAVE PARA EL HOVER (304x170) */
+    /* La card crece 44px de ancho (22px por lado) y 23px de alto (12px por lado) */
+    padding: 15px 22px;
+}
+
+.carrusel-track-chico::-webkit-scrollbar {
+    display: none;
+}
+
+@media (min-width: 1024px) {
+    .titulo-seccion {
+        padding-left: 22px;
+    }
+
+    .carrusel-track-chico {
+        padding-left: 28px;
+        padding-right: 28px;
     }
 }
