@@ -1,0 +1,245 @@
+/* ================== */
+/*      HEADER      */
+/* ================== */
+header {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--secundarioSombra1);
+    padding: 0 16px;
+    position: relative;
+}
+
+/* ================== */
+/* BOTON HAMBURGUESA */
+/* ================== */
+.btn-hamburguesa {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.btn-hamburguesa svg {
+    fill: var(--primario);
+    width: 1.8rem;
+    height: auto;
+}
+
+.btn-hamburguesa:hover svg {
+    fill: var(--primarioSombra2);
+    stroke: var(--primarioLuz2);
+    stroke-width: 2px;
+}
+
+/* ================== */
+/*     HEADER IZQ     */
+/* ================== */
+.header-izq {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+}
+
+/* ================== */
+/*        LOGO        */
+/* ================== */
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.logo-icono {
+    display: none;
+}
+
+.logo-texto {
+    display: block;
+    height: 18px;
+    width: auto;
+}
+
+/* ================== */
+/*      BUSCADOR      */
+/* ================== */
+.buscador {
+    width: 334px;
+    height: 36px;
+    background-color: var(--secundarioLuz2);
+    border-radius: 50px;
+    display: none;
+    align-items: center;
+    padding: 0 15px;
+    justify-content: space-between;
+    margin-left: 67px;
+}
+
+.buscador input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--textoWhite);
+    width: 100%;
+}
+
+.buscador input::placeholder {
+    color: var(--textoWhite);
+}
+
+.icono-lupa {
+    width: 14px;
+    height: 14px;
+}
+
+.icono-lupa path {
+    fill: var(--textoWhite);
+}
+
+/* ================== */
+/*     HEADER DER     */
+/* ================== */
+.header-der {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+/* ================== */
+/*    OBTENER PRO     */
+/* ================== */
+/* Pisamos las medidas del btn-acento global para que encaje en el header */
+.header-der .btn-acento {
+    width: 128px;
+    height: 37px;
+    border-radius: 16px;
+    padding: 0;
+    display: none;
+    /* Oculto en mobile */
+}
+
+/* ================== */
+/*     FAVORITOS      */
+/* ================== */
+.btn-favoritos {
+    width: 69px;
+    height: 66px;
+    background-color: var(--secundarioLuz1);
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: background-color 0.3s ease;
+}
+
+.btn-favoritos:hover {
+    background-color: var(--secundarioLuz2);
+}
+
+.icono-corazon {
+    width: 43px;
+    height: 43px;
+}
+
+.icono-corazon path {
+    fill: var(--primario);
+    transition: fill 0.3s ease;
+}
+
+.btn-favoritos:hover .icono-corazon path {
+    fill: var(--primarioLuz2);
+}
+
+/* ================== */
+/*       PERFIL       */
+/* ================== */
+.btn-perfil {
+    width: 40px;
+    height: 40px;
+    background-color: var(--secundarioLuz2);
+    border-radius: 50%;
+    border: 3px solid transparent;
+    box-sizing: border-box;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: all 0.3s ease;
+}
+
+.btn-perfil:hover {
+    border-color: var(--primarioLuz2);
+}
+
+.icono-perfil {
+    width: 28px;
+    height: 28px;
+}
+
+.icono-perfil path {
+    fill: var(--textoWhite);
+    transition: fill 0.3s ease;
+}
+
+/* ======================================= */
+/*         HEADER (VERSIÓN PC)             */
+/* ======================================= */
+@media (min-width: 1024px) {
+    header {
+        height: 86px;
+        padding: 0 22px;
+    }
+
+    .btn-hamburguesa svg {
+        width: 2.5rem;
+    }
+
+    .btn-perfil {
+        width: 71px;
+        height: 68px;
+        background-color: var(--secundarioLuz2);
+    }
+
+    .icono-perfil {
+        width: 50px;
+        height: 47px;
+    }
+
+    .logo {
+        position: static;
+        transform: none;
+    }
+
+    .logo-icono {
+        display: block;
+    }
+
+    .logo-texto {
+        height: auto;
+    }
+
+    .header-izq {
+        min-width: 0;
+    }
+
+    .buscador {
+        display: flex;
+        max-width: 334px;
+        margin-left: 10px;
+        min-width: 0;
+    }
+
+    .btn-favoritos,
+    .header-der .btn-acento {
+        display: flex;
+    }
+}

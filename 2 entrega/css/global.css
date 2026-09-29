@@ -1,0 +1,142 @@
+/* RESET UNIVERSAL */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background-color: var(--secundarioLuz1);
+}
+
+button,
+input {
+    font-family: inherit;
+}
+
+/*COLORES Y VARIABLES DE DISEÑO*/
+:root {
+    --primario: #FFB8F5;
+    --secundario: #061127;
+    --acento: #823DE3;
+    --textoBlack: #000000;
+    --textoWhite: #FFFFFF;
+    --primarioSombra1: #CC93C4;
+    --primarioSombra2: #996E93;
+    --primarioLuz2: #FFD4F9;
+    --secundarioSombra1: #050E1F;
+    --secundarioLuz1: #0B1936;
+    --secundarioLuz2: #6A707D;
+    --acentoSombra1: #6831B6;
+    /* FUENTES (Tamaños Base Mobile) */
+    --fs-h1: 24px;
+    --lh-h1: 32px;
+    --fs-h2: 20px;
+    --lh-h2: 28px;
+    --fs-h3: 18px;
+    --lh-h3: 24px;
+    --fs-h4: 16px;
+    --lh-h4: 22px;
+}
+
+/*FUENTES*/
+h1,
+.h1 {
+    font-weight: bold;
+    font-size: var(--fs-h1);
+    line-height: var(--lh-h1);
+    letter-spacing: -0.5px;
+}
+
+h2,
+.h2 {
+    font-weight: 500;
+    font-size: var(--fs-h2);
+    line-height: var(--lh-h2);
+    letter-spacing: -0.2px;
+}
+
+h3,
+.h3 {
+    font-weight: bold;
+    font-size: var(--fs-h3);
+    line-height: var(--lh-h3);
+    letter-spacing: 0;
+}
+
+h4,
+.h4 {
+    font-weight: 600;
+    font-size: var(--fs-h4);
+    line-height: var(--lh-h4);
+    letter-spacing: 0;
+}
+
+.body-base {
+    font-weight: normal;
+    font-size: 16px;
+    line-height: 24px;
+    letter-spacing: 0;
+}
+
+.body-small {
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: 0;
+}
+
+.label {
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: 0.5px;
+}
+
+/* BOTONES GLOBALES */
+.btn-primario, .btn-acento {
+    padding: 10px 24px; /* Relleno flexible en lugar de medidas fijas */
+    border: 2px solid transparent;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Variación Primaria (Rosa) */
+.btn-primario {
+    background-color: var(--primario);
+    color: var(--textoBlack);
+}
+.btn-primario:hover {
+    border: 2px solid var(--primarioLuz2);
+    background-color: var(--primarioSombra2);
+}
+
+/* Variación Acento (Violeta) */
+.btn-acento {
+    background-color: var(--acento);
+    color: var(--textoWhite);
+}
+.btn-acento:hover {
+    background-color: var(--acentoSombra1);
+    border-color: var(--primarioLuz2);
+}
+
+/* REGLAS DE PC (DESKTOP) GLOBALES */
+@media (min-width: 1024px) {
+    :root {
+        --fs-h1: 40px;
+        --lh-h1: 48px;
+        --fs-h2: 32px;
+        --lh-h2: 40px;
+        --fs-h3: 24px;
+        --lh-h3: 32px;
+        --fs-h4: 18px;
+        --lh-h4: 24px;
+    }
+}
