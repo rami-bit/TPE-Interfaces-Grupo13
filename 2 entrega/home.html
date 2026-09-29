@@ -81,34 +81,47 @@
                 </svg>
             </button>
 
-            <!-- Contenido de texto a la izquierda -->
-            <div class="hero-contenido">
-                <h1>Peg Solitaire: Boca Juniors</h1>
+            <!-- VENTANA DEL CARRUSEL -->
+            <div class="hero-viewport">
+                <!-- VÍA DEL CARRUSEL (Contenedor de todos los slides) -->
+                <div class="hero-track" id="hero-track">
 
-                <p class="hero-descripcion body-base">
-                    Este no es un juego de mesa, es un ritual. El único objetivo es acomodar la mística para que la
-                    Séptima llegue de una vez por todas. Se juega con el corazón en la mano, un termo abajo del brazo y
-                    la fe intacta.
-                </p>
+                    <!-- VAGÓN 1 (Slide Harcodeado para carga rápida) -->
+                    <div class="hero-slide">
+                        <!-- Contenido de texto a la izquierda -->
+                        <div class="hero-contenido">
+                            <h1>Peg Solitaire: Boca Juniors</h1>
 
-                <div class="hero-tags body-base">
-                    <span>Estrategia</span> &bull; <span>⭐ 9.6</span> &bull; <span>BocaGames</span>
+                            <p class="hero-descripcion body-base">
+                                Este no es un juego de mesa, es un ritual. El único objetivo es acomodar la mística para
+                                que la
+                                Séptima llegue de una vez por todas. Se juega con el corazón en la mano, un termo abajo
+                                del brazo y
+                                la fe intacta.
+                            </p>
+
+                            <div class="hero-tags body-base">
+                                <span>Estrategia</span> &bull; <span>⭐ 9.6</span> &bull; <span>26/06/2011</span>
+                            </div>
+
+                            <div class="hero-botones">
+                                <button class="btn-primario h3">Jugar</button>
+                                <button class="btn-fav-hero" aria-label="Favoritos">
+                                    <svg viewBox="0 0 65 53" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                        <path
+                                            d="M32.4652 39.9806L30.4253 38.1236C23.1802 31.5537 18.397 27.2067 18.397 21.9029C18.397 17.5559 21.8015 14.1654 26.1345 14.1654C28.5824 14.1654 30.9318 15.3049 32.4652 17.0916C33.9986 15.3049 36.348 14.1654 38.7959 14.1654C43.1289 14.1654 46.5335 17.5559 46.5335 21.9029C46.5335 27.2067 41.7502 31.5537 34.5051 38.1236L32.4652 39.9806Z" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Imagen 16:9 alineada a la derecha -->
+                        <div class="hero-imagen">
+                            <img src="img/hero-boca.jpg" alt="Peg Solitaire Boca Juniors">
+                        </div>
+                    </div>
+
                 </div>
-
-                <div class="hero-botones">
-                    <button class="btn-primario h3">Jugar</button>
-                    <button class="btn-fav-hero" aria-label="Favoritos">
-                        <svg viewBox="0 0 65 53" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <path
-                                d="M32.4652 39.9806L30.4253 38.1236C23.1802 31.5537 18.397 27.2067 18.397 21.9029C18.397 17.5559 21.8015 14.1654 26.1345 14.1654C28.5824 14.1654 30.9318 15.3049 32.4652 17.0916C33.9986 15.3049 36.348 14.1654 38.7959 14.1654C43.1289 14.1654 46.5335 17.5559 46.5335 21.9029C46.5335 27.2067 41.7502 31.5537 34.5051 38.1236L32.4652 39.9806Z" />
-                        </svg>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Imagen 16:9 alineada a la derecha -->
-            <div class="hero-imagen">
-                <img src="img/hero-boca.jpg" alt="Peg Solitaire Boca Juniors">
             </div>
 
             <!-- Indicadores de Carrusel (Puntitos) -->
@@ -123,6 +136,7 @@
 
 
 
+    <script src="js/main.js"></script>
 </body>
 
 </html>

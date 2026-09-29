@@ -319,11 +319,41 @@ header {
 
 /*  Usamos Grid para superponer la foto y el texto */
 .hero-banner {
-    display: grid;
     width: 100%;
     background-color: var(--secundario);
     position: relative;
     /* Necesario para ubicar los botones absolutos */
+}
+
+/* La ventana que recorta lo que desborda */
+.hero-viewport {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* La vía del tren que se mueve */
+.hero-track {
+    display: flex;
+    height: 100%;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+}
+
+.hero-track::-webkit-scrollbar {
+    display: none;
+}
+
+/* El vagón individual (Slide) */
+.hero-slide {
+    flex: 0 0 100%;
+    /* Cada uno ocupa el 100% del ancho */
+    height: 100%;
+    scroll-snap-align: center;
+    /* Magnetismo al centrar */
+    display: grid;
+    /* Mantiene la lógica de superposición móvil */
 }
 
 /*  Obligamos a que la foto y el texto ocupen la misma celda de la grilla (capas) */
@@ -373,6 +403,27 @@ header {
 .btn-carrusel {
     display: none;
     /* Ocultos en celular, navegamos con swipe */
+}
+
+/* ======================================= */
+/*   ETIQUETA PRO CARRUSEL        */
+/* ======================================= */
+.etiqueta-pro-carrusel {
+    width: 115px;
+    height: 52px;
+    border-radius: 23px;
+    background-color: var(--secundario);
+    border: 1.5px solid var(--primarioLuz2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    /* Separación entre el SVG y el texto */
+}
+
+.etiqueta-pro-carrusel h3 {
+    color: var(--primario);
+    margin: 0;
 }
 
 /* ======================================= */
@@ -498,10 +549,15 @@ header {
         height: 520px;
         background-color: var(--secundario);
         margin-top: 40px;
-        display: flex;
-        justify-content: space-between;
         position: relative;
         /* Para los botones de carrusel */
+    }
+
+    .hero-slide {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        height: 100%;
     }
 
     /* ======================================= */
@@ -524,7 +580,14 @@ header {
         cursor: pointer;
         z-index: 5;
         /* Por encima de la foto y texto */
-        transition: background-color 0.3s ease;
+        transition: background-color 0.3s ease, opacity 0.3s ease;
+    }
+
+    .btn-carrusel:disabled {
+        opacity: 0.3;
+        cursor: default;
+        pointer-events: none;
+        /* Evita que el hover aplique */
     }
 
     .btn-carrusel:hover {
