@@ -249,12 +249,38 @@ main {
         gap: 16px;
     }
 
-    /* Forzamos el tamaÃ±o exacto del botÃ³n primario SÃ“LO dentro del carrusel */
+    /* Forzamos el tamaño exacto del botón primario SÓLO dentro del carrusel y lo preparamos para la animación */
     .hero-botones .btn-primario {
         width: 126px;
         height: 46px;
         padding: 0;
-        /* Anulamos el padding flexible */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden; /* Para que el joystick no se vea antes de entrar */
+    }
+
+    /* Joystick oculto y achicado por defecto */
+    .hero-botones .btn-primario::before {
+        content: "";
+        display: inline-block;
+        width: 0px;
+        height: 20px;
+        opacity: 0;
+        background-image: url('../assets/icons/joystick.svg');
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        transform: translateX(-15px);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    /* Al hacer hover, el joystick aparece, toma espacio (empujando el texto) y entra con efecto elástico */
+    .hero-botones .btn-primario:hover::before {
+        width: 20px;
+        opacity: 1;
+        transform: translateX(0);
+        margin-right: 8px;
     }
 
     .btn-fav-hero {
