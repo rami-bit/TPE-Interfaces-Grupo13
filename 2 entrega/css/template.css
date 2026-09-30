@@ -76,6 +76,41 @@ header {
     display: none;
 }
 
+.buscador-movil {
+    display: flex;
+    width: auto;
+    height: 36px;
+    background-color: var(--secundarioLuz2);
+    border-radius: 50px;
+    align-items: center;
+    padding: 0 15px;
+    justify-content: space-between;
+    margin: 10px 15px;
+    gap: 5px;
+}
+
+.buscador-movil input {
+    background: transparent;
+    border: none;
+    color: var(--textoWhite);
+    width: 100%;
+    outline: none;
+}
+
+.buscador-movil input::placeholder {
+    color: var(--textoWhite);
+}
+
+.buscador-movil .icono-lupa {
+    width: 14px;
+    height: 14px;
+    flex: none;
+}
+
+.buscador-movil .icono-lupa path {
+    fill: var(--textoWhite);
+}
+
 /* ================== */
 /*     HEADER DER     */
 /* ================== */
@@ -609,9 +644,9 @@ body:has(.btn-hamburguesa.activo) {
     transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
-/* Línea separadora solo en "Plan Pro" y "Preferencias" */
+/* Línea separadora por defecto (Mobile First) */
 .cuenta-menu li:nth-child(1),
-.cuenta-menu li:nth-child(3) {
+.cuenta-menu li:nth-child(4) {
     border-bottom: 2px solid var(--textoWhite);
 }
 
@@ -639,6 +674,10 @@ body:has(.btn-hamburguesa.activo) {
 
 .header-cuenta.activo .cuenta-menu li:nth-child(4) {
     transition-delay: 0.36s;
+}
+
+.header-cuenta.activo .cuenta-menu li:nth-child(5) {
+    transition-delay: 0.44s;
 }
 
 .cuenta-menu__salir {
@@ -687,6 +726,12 @@ body:has(.btn-hamburguesa.activo) {
 .cuenta-menu__icono--escudo {
     -webkit-mask-image: url("../assets/icons/escudo.svg");
     mask-image: url("../assets/icons/escudo.svg");
+}
+
+.cuenta-menu__icono--fav-perfil {
+    background-color: var(--primario);
+    -webkit-mask-image: url("../assets/icons/favoritos.svg");
+    mask-image: url("../assets/icons/favoritos.svg");
 }
 
 .cuenta-menu__icono--salir {
@@ -822,5 +867,20 @@ body:has(.btn-hamburguesa.activo) {
 
     .fat-footer__copy {
         border-top: none;
+    }
+
+    /* Ocultamos "Favoritos" del dropdown y el buscador móvil (ya están en el header) */
+    .cuenta-menu__item-movil,
+    .buscador-movil {
+        display: none;
+    }
+
+    /* Reestablecemos la línea separadora en Privacidad (3) y se la sacamos a Favoritos (4) que está oculto */
+    .cuenta-menu li:nth-child(3) {
+        border-bottom: 2px solid var(--textoWhite);
+    }
+
+    .cuenta-menu li:nth-child(4) {
+        border-bottom: none;
     }
 }

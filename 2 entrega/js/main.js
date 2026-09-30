@@ -586,3 +586,18 @@ function renderizarCarruselMixto(juegos, trackId) {
         isBig = !isBig;
     }
 }
+
+/* ========================================================================= */
+/*                   LOGICA DE BOTONES GLOBALES                              */
+/* ========================================================================= */
+
+// Escuchador global para los botones de favoritos
+document.addEventListener("click", (e) => {
+    // Buscar si el clic se hizo en el botón de favoritos o adentro del botón
+    const btnFav = e.target.closest('.btn-juego--fav, .btn-fav-hero, .btn-favoritos');
+    
+    if (btnFav) {
+        // Le togglea (pone o saca) la clase 'activo' que dispara nuestra animación Matrix en CSS
+        btnFav.classList.toggle('activo');
+    }
+});
