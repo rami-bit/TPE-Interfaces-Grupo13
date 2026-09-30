@@ -420,14 +420,15 @@ header {
     border-right: 2px solid var(--primario);
     overflow-y: auto;
     transform-origin: top left;
-    transform: translateX(-6px) scale(0.92);
+    /*transform: translateX(-6px) scale(0.92); */
+    transform: matrix(0.92, 0, 0, 0.92, -6, 0);
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.15s ease, transform 0.15s ease, visibility 0s 0.15s;
+    transition: opacity 0.15s ease, transform 0.5s ease, visibility 0s 0.15s;
 }
 
 body:has(.btn-hamburguesa.activo) .menu-nav {
-    transform: translateX(0) scale(1);
+    transform: matrix(1, 0, 0, 1, 0, 0);
     opacity: 1;
     visibility: visible;
     transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), visibility 0s;
@@ -558,7 +559,7 @@ body:has(.btn-hamburguesa.activo) {
     opacity: 0;
     visibility: hidden;
     transform-origin: top right;
-    transform: translateY(6px) scale(0.92);
+    transform: matrix(0.92, 0, 0, 0.92, 6, 0);
     transition: opacity 0.15s ease, transform 0.15s ease, visibility 0s 0.15s;
 }
 
@@ -572,7 +573,7 @@ body:has(.btn-hamburguesa.activo) {
 .header-cuenta.activo .cuenta-panel {
     opacity: 1;
     visibility: visible;
-    transform: translateY(0) scale(1);
+    transform: matrix(1, 0, 0, 1, 0, 0);
     transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), visibility 0s;
 }
 
