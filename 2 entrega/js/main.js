@@ -35,6 +35,39 @@ document.addEventListener("DOMContentLoaded", () => {
             // --- CARRUSEL Para ti (Juegos 14 al 21) ---
             renderizarCarruselChico(games.slice(14, 22), 'carrusel-nuevos');
             inicializarCarruselUniversal('carrusel-nuevos', 'btn-prev-nuevos', 'btn-next-nuevos');
+
+            // --- NUEVO: CARRUSEL MIXTO (Juegos 30 al 44) ---
+            // Le pasamos 15 juegos para que arme 3 ciclos completos (1 grande + 4 chicas = 5 juegos por ciclo)
+            renderizarCarruselMixto(games.slice(30, 45), 'carrusel-mixto');
+            inicializarCarruselUniversal('carrusel-mixto', 'btn-prev-mixto', 'btn-next-mixto');
+
+            // --- RPG (Carrusel Chico Filtrado) ---
+            const juegosRPG = filtrarJuegosPorGenero(games, 'rpg');
+            renderizarCarruselChico(juegosRPG, 'carrusel-rpg');
+            inicializarCarruselUniversal('carrusel-rpg', 'btn-prev-rpg', 'btn-next-rpg');
+
+            // --- AVENTURA PURA (Carrusel Chico Filtrado) ---
+            const juegosAventura = filtrarJuegosPorGenero(games, 'Adventure');
+            renderizarCarruselChico(juegosAventura, 'carrusel-aventura');
+            inicializarCarruselUniversal('carrusel-aventura', 'btn-prev-aventura', 'btn-next-aventura');
+
+            // --- ACCIÓN (Carrusel Vertical) ---
+            const juegosAccion = filtrarJuegosPorGenero(games, 'Action');
+            renderizarCarruselVertical(juegosAccion, 'carrusel-accion');
+            inicializarCarruselUniversal('carrusel-accion', 'btn-prev-accion', 'btn-next-accion');
+
+
+            renderizarCarruselChico(games.slice(38, 47), 'carrusel-valoracion');
+            inicializarCarruselUniversal('carrusel-valoracion', 'btn-prev-valoracion', 'btn-next-valoracion');
+            // ==========================================
+            // FUNCIÓN PARA FILTRAR JUEGOS POR GÉNERO
+            // ==========================================
+            function filtrarJuegosPorGenero(listaJuegos, genero) {
+                return listaJuegos.filter(game =>
+                    game.genres && game.genres.some(g => g.name.toLowerCase() === genero.toLowerCase())
+                );
+            }
+
         })
         .catch(error => console.error("Error al cargar los juegos de la API:", error));
 });
@@ -44,7 +77,9 @@ document.addEventListener("DOMContentLoaded", () => {
 /*                   MÁQUINAS DEL CARRUSEL (Lógica de JS)                    */
 /* ========================================================================= */
 
-// MÁQUINA UNIVERSAL 
+/* ========================================================================= */
+/*                              MÁQUINA UNIVERSAL                  */
+/* ========================================================================= */
 function inicializarCarruselUniversal(trackId, btnPrevId, btnNextId, alMoverse = null, startIndex = 0, isCentered = false) {
     const track = document.getElementById(trackId);
     const btnNext = document.getElementById(btnNextId);
@@ -57,7 +92,7 @@ function inicializarCarruselUniversal(trackId, btnPrevId, btnNextId, alMoverse =
 
     // 1. Averiguar cuánto mide 1 sola card real (+ su hueco)
     const getCardWidth = () => {
-        const card = track.querySelector('article');
+        const card = track.children[0];
         if (!card) return 0;
         // Leemos el gap exacto directo del CSS para que soporte cualquier diseño
         const gap = parseFloat(window.getComputedStyle(track).gap) || 0;
@@ -78,7 +113,7 @@ function inicializarCarruselUniversal(trackId, btnPrevId, btnNextId, alMoverse =
 
     // 3. Averiguar cuál es el tope máximo para no pasarnos de largo
     const getMaxIndex = () => {
-        const totalCards = track.querySelectorAll('article').length;
+        const totalCards = track.children.length;
         const visibles = getCardsVisibles();
         return Math.max(0, totalCards - visibles);
     };
@@ -90,7 +125,17 @@ function inicializarCarruselUniversal(trackId, btnPrevId, btnNextId, alMoverse =
         if (currentIndex > max) currentIndex = max;
 
         // Traducimos el índice a píxeles exactos
-        const translatePosition = currentIndex * getCardWidth();
+        let translatePosition = currentIndex * getCardWidth();
+
+        // FIX: Evitar el "vacío" al final del carrusel cuando la última carta no llena toda la pantalla
+        if (!isCentered) {
+            // Calculamos el máximo scroll físico posible
+            const maxTranslate = Math.max(0, track.scrollWidth - track.parentElement.clientWidth);
+            if (translatePosition > maxTranslate) {
+                translatePosition = maxTranslate + 30;
+            }
+        }
+
         track.style.transform = `translateX(-${translatePosition}px)`;
 
         // Controlamos las flechas
@@ -148,7 +193,9 @@ function inicializarCarruselUniversal(trackId, btnPrevId, btnNextId, alMoverse =
     window.addEventListener('resize', actualizar);
 }
 
-// MÁQUINA ESPECÍFICA DEL HERO BANNER 
+/* ========================================================================= */
+/*                              MÁQUINA HERO BANNER                  */
+/* ========================================================================= */
 function inicializarCarruselHero(trackId, btnPrevId, btnNextId, puntosSelector) {
     const track = document.getElementById(trackId);
     const btnNext = document.getElementById(btnNextId);
@@ -348,6 +395,29 @@ function renderizarCarruselChico(juegos, trackId) {
 }
 
 /* ========================================================================= */
+/*             RENDER: CARRUSEL VERTICAL (ACCIÓN)                            */
+/* ========================================================================= */
+function renderizarCarruselVertical(games, trackId) {
+    const track = document.getElementById(trackId);
+    if (!track) return;
+    track.innerHTML = '';
+
+    games.forEach(game => {
+        const slideHTML = `
+            <article class="card-vertical">
+                <div class="card-imagen">
+                    <img src="${game.background_image}" alt="${game.name}" loading="lazy">
+                </div>
+                <div class="card-overlay">
+                    <h3 class="card-titulo h4">${game.name}</h3>
+                </div>
+            </article>
+        `;
+        track.insertAdjacentHTML('beforeend', slideHTML);
+    });
+}
+
+/* ========================================================================= */
 /*             RENDER: CARRUSEL CENTRADO (JUEGOS RECOMENDADOS)               */
 /* ========================================================================= */
 
@@ -422,4 +492,93 @@ function renderizarCarruselCentrado(games, trackId) {
         `;
         track.appendChild(article);
     });
+}
+
+/* ========================================================================= */
+/*             RENDER: CARRUSEL MIXTO (CARD GRANDE + 4 CHICAS)               */
+/* ========================================================================= */
+function renderizarCarruselMixto(juegos, trackId) {
+    const track = document.getElementById(trackId);
+    if (!track) return;
+    track.innerHTML = '';
+
+    let i = 0;
+    let isBig = true; // Alternador: Arranca renderizando 1 grande, luego 4 chicas, luego 1 grande...
+
+    while (i < juegos.length) {
+        if (isBig) {
+            // RENDER VAGÓN: 1 CARD GRANDE
+            const game = juegos[i];
+            const nombreGenero = game.genres && game.genres.length > 0 ? game.genres[0].name : 'default';
+            const svgIcono = iconosPorGenero[nombreGenero] || iconosPorGenero['default'];
+
+            const slideHTML = `
+                <div class="carrusel-slide">
+                    <!-- Le clavamos activo y opacity 1 porque en este carrusel no se opacan las cartas -->
+                    <article class="card-grande activo" style="opacity: 1;">
+                        <div class="card-grande-imagen">
+                            <img src="${game.background_image}" alt="${game.name}">
+                        </div>
+                        
+                        ${i === 0 ? `
+                        <div class="etiqueta-pro-carrusel">
+                            <svg width="31" height="25" viewBox="0 0 31 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M29.2792 2.69097C28.8093 2.50059 28.2917 2.45055 27.7924 2.54722C27.2931 2.64388 26.8347 2.88288 26.4755 3.23377L23.1497 6.46807L17.2517 0.732374C16.7693 0.263435 16.1152 0 15.4331 0C14.7511 0 14.097 0.263435 13.6146 0.732374L7.71657 6.46807L4.39073 3.23377C4.031 2.88405 3.57273 2.6459 3.07385 2.54943C2.57496 2.45296 2.05787 2.50249 1.58793 2.69177C1.11799 2.88105 0.71631 3.20158 0.433667 3.61283C0.151024 4.02409 0.000108609 4.5076 0 5.00225L0 18.2421C0.00204213 19.9001 0.680192 21.4895 1.8857 22.6618C3.0912 23.8342 4.72563 24.4936 6.43047 24.4956H24.4358C26.1406 24.4936 27.7751 23.8342 28.9806 22.6618C30.1861 21.4895 30.8642 19.9001 30.8663 18.2421V5.00225C30.8664 4.50756 30.7157 4.02394 30.4332 3.61254C30.1507 3.20114 29.7491 2.88043 29.2792 2.69097Z" fill="var(--primarioLuz2)"/>
+                            </svg>
+                            <h3 class="h3">PRO</h3>
+                        </div>
+                        ` : ''}
+
+                        <div class="card-overlay">
+                            <h3 class="card-titulo">${game.name}</h3>
+                            <div class="card-grande-icono">
+                                ${svgIcono}
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            `;
+            track.insertAdjacentHTML('beforeend', slideHTML);
+            i += 1;
+        } else {
+            // RENDER VAGÓN: 4 CARDS CHICAS (2x2)
+            const gamesChunk = juegos.slice(i, i + 4);
+            let cardsHTML = '';
+
+            gamesChunk.forEach((game, idx) => {
+                cardsHTML += `
+                    <article class="card-juego">
+                        <div class="card-imagen">
+                            <img src="${game.background_image}" alt="${game.name}">
+                        </div>
+                        
+                        ${(idx === 1 || idx === 2) ? `
+                        <div class="etiqueta-pro-carrusel">
+                            <svg viewBox="0 0 31 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M29.2792 2.69097C28.8093 2.50059 28.2917 2.45055 27.7924 2.54722C27.2931 2.64388 26.8347 2.88288 26.4755 3.23377L23.1497 6.46807L17.2517 0.732374C16.7693 0.263435 16.1152 0 15.4331 0C14.7511 0 14.097 0.263435 13.6146 0.732374L7.71657 6.46807L4.39073 3.23377C4.031 2.88405 3.57273 2.6459 3.07385 2.54943C2.57496 2.45296 2.05787 2.50249 1.58793 2.69177C1.11799 2.88105 0.71631 3.20158 0.433667 3.61283C0.151024 4.02409 0.000108609 4.5076 0 5.00225L0 18.2421C0.00204213 19.9001 0.680192 21.4895 1.8857 22.6618C3.0912 23.8342 4.72563 24.4936 6.43047 24.4956H24.4358C26.1406 24.4936 27.7751 23.8342 28.9806 22.6618C30.1861 21.4895 30.8642 19.9001 30.8663 18.2421V5.00225C30.8664 4.50756 30.7157 4.02394 30.4332 3.61254C30.1507 3.20114 29.7491 2.88043 29.2792 2.69097Z" fill="var(--primarioLuz2)"/>
+                            </svg>
+                            <span class="label">PRO</span>
+                        </div>
+                        ` : ''}
+
+                        <div class="card-overlay">
+                            <h3 class="card-titulo">${game.name}</h3>
+                        </div>
+                    </article>
+                `;
+            });
+
+            // Si sobraron juegos para hacer el vagón pero no llegaron a 4, se meten igual y Grid los acomoda solos
+            const slideHTML = `
+                <div class="carrusel-slide slide-2x2">
+                    ${cardsHTML}
+                </div>
+            `;
+            track.insertAdjacentHTML('beforeend', slideHTML);
+            i += 4;
+        }
+
+        // Alternar el estado para el próximo vagón
+        isBig = !isBig;
+    }
 }

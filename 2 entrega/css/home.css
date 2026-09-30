@@ -328,9 +328,9 @@ main {
     /* Cartas más juntas en mobile */
     transition: transform 0.5s ease-in-out;
 
-    /* PADDINGS CLAVE PARA EL HOVER (304x170) */
-    /* La card crece 44px de ancho (22px por lado) y 23px de alto (12px por lado) */
-    padding: 10px 15px;
+    /* PADDINGS CLAVE PARA EL HOVER (Para normales y verticales) */
+    /* Las cards verticales crecen ~35px de alto (17.5px por lado) */
+    padding: 17px 15px;
 }
 
 .carrusel-track-chico::-webkit-scrollbar {
@@ -486,5 +486,94 @@ main {
     .btn-carrusel-flotante.btn-carrusel--der {
         right: calc(50% - 313.5px - 85px);
         transform: translate(100%, -50%);
+    }
+}
+
+/* ======================================= */
+/*   CARRUSEL MIXTO     */
+/* ======================================= */
+
+.carrusel-track-mixto {
+    display: flex;
+    gap: 15px;
+    /* Espacio entre los vagones en mobile */
+    transition: transform 0.5s ease-in-out;
+    padding: 20px 15px;
+}
+
+.carrusel-slide {
+    flex: 0 0 330px;
+    height: 185px;
+    display: flex;
+}
+
+/* El vagan especial que es una grilla 2x2 */
+.slide-2x2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 15px;
+    /* Espacio interno entre las 4 cards chicas */
+}
+
+/* Obligamos a que las cards adentro del vagon se estiren y pierdan su medida fija */
+.carrusel-slide .card-grande,
+.carrusel-slide .card-juego {
+    flex: none;
+    width: 100%;
+    height: 100%;
+}
+
+@media (min-width: 1024px) {
+    .carrusel-track-mixto {
+        gap: 30px;
+    }
+
+    .carrusel-slide {
+        flex: 0 0 627px;
+        height: 353px;
+    }
+
+    .slide-2x2 {
+        gap: 30px;
+        /* Espacio interno entre las 4 cards chicas en desktop */
+    }
+}
+
+/* ======================================= */
+/*          CARDS VERTICALES (NUEVO)       */
+/* ======================================= */
+.card-vertical {
+    flex: 0 0 150px;
+    /* Tamaño mobile proporcional */
+    height: 230px;
+    border-radius: 16px;
+    background-color: var(--secundarioSombra1);
+    scroll-snap-align: start;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    border: 3px solid transparent;
+    transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.card-vertical:hover {
+    transform: scale(1.1);
+    /* Efecto agrandado */
+    border-color: var(--primario);
+    /* Borde rosa brillante */
+    z-index: 10;
+}
+
+/* Sube cuando hacés hover (reutilizamos la clase .card-overlay) */
+.card-vertical:hover .card-overlay {
+    transform: translateY(0);
+}
+
+@media (min-width: 1024px) {
+    .card-vertical {
+        flex: 0 0 228px;
+        height: 351px;
+        border-radius: 24px;
     }
 }
