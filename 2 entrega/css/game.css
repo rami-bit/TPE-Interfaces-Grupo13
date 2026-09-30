@@ -237,10 +237,10 @@ body {
 .juego-columnas {
     display: grid;
     grid-template-columns: minmax(0, 751px) minmax(0, 392.6px);
-    column-gap: 102px;
-    row-gap: 76px;
+    gap: 5rem;
     align-items: start;
-    margin-top: 24px;
+    justify-content: center;
+    margin-top: 79px;
 }
 
 .juego-info {
