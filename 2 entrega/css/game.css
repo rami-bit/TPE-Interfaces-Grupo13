@@ -228,7 +228,7 @@ body {
 }
 
 .btn-juego--full:hover .btn-juego__icono {
-    background-color: var(--primarioluz1);
+    background-color: var(--primarioLuz2);
 }
 
 
