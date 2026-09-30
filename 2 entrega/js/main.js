@@ -1,5 +1,24 @@
 document.addEventListener("DOMContentLoaded", () => {
 
+    // ==========================================
+    // MENÚ HAMBURGUESA
+    // ==========================================
+    const btnHamburguesa = document.querySelector('.btn-hamburguesa');
+    const menuOverlay = document.querySelector('.menu-overlay');
+
+    if (btnHamburguesa) {
+        btnHamburguesa.addEventListener('click', () => {
+            btnHamburguesa.classList.toggle('activo');
+        });
+
+        // Cerrar al clickear fuera del menú (en el overlay)
+        if (menuOverlay) {
+            menuOverlay.addEventListener('click', () => {
+                btnHamburguesa.classList.remove('activo');
+            });
+        }
+    }
+
     // 1. EL JEFE: LLAMA A LA API UNA SOLA VEZ Y REPARTE LAS CARTAS
     fetch('https://vj.interfaces.jima.com.ar/api/v2')
         .then(response => response.json())
@@ -313,7 +332,9 @@ function habilitarTouch(track, onSnap, getPosicionBase) {
 /* ========================================================================= */
 /*                     FUNCIONES OBRERAS (Fabrican el HTML)                  */
 /* ========================================================================= */
-
+/* ========================================================================= */
+/*             RENDER: CARRUSEL HERO BANNER                           */
+/* ========================================================================= */
 function renderizarHeroBanner(juegos) {
     const track = document.getElementById('hero-track');
     if (!track) return;
@@ -360,7 +381,9 @@ function renderizarHeroBanner(juegos) {
         track.insertAdjacentHTML('beforeend', slideHTML);
     });
 }
-
+/* ========================================================================= */
+/*             RENDER: CARRUSEL CHICO                            */
+/* ========================================================================= */
 function renderizarCarruselChico(juegos, trackId) {
     const track = document.getElementById(trackId);
     if (!track) return;
@@ -386,7 +409,7 @@ function renderizarCarruselChico(juegos, trackId) {
                 ` : ''}
 
                 <div class="card-overlay">
-                    <h3 class="card-titulo h4">${game.name}</h3>
+                    <h3 class="card-titulo h4" title="${game.name}">${game.name}</h3>
                 </div>
             </article>
         `;
@@ -409,7 +432,7 @@ function renderizarCarruselVertical(games, trackId) {
                     <img src="${game.background_image}" alt="${game.name}" loading="lazy">
                 </div>
                 <div class="card-overlay">
-                    <h3 class="card-titulo h4">${game.name}</h3>
+                    <h3 class="card-titulo h4" title="${game.name}">${game.name}</h3>
                 </div>
             </article>
         `;
@@ -484,7 +507,7 @@ function renderizarCarruselCentrado(games, trackId) {
             ` : ''}
 
             <div class="card-overlay">
-                <h3 class="card-titulo">${game.name}</h3>
+                <h3 class="card-titulo" title="${game.name}">${game.name}</h3>
                 <div class="card-grande-icono">
                     ${svgIcono}
                 </div>
@@ -530,7 +553,7 @@ function renderizarCarruselMixto(juegos, trackId) {
                         ` : ''}
 
                         <div class="card-overlay">
-                            <h3 class="card-titulo">${game.name}</h3>
+                            <h3 class="card-titulo" title="${game.name}">${game.name}</h3>
                             <div class="card-grande-icono">
                                 ${svgIcono}
                             </div>
@@ -562,7 +585,7 @@ function renderizarCarruselMixto(juegos, trackId) {
                         ` : ''}
 
                         <div class="card-overlay">
-                            <h3 class="card-titulo">${game.name}</h3>
+                            <h3 class="card-titulo" title="${game.name}">${game.name}</h3>
                         </div>
                     </article>
                 `;

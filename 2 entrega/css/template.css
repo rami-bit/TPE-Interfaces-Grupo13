@@ -9,6 +9,7 @@ header {
     background-color: var(--secundarioSombra1);
     padding: 0 16px;
     position: relative;
+    z-index: 30;
 }
 
 /* ================== */
@@ -25,6 +26,7 @@ header {
     fill: var(--primario);
     width: 1.8rem;
     height: auto;
+    overflow: visible;
 }
 
 .btn-hamburguesa:hover svg {
@@ -354,4 +356,150 @@ header {
         height: 12px;
     }
 }
-
+
+/* ================== */
+/* COMPORTAMIENTO NAV */
+/* ================== */
+@keyframes abrirMenu {
+    0% {
+        transform: scaleX(1);
+    }
+
+    100% {
+        transform: scaleX(-1);
+    }
+}
+
+.btn-hamburguesa.activo {
+    animation: abrirMenu 0.15s ease forwards;
+}
+
+/* Menu desplegable */
+.menu-nav {
+    position: fixed;
+    top: 60px;
+    /* Debajo del header mobile */
+    left: 0;
+    z-index: 25;
+    box-sizing: border-box;
+    width: 180px;
+    background-color: var(--secundario);
+    border-right: 2px solid var(--primario);
+    overflow-y: auto;
+    transform-origin: top left;
+    transform: translateX(-6px) scale(0.92);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.15s ease, transform 0.15s ease, visibility 0s 0.15s;
+}
+
+body:has(.btn-hamburguesa.activo) .menu-nav {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), visibility 0s;
+}
+
+.menu-nav__lista {
+    list-style: none;
+    margin: 0;
+    padding: 8px 0;
+}
+
+.menu-nav__lista+.menu-nav__lista {
+    border-top: 2px solid var(--primario);
+}
+
+.menu-nav__link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 16px;
+    color: var(--textoWhite);
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+}
+
+.menu-nav__link:hover {
+    opacity: 0.6;
+}
+
+.menu-nav__icono {
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+}
+
+.menu-nav li {
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+body:has(.btn-hamburguesa.activo) .menu-nav li {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+body:has(.btn-hamburguesa.activo) .menu-nav li:nth-child(1) {
+    transition-delay: 0.06s;
+}
+
+body:has(.btn-hamburguesa.activo) .menu-nav li:nth-child(2) {
+    transition-delay: 0.12s;
+}
+
+body:has(.btn-hamburguesa.activo) .menu-nav li:nth-child(3) {
+    transition-delay: 0.18s;
+}
+
+body:has(.btn-hamburguesa.activo) .menu-nav li:nth-child(4) {
+    transition-delay: 0.24s;
+}
+
+body:has(.btn-hamburguesa.activo) .menu-nav__lista+.menu-nav__lista li:nth-child(1) {
+    transition-delay: 0.3s;
+}
+
+body:has(.btn-hamburguesa.activo) .menu-nav__lista+.menu-nav__lista li:nth-child(2) {
+    transition-delay: 0.36s;
+}
+
+body:has(.btn-hamburguesa.activo) .menu-nav__lista+.menu-nav__lista li:nth-child(3) {
+    transition-delay: 0.42s;
+}
+
+body:has(.btn-hamburguesa.activo) .menu-nav__lista+.menu-nav__lista li:nth-child(4) {
+    transition-delay: 0.48s;
+}
+
+.menu-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    background-color: rgba(6, 17, 39, 0.5);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.2s ease, backdrop-filter 0.2s ease, visibility 0s 0.2s;
+}
+
+body:has(.btn-hamburguesa.activo) .menu-overlay {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition-delay: 0s;
+}
+
+body:has(.btn-hamburguesa.activo) {
+    overflow: hidden;
+}
+
+@media (min-width: 1024px) {
+    .menu-nav {
+        top: 86px;
+        /* Debajo del header desktop */
+    }
+}
