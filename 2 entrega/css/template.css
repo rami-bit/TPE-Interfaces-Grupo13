@@ -2,6 +2,7 @@
 /*      HEADER      */
 /* ================== */
 header {
+    grid-area: header;
     height: 60px;
     display: flex;
     align-items: center;
@@ -20,6 +21,7 @@ header {
     border: none;
     cursor: pointer;
     padding: 0;
+    transition: transform 0.15s ease;
 }
 
 .btn-hamburguesa svg {
@@ -244,6 +246,47 @@ header {
         height: 37px;
         border-radius: 16px;
         padding: 0;
+        position: relative;
+        border: 3px solid transparent;
+        transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.3s ease;
+    }
+
+    .header-der .btn-acento::before {
+        content: "";
+        position: absolute;
+        inset: -3px;
+        padding: 3px;
+        border-radius: inherit;
+        --angle: 0deg;
+        background: conic-gradient(from var(--angle), var(--primario), var(--primarioLuz2), var(--primario));
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        mask-composite: exclude;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        pointer-events: none;
+    }
+
+    .header-der .btn-acento:hover::before {
+        opacity: 1;
+        animation: pro-borde-gira 3s linear infinite;
+    }
+
+    .header-der .btn-acento:hover {
+        box-shadow: 0 0 12px rgba(155, 100, 233, 0.55);
+    }
+}
+
+@property --angle {
+    syntax: "<angle>";
+    initial-value: 0deg;
+    inherits: false;
+}
+
+@keyframes pro-borde-gira {
+    to {
+        --angle: 360deg;
     }
 }
 
@@ -360,18 +403,8 @@ header {
 /* ================== */
 /* COMPORTAMIENTO NAV */
 /* ================== */
-@keyframes abrirMenu {
-    0% {
-        transform: scaleX(1);
-    }
-
-    100% {
-        transform: scaleX(-1);
-    }
-}
-
 .btn-hamburguesa.activo {
-    animation: abrirMenu 0.15s ease forwards;
+    transform: scaleX(-1);
 }
 
 /* Menu desplegable */
@@ -501,5 +534,292 @@ body:has(.btn-hamburguesa.activo) {
     .menu-nav {
         top: 86px;
         /* Debajo del header desktop */
+    }
+}
+
+/* ================== */
+/* COMPORTAMIENTO CUENTA */
+/* ================== */
+
+.header-cuenta {
+    display: flex;
+}
+
+.cuenta-panel {
+    position: absolute;
+    top: 60px;
+    /* Debajo del header mobile */
+    right: 16px;
+    z-index: 26;
+    box-sizing: border-box;
+    width: max-content;
+    padding: 14px 0 8px;
+    background-color: var(--secundarioSombra1);
+    opacity: 0;
+    visibility: hidden;
+    transform-origin: top right;
+    transform: translateY(6px) scale(0.92);
+    transition: opacity 0.15s ease, transform 0.15s ease, visibility 0s 0.15s;
+}
+
+@media (min-width: 1024px) {
+    .cuenta-panel {
+        top: 86px;
+        /* Debajo del header desktop */
+    }
+}
+
+.header-cuenta.activo .cuenta-panel {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+    transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), visibility 0s;
+}
+
+.cuenta-perfil {
+    gap: 8px;
+    width: calc(100% - 24px);
+    height: 32px;
+    margin: 0 12px;
+    padding: 0;
+    opacity: 0;
+    transform: translateY(6px);
+    /* Pisamos la transición del botón para incluir la opacidad de la cascada */
+    transition: all 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
+}
+
+.cuenta-perfil__icono {
+    width: 16px;
+    height: 16px;
+    background-color: var(--textoBlack);
+    -webkit-mask: url("../assets/icons/avatar.svg") no-repeat center / contain;
+    mask: url("../assets/icons/avatar.svg") no-repeat center / contain;
+}
+
+.cuenta-menu {
+    list-style: none;
+    margin: 12px 0 0;
+    padding: 0;
+}
+
+.cuenta-menu li {
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Línea separadora solo en "Plan Pro" y "Preferencias" */
+.cuenta-menu li:nth-child(1),
+.cuenta-menu li:nth-child(3) {
+    border-bottom: 2px solid var(--textoWhite);
+}
+
+.header-cuenta.activo .cuenta-perfil,
+.header-cuenta.activo .cuenta-menu li {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.header-cuenta.activo .cuenta-perfil {
+    transition-delay: 0.06s;
+}
+
+.header-cuenta.activo .cuenta-menu li:nth-child(1) {
+    transition-delay: 0.12s;
+}
+
+.header-cuenta.activo .cuenta-menu li:nth-child(2) {
+    transition-delay: 0.2s;
+}
+
+.header-cuenta.activo .cuenta-menu li:nth-child(3) {
+    transition-delay: 0.28s;
+}
+
+.header-cuenta.activo .cuenta-menu li:nth-child(4) {
+    transition-delay: 0.36s;
+}
+
+.cuenta-menu__salir {
+    margin-top: 10px;
+}
+
+.cuenta-menu__link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    color: var(--textoWhite);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: opacity 0.2s ease;
+}
+
+.cuenta-menu__link:hover {
+    opacity: 0.6;
+}
+
+.cuenta-menu__icono {
+    flex: none;
+    width: 16px;
+    height: 16px;
+    background-color: var(--textoWhite);
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+}
+
+.cuenta-menu__icono--corona {
+    background-color: var(--primario);
+    -webkit-mask-image: url("../assets/icons/avatar-noob/pro-card-recomendados/coronaPro-1.svg");
+    mask-image: url("../assets/icons/avatar-noob/pro-card-recomendados/coronaPro-1.svg");
+}
+
+.cuenta-menu__icono--config {
+    -webkit-mask-image: url("../assets/icons/Config.svg");
+    mask-image: url("../assets/icons/Config.svg");
+}
+
+.cuenta-menu__icono--escudo {
+    -webkit-mask-image: url("../assets/icons/escudo.svg");
+    mask-image: url("../assets/icons/escudo.svg");
+}
+
+.cuenta-menu__icono--salir {
+    -webkit-mask-image: url("../assets/icons/salir.svg");
+    mask-image: url("../assets/icons/salir.svg");
+}
+
+/* ================== */
+/*       FOOTER       */
+/* ================== */
+.fat-footer {
+    grid-area: footer;
+    box-sizing: border-box;
+    padding: 40px 16px 24px;
+    background-color: var(--secundarioSombra1);
+    display: flex;
+    flex-direction: column;
+}
+
+.fat-footer__contenido {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.fat-footer__col {
+    min-width: 0;
+}
+
+.fat-footer__titulo {
+    margin: 0 0 8px;
+    color: var(--primario);
+    line-height: 1.3;
+}
+
+.fat-footer__titulo:not(:first-child) {
+    margin-top: 16px;
+}
+
+.fat-footer__subtitulo {
+    margin: 0 0 8px;
+    color: var(--textoWhite);
+}
+
+.fat-footer__lista {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.fat-footer__lista li {
+    margin-bottom: 6px;
+}
+
+.fat-footer__lista a {
+    color: var(--textoWhite);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.fat-footer__lista a:hover {
+    color: var(--primario);
+}
+
+.fat-footer__pro {
+    display: inline-block;
+    margin-bottom: 16px;
+    transition: opacity 0.2s ease;
+}
+
+.fat-footer__pro:hover {
+    opacity: 0.8;
+}
+
+.fat-footer__pro img {
+    display: block;
+    width: 96px;
+    height: 43px;
+}
+
+.fat-footer__pagos {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.fat-footer__pagos img {
+    display: block;
+    height: 32px;
+    width: auto;
+}
+
+.fat-footer__redes {
+    display: flex;
+    gap: 12px;
+}
+
+.fat-footer__redes a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background-color: var(--textoWhite);
+    transition: background-color 0.2s ease;
+}
+
+.fat-footer__redes a:hover {
+    background-color: var(--primarioLuz2);
+}
+
+.fat-footer__copy {
+    margin: 32px auto 0;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--textoWhite);
+    text-align: center;
+    width: 100%;
+}
+
+@media (min-width: 1024px) {
+    .fat-footer {
+        padding: 43px 52px 24px;
+    }
+
+    .fat-footer__contenido {
+        flex-direction: row;
+        justify-content: space-between;
+        gap: 40px;
+    }
+
+    .fat-footer__copy {
+        border-top: none;
     }
 }

@@ -8,15 +8,13 @@
 
 .olvide-contrasena {
     color: var(--primario);
-    font-size: 12px;
-    font-weight: 600;
     text-decoration: none;
     align-self: flex-start;
     transition: color 0.3s;
 }
 
 .olvide-contrasena:hover {
-    color: var(--primarioluz2);
+    color: var(--primarioLuz2);
     text-decoration: underline;
 }
 

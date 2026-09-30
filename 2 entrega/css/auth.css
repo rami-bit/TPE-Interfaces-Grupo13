@@ -8,12 +8,11 @@
 body.pagina-registro,
 body.pagina-login {
     min-height: 100vh;
-    background-color: var(--secundarioluz1);
+    background-color: var(--secundarioLuz1);
     display: flex;
     justify-content: center;
     align-items: flex-start;
     padding: 40px 16px;
-    font-family: var(--fuente);
 }
 
 /* Tarjeta */
@@ -24,7 +23,7 @@ body.pagina-login {
     overflow: hidden;
     width: 100%;
     max-width: 380px;
-    background-color: var(--secundariosombra);
+    background-color: var(--secundarioSombra1);
     border: 8px solid var(--primario);
     border-radius: 12px;
     padding: 24px 28px 28px;
@@ -66,8 +65,6 @@ body.pagina-login {
 .titulo-registro,
 .titulo-login {
     color: var(--primario);
-    font-size: 20px;
-    font-weight: bold;
     margin-bottom: 12px;
 }
 
@@ -78,7 +75,6 @@ body.pagina-login {
     gap: 10px;
     margin: 0 -28px;
     color: var(--textoWhite);
-    font-size: 12px;
 }
 
 .subtitulo-registro::before,
@@ -88,7 +84,7 @@ body.pagina-login {
     content: "";
     flex: 1;
     height: 1px;
-    background-color: var(--secundarioluz2);
+    background-color: var(--secundarioLuz2);
 }
 
 /* Formulario */
@@ -115,7 +111,7 @@ body.pagina-login {
     height: 32px;
     border: none;
     border-radius: 20px;
-    background-color: var(--secundarioluz2);
+    background-color: var(--secundarioLuz2);
     color: var(--textoWhite);
     font-size: 12px;
     padding: 0 16px;
@@ -181,9 +177,9 @@ body.pagina-login {
 
 .boton-crear:hover,
 .boton-iniciar:hover {
-    background-color: var(--acentosombra);
-    border: 3px solid var(--primarioluz2);
-    color: var(--textoblack);
+    background-color: var(--acentoSombra1);
+    border: 3px solid var(--primarioLuz2);
+    color: var(--textoBlack);
     transform: translateY(-2px);
     transform: scale(1.03);
 }
@@ -244,7 +240,6 @@ body.pagina-login {
     gap: 10px;
     margin: 0 -28px;
     color: var(--textoWhite);
-    font-size: 12px;
 }
 
 .separador-registro::before,
@@ -254,7 +249,7 @@ body.pagina-login {
     content: "";
     flex: 1;
     height: 1px;
-    background-color: var(--secundarioluz2);
+    background-color: var(--secundarioLuz2);
 }
 
 .separador-registro span,

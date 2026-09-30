@@ -1,24 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-    // ==========================================
-    // MENÚ HAMBURGUESA
-    // ==========================================
-    const btnHamburguesa = document.querySelector('.btn-hamburguesa');
-    const menuOverlay = document.querySelector('.menu-overlay');
-
-    if (btnHamburguesa) {
-        btnHamburguesa.addEventListener('click', () => {
-            btnHamburguesa.classList.toggle('activo');
-        });
-
-        // Cerrar al clickear fuera del menú (en el overlay)
-        if (menuOverlay) {
-            menuOverlay.addEventListener('click', () => {
-                btnHamburguesa.classList.remove('activo');
-            });
-        }
-    }
-
     // 1. EL JEFE: LLAMA A LA API UNA SOLA VEZ Y REPARTE LAS CARTAS
     fetch('https://vj.interfaces.jima.com.ar/api/v2')
         .then(response => response.json())

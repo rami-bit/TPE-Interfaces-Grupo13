@@ -58,15 +58,39 @@
             <!-- Botón PRO -->
             <button class="btn-acento body-small">Obtener PRO</button>
 
-            <!-- Botón Perfil -->
-            <button aria-label="Perfil" class="btn-perfil">
-                <svg class="icono-perfil" viewBox="0 0 50 47" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    <path
-                        d="M32.9136 27.4166H16.3245C13.6283 27.4197 11.0435 28.4435 9.13702 30.2633C7.23054 32.0831 6.15804 34.5505 6.15479 37.1241V47H43.0834V37.1241C43.0801 34.5505 42.0076 32.0831 40.1011 30.2633C38.1946 28.4435 35.6098 27.4197 32.9136 27.4166Z" />
-                    <path
-                        d="M24.6191 23.5C31.4175 23.5 36.9286 18.2393 36.9286 11.75C36.9286 5.26065 31.4175 0 24.6191 0C17.8207 0 12.3096 5.26065 12.3096 11.75C12.3096 18.2393 17.8207 23.5 24.6191 23.5Z" />
-                </svg>
-            </button>
+            <!-- Contenedor del Perfil -->
+            <div class="header-cuenta">
+                <!-- Botón Perfil -->
+                <button aria-label="Perfil" class="btn-perfil">
+                    <svg class="icono-perfil" viewBox="0 0 50 47" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path
+                            d="M32.9136 27.4166H16.3245C13.6283 27.4197 11.0435 28.4435 9.13702 30.2633C7.23054 32.0831 6.15804 34.5505 6.15479 37.1241V47H43.0834V37.1241C43.0801 34.5505 42.0076 32.0831 40.1011 30.2633C38.1946 28.4435 35.6098 27.4197 32.9136 27.4166Z" />
+                        <path
+                            d="M24.6191 23.5C31.4175 23.5 36.9286 18.2393 36.9286 11.75C36.9286 5.26065 31.4175 0 24.6191 0C17.8207 0 12.3096 5.26065 12.3096 11.75C12.3096 18.2393 17.8207 23.5 24.6191 23.5Z" />
+                    </svg>
+                </button>
+
+                <!-- Panel desplegable -->
+                <div class="cuenta-panel" id="cuenta-panel">
+                    <button type="button" class="btn-primario cuenta-perfil label">
+                        <span class="cuenta-perfil__icono"></span>
+                        Ver Perfil
+                    </button>
+                    <ul class="cuenta-menu">
+                        <li><a class="cuenta-menu__link body-small" href="#"><span
+                                    class="cuenta-menu__icono cuenta-menu__icono--corona"></span>Mejorar Plan Pro</a>
+                        </li>
+                        <li><a class="cuenta-menu__link body-small" href="#"><span
+                                    class="cuenta-menu__icono cuenta-menu__icono--config"></span>Configuracion de
+                                cuenta</a></li>
+                        <li><a class="cuenta-menu__link body-small" href="#"><span
+                                    class="cuenta-menu__icono cuenta-menu__icono--escudo"></span>Preferencias de
+                                privacidad</a></li>
+                        <li class="cuenta-menu__salir"><a class="cuenta-menu__link body-small" href="#"><span
+                                    class="cuenta-menu__icono cuenta-menu__icono--salir"></span>Cerrar Sesion</a></li>
+                    </ul>
+                </div>
+            </div>
         </div>
 
     </header>
@@ -75,8 +99,8 @@
     <div class="menu-overlay"></div>
     <nav class="menu-nav" aria-label="Menú principal">
         <ul class="menu-nav__lista">
-            <li><a class="menu-nav__link body-small" href="#"><img class="menu-nav__icono" src="assets/icons/home.svg"
-                        alt="">Home</a></li>
+            <li><a class="menu-nav__link body-small" href="home.html"><img class="menu-nav__icono"
+                        src="assets/icons/home.svg" alt="">Home</a></li>
             <li><a class="menu-nav__link body-small" href="#"><img class="menu-nav__icono"
                         src="assets/icons/recientes.svg" alt="">Recientes</a></li>
             <li><a class="menu-nav__link body-small" href="#"><img class="menu-nav__icono"
@@ -136,7 +160,7 @@
                             </div>
 
                             <div class="hero-botones">
-                                <button class="btn-primario h3">Jugar</button>
+                                <a href="game.html" class="btn-primario h3" style="text-decoration: none;">Jugar</a>
                                 <button class="btn-fav-hero" aria-label="Favoritos">
                                     <svg viewBox="0 0 65 53" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                                         <path
@@ -453,8 +477,92 @@
         </section>
     </main>
 
+    <footer class="fat-footer">
+        <div class="fat-footer__contenido">
+            <div class="fat-footer__col">
+                <h4 class="fat-footer__titulo h3">Juegos</h4>
+                <p class="fat-footer__subtitulo body-small">Explora el sitio</p>
+                <ul class="fat-footer__lista body-small">
+                    <li><a href="home.html">home</a></li>
+                    <li><a href="#">Recientes</a></li>
+                    <li><a href="#">Juegos</a></li>
+                </ul>
+                <h4 class="fat-footer__titulo h3">Categorías</h4>
+                <ul class="fat-footer__lista body-small">
+                    <li><a href="#">ACCION</a></li>
+                    <li><a href="#">Deporte</a></li>
+                    <li><a href="#">Puzzle</a></li>
+                    <li><a href="#">RPG</a></li>
+                </ul>
+            </div>
 
+            <div class="fat-footer__col">
+                <h4 class="fat-footer__titulo h3">Servicios y Ventajas</h4>
+                <a class="fat-footer__pro" href="#"><img src="assets/icons/iconoPro.svg" alt="PRO"></a>
+                <p class="fat-footer__subtitulo body-small">Ventajas de la suscripcion Pro:</p>
+                <ul class="fat-footer__lista body-small">
+                    <li><a href="#">Acceso a todos los titulos Pro</a></li>
+                    <li><a href="#">Sin Anuncios</a></li>
+                    <li><a href="#">Regalos Mensuales</a></li>
+                </ul>
+            </div>
 
+            <div class="fat-footer__col">
+                <h4 class="fat-footer__titulo h3">Ayuda</h4>
+                <ul class="fat-footer__lista body-small">
+                    <li><a href="#">Sobre Code Play</a></li>
+                    <li><a href="#">Contactanos</a></li>
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Politica de privacidad</a></li>
+                    <li><a href="#">Terminos de servicio</a></li>
+                    <li><a href="#">Blog de desarrollo</a></li>
+                </ul>
+            </div>
+
+            <div class="fat-footer__col">
+                <h4 class="fat-footer__titulo h3">Pagos y Comunidad</h4>
+                <p class="fat-footer__subtitulo body-small">Metodos de pago aceptados</p>
+                <div class="fat-footer__pagos">
+                    <img src="assets/icons/mastercard.svg" alt="Mastercard">
+                    <img src="assets/icons/visa.svg" alt="Visa">
+                </div>
+                <h4 class="fat-footer__titulo h3">Seguinos</h4>
+                <div class="fat-footer__redes">
+                    <a href="#" aria-label="Instagram">
+                        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="var(--textoBlack)"
+                            stroke-width="2" aria-hidden="true">
+                            <rect x="3" y="3" width="18" height="18" rx="5.5"></rect>
+                            <circle cx="12" cy="12" r="4.2"></circle>
+                            <circle cx="17.3" cy="6.7" r="1.2" fill="var(--textoBlack)" stroke="none"></circle>
+                        </svg>
+                    </a>
+                    <a href="#" aria-label="TikTok">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="var(--textoBlack)" aria-hidden="true">
+                            <path
+                                d="M15.1 2h3c.3 1.9 1.5 3.2 3.4 3.5v3c-1.4 0-2.7-.4-3.7-1.2v6.4a5.7 5.7 0 1 1-5.7-5.7c.3 0 .6 0 .9.1v3.1a2.6 2.6 0 1 0 1.9 2.5V2z">
+                            </path>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <div class="fat-footer__col">
+                <h4 class="fat-footer__titulo h3">Novedades y Soporte</h4>
+                <ul class="fat-footer__lista body-small">
+                    <li><a href="#">Ultimas Actualizaciones</a></li>
+                    <li><a href="#">Nuevos Lanzamientos</a></li>
+                </ul>
+                <h4 class="fat-footer__titulo h3">Soporte</h4>
+                <ul class="fat-footer__lista body-small">
+                    <li><a href="#">Soporte Tecnico</a></li>
+                    <li><a href="#">Reportar Problema</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="fat-footer__copy label">2026-2027 Code Play, Inc | All Rights Reserved</p>
+    </footer>
+
+    <script src="js/header.js"></script>
     <script src="js/main.js"></script>
 </body>
 

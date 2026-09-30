@@ -1,39 +1,52 @@
 document.addEventListener("DOMContentLoaded", () => {
-    let btnMenu = document.querySelector(".menu-hamburguesa");
-    let menuNav = document.querySelector(".menu-nav");
-    let cuenta = document.querySelector(".header-cuenta");
-    let btnCuenta = document.querySelector(".boton-avatar");
+    // ==========================================
+    // MENÚ HAMBURGUESA Y PERFIL (HEADER)
+    // ==========================================
+    const btnHamburguesa = document.querySelector('.btn-hamburguesa');
+    const menuOverlay = document.querySelector('.menu-overlay');
+    const cuenta = document.querySelector(".header-cuenta");
+    const btnCuenta = document.querySelector(".btn-perfil");
 
-    function cerrarMenu() {
-        btnMenu.classList.remove("activo");
-        btnMenu.setAttribute("aria-expanded", "false");
+    function cerrarMenuHamburguesa() {
+        if (btnHamburguesa) btnHamburguesa.classList.remove("activo");
+        if (btnHamburguesa) btnHamburguesa.setAttribute("aria-expanded", "false");
     }
 
     function cerrarCuenta() {
-        cuenta.classList.remove("activo");
-        btnCuenta.setAttribute("aria-expanded", "false");
+        if (cuenta) cuenta.classList.remove("activo");
+        if (btnCuenta) btnCuenta.setAttribute("aria-expanded", "false");
     }
 
-    btnMenu.addEventListener("click", function() {
-        let abrir = !btnMenu.classList.contains("activo");
-        cerrarCuenta();
-        btnMenu.classList.toggle("activo", abrir);
-        btnMenu.setAttribute("aria-expanded", String(abrir));
-    });
+    if (btnHamburguesa) {
+        btnHamburguesa.addEventListener('click', (e) => {
+            e.stopPropagation();
+            cerrarCuenta();
+            const abrir = !btnHamburguesa.classList.contains("activo");
+            btnHamburguesa.classList.toggle('activo', abrir);
+            btnHamburguesa.setAttribute("aria-expanded", String(abrir));
+        });
+    }
 
-    btnCuenta.addEventListener("click", function() {
-        let abrir = !cuenta.classList.contains("activo");
-        cerrarMenu();
-        cuenta.classList.toggle("activo", abrir);
-        btnCuenta.setAttribute("aria-expanded", String(abrir));
-    });
+    if (btnCuenta) {
+        btnCuenta.addEventListener("click", (e) => {
+            e.stopPropagation();
+            cerrarMenuHamburguesa();
+            const abrir = !cuenta.classList.contains("activo");
+            cuenta.classList.toggle("activo", abrir);
+            btnCuenta.setAttribute("aria-expanded", String(abrir));
+        });
+    }
 
+    // Cerrar al clickear fuera
     document.addEventListener("click", (e) => {
-        if (cuenta.classList.contains("activo") && !cuenta.contains(e.target)) {
+        if (cuenta && cuenta.classList.contains("activo") && !cuenta.contains(e.target)) {
             cerrarCuenta();
         }
-        if (btnMenu.classList.contains("activo") && !btnMenu.contains(e.target) && !menuNav.contains(e.target)) {
-            cerrarMenu();
+        if (btnHamburguesa && btnHamburguesa.classList.contains("activo")) {
+            const menuNav = document.querySelector('.menu-nav');
+            if (!btnHamburguesa.contains(e.target) && (!menuNav || !menuNav.contains(e.target))) {
+                cerrarMenuHamburguesa();
+            }
         }
     });
 });

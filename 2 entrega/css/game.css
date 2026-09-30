@@ -17,7 +17,7 @@ body {
 .migas {
     margin: 0 0 16px;
     color: var(--textoWhite);
-    font-family: var(--fuente);
+
     font-size: 14px;
     font-weight: 700;
 }
@@ -69,8 +69,8 @@ body {
 }
 
 .juego-play:hover .juego-play__circulo {
-    background-color: var(--primariosombra2);
-    box-shadow: inset 0 0 0 3px var(--primarioluz2);
+    background-color: var(--primarioSombra2);
+    box-shadow: inset 0 0 0 3px var(--primarioLuz2);
     animation: juego-play-bounce 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
 }
 
@@ -78,15 +78,19 @@ body {
     0% {
         transform: scale(1);
     }
+
     30% {
         transform: scale(1.1);
     }
+
     50% {
         transform: scale(0.95);
     }
+
     70% {
         transform: scale(1.05);
     }
+
     100% {
         transform: scale(1);
     }
@@ -108,7 +112,7 @@ body {
     justify-content: space-between;
     height: 52.52px;
     padding: 0 24px;
-    background-color: var(--secundarioluz2);
+    background-color: var(--secundarioLuz2);
 }
 
 .juego-barra__nombre {
@@ -124,7 +128,7 @@ body {
 
 .juego-barra__titulo {
     color: var(--textoWhite);
-    font-family: var(--fuente);
+
     font-size: 40px;
     font-weight: 500;
 }
@@ -143,7 +147,7 @@ body {
     align-items: center;
     justify-content: center;
     padding: 0;
-    background-color: var(--secundariosombra);
+    background-color: var(--secundarioSombra1);
     cursor: pointer;
     transition: background-color 0.2s ease, border-color 0.2s ease;
 }
@@ -151,7 +155,7 @@ body {
 .btn-juego__icono {
     background-color: var(--primario);
     transition: background-color 0.2s ease;
-    -webkit-mask-repeat: no-repeat; 
+    -webkit-mask-repeat: no-repeat;
     mask-repeat: no-repeat;
     -webkit-mask-position: center;
     mask-position: center;
@@ -167,7 +171,7 @@ body {
 }
 
 .btn-juego--compartir:hover {
-    background-color: var(--secundarioluz2);
+    background-color: var(--secundarioLuz2);
 }
 
 .btn-juego--compartir .btn-juego__icono {
@@ -185,8 +189,8 @@ body {
 }
 
 .btn-juego--fav:hover {
-    background-color: var(--secundarioluz2);
-    border-color: var(--primarioluz2);
+    background-color: var(--secundarioLuz2);
+    border-color: var(--primarioLuz2);
 }
 
 .btn-juego--fav .btn-juego__icono {
@@ -198,7 +202,7 @@ body {
 }
 
 .btn-juego--fav:hover .btn-juego__icono {
-    background-color: var(--primarioluz2);
+    background-color: var(--primarioLuz2);
 }
 
 .btn-juego--fav.activo .btn-juego__icono {
@@ -213,7 +217,7 @@ body {
 }
 
 .btn-juego--full:hover {
-    background-color: var(--secundarioluz2);
+    background-color: var(--secundarioLuz2);
 }
 
 .btn-juego--full .btn-juego__icono {
@@ -251,14 +255,14 @@ body {
 .info-card {
     box-sizing: border-box;
     padding: 32px;
-    background-color: var(--secundariosombra);
+    background-color: var(--secundarioSombra1);
     border-radius: 16px;
 }
 
 .info-card__titulo {
     margin: 0 0 16px;
     color: var(--primario);
-    font-family: var(--fuente);
+
     font-size: 36px;
     font-weight: 700;
     line-height: 1.2;
@@ -272,14 +276,14 @@ body {
 .info-card__linea {
     margin: 0 0 12px;
     color: var(--textoWhite);
-    font-family: var(--fuente);
+
     font-size: 14px;
 }
 
 .info-card__texto {
     margin: 0 0 14px;
     color: var(--textoWhite);
-    font-family: var(--fuente);
+
     font-size: 14px;
     line-height: 1.55;
 }
@@ -394,7 +398,7 @@ body {
     display: inline-block;
     margin-top: 8px;
     color: var(--primario);
-    font-family: var(--fuente);
+
     font-size: 14px;
     font-weight: 700;
     text-decoration: none;
@@ -411,7 +415,7 @@ body {
     box-sizing: border-box;
     width: min(751px, 100%);
     padding: 32px;
-    background-color: var(--secundariosombra);
+    background-color: var(--secundarioSombra1);
     border-radius: 16px;
     display: flex;
     flex-direction: column;
@@ -460,7 +464,7 @@ body {
     background-color: transparent;
     resize: none;
     color: var(--textoWhite);
-    font-family: var(--fuente);
+
     font-size: 14px;
     line-height: 20px;
 }
@@ -485,7 +489,7 @@ body {
     border: none;
     background-color: transparent;
     color: var(--textoWhite);
-    font-family: var(--fuente);
+
     font-size: 15px;
     font-weight: 700;
     cursor: pointer;
@@ -502,7 +506,7 @@ body {
     border-radius: 999px;
     background-color: #98A4B0;
     color: var(--textoWhite);
-    font-family: var(--fuente);
+
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
@@ -535,7 +539,7 @@ body {
 
 .comentario__nombre {
     color: var(--textoWhite);
-    font-family: var(--fuente);
+
     font-size: 14px;
     font-weight: 600;
     overflow-wrap: anywhere;
@@ -548,7 +552,7 @@ body {
     margin: 0;
     flex-shrink: 0;
     color: var(--textoWhite);
-    font-family: var(--fuente);
+
     font-size: 13px;
     cursor: pointer;
     transition: color 0.2s ease;
@@ -569,7 +573,7 @@ body {
     margin: 0;
     padding: 12px 14px;
     color: var(--textoWhite);
-    font-family: var(--fuente);
+
     font-size: 13px;
     line-height: 1.5;
 }
