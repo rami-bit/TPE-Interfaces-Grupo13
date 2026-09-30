@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/game.css">
+    <link rel="stylesheet" href="css/carrusel.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/footer.css">
+    <title>Document</title>
+</head>
+
+<body>
+    <header class="main-header">
+        <div class="header-grupo-izquierdo">
+            <button type="button" class="menu-hamburguesa" aria-label="Abrir menú" aria-expanded="false">
+                <span class="menu-hamburguesa__barra"></span>
+                <span class="menu-hamburguesa__barra menu-hamburguesa__barra--media"></span>
+                <span class="menu-hamburguesa__barra"></span>
+                <span class="menu-hamburguesa__flecha"></span>
+            </button>
+            <nav class="menu-nav" aria-label="Menú principal">
+                <ul class="menu-nav__lista">
+                    <li><a class="menu-nav__link" href="#"><img class="menu-nav__icono" src="assets/icons/home.svg"
+                                alt="">Home</a></li>
+                    <li><a class="menu-nav__link" href="#"><img class="menu-nav__icono" src="assets/icons/recientes.svg"
+                                alt="">Recientes</a></li>
+                    <li><a class="menu-nav__link" href="#"><img class="menu-nav__icono"
+                                src="assets/icons/juegos-gratis/predeterminado.svg" alt="">Juegos Gratis</a></li>
+                    <li><a class="menu-nav__link" href="#"><img class="menu-nav__icono"
+                                src="assets/icons/juegos-gratis/juegos-pro.svg" alt="">Juegos Pro</a></li>
+                </ul>
+                <ul class="menu-nav__lista">
+                    <li><a class="menu-nav__link" href="#"><img class="menu-nav__icono" src="assets/icons/accion.svg"
+                                alt="">Accion</a></li>
+                    <li><a class="menu-nav__link" href="#"><img class="menu-nav__icono" src="assets/icons/deporte.svg"
+                                alt="">Deporte</a></li>
+                    <li><a class="menu-nav__link" href="#"><img class="menu-nav__icono" src="assets/icons/puzzle.svg"
+                                alt="">Puzzle</a></li>
+                    <li><a class="menu-nav__link" href="#"><img class="menu-nav__icono" src="assets/icons/rpg.svg"
+                                alt="">RPG</a></li>
+                </ul>
+            </nav>
+            <img src="assets/logo.svg" alt="Logo de CODEPLAY" class="logo">
+            <img src="assets/marca.svg" alt="Marca de CODEPLAY" class="marca">
+        </div>
+
+        <div class="header-buscador">
+            <input type="search" class="buscador" placeholder="Buscar juegos y categorías"
+                aria-label="Buscar juegos y categorías">
+            <img src="assets/icons/search-1.svg" alt="" class="buscador__lupa">
+        </div>
+
+        <div class="header-acciones">
+            <button type="button" class="boton-icono boton-favorito" aria-label="Favoritos">
+                <span class="icono-corazon"></span>
+            </button>
+            <button type="button" class="boton-pro">Obtener PRO</button>
+            <div class="header-cuenta">
+                <button type="button" class="boton-icono boton-avatar" aria-label="Mi perfil" aria-expanded="false"
+                    aria-controls="cuenta-panel">
+                    <img src="assets/icons/avatar-claro.svg" alt="">
+                </button>
+                <div class="cuenta-panel" id="cuenta-panel">
+                    <button type="button" class="cuenta-perfil">
+                        <span class="cuenta-perfil__icono"></span>
+                        Ver Perfil
+                    </button>
+                    <ul class="cuenta-menu">
+                        <li><a class="cuenta-menu__link" href="#"><span
+                                    class="cuenta-menu__icono cuenta-menu__icono--corona"></span>Mejorar Plan Pro</a>
+                        </li>
+                        <li><a class="cuenta-menu__link" href="#"><span
+                                    class="cuenta-menu__icono cuenta-menu__icono--config"></span>Configuracion de
+                                cuenta</a></li>
+                        <li><a class="cuenta-menu__link" href="#"><span
+                                    class="cuenta-menu__icono cuenta-menu__icono--escudo"></span>Preferencias de
+                                privacidad</a></li>
+                        <li class="cuenta-menu__salir"><a class="cuenta-menu__link" href="#"><span
+                                    class="cuenta-menu__icono cuenta-menu__icono--salir"></span>Cerrar Sesion</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="juego-main">
+        <p class="migas">Juegos>>Puzzle>>Peg solitary boca edition</p>
+        <article class="juego-card">
+            <div class="juego-video">
+                <img src="assets/caratula-peg.png" alt="Peg Solitaire Edition Boca Juniors" class="juego-caratula">
+                <button type="button" class="juego-play" aria-label="Jugar">
+                    <span class="juego-play__circulo">
+                        <span class="juego-play__triangulo"></span>
+                    </span>
+                </button>
+            </div>
+            <div class="juego-barra">
+                <div class="juego-barra__nombre">
+                    <img src="assets/logo.svg" alt="" class="juego-barra__icono">
+                    <span class="juego-barra__titulo">Peg Solitary</span>
+                </div>
+                <div class="juego-barra__botones">
+                    <button type="button" class="btn-juego btn-juego--compartir" aria-label="Compartir">
+                        <span class="btn-juego__icono"></span>
+                    </button>
+                    <button type="button" class="btn-juego btn-juego--fav" aria-label="Favorito">
+                        <span class="btn-juego__icono"></span>
+                    </button>
+                    <button type="button" class="btn-juego btn-juego--full" aria-label="Pantalla completa">
+                        <span class="btn-juego__icono"></span>
+                    </button>
+                </div>
+            </div>
+        </article>
+
+        <div class="juego-columnas">
+            <section class="juego-info" aria-label="Información del juego">
+                <article class="info-card">
+                    <h2 class="info-card__titulo">Sobre el juego</h2>
+                    <p class="info-card__linea">Desarrollador : BocaGames</p>
+                    <p class="info-card__linea">Calificacion: 9.6</p>
+                    <p class="info-card__linea">Fecha de publicacion: 11/06/2011</p>
+                    <p class="info-card__linea">Categoria/s</p>
+                    <span class="info-categoria" aria-hidden="true"></span>
+                </article>
+
+                <article class="info-card">
+                    <h2 class="info-card__titulo">Como Se Juega</h2>
+                    <p class="info-card__texto">Este no es un juego de mesa, es un ritual. El único objetivo es acomodar
+                        la mística para que la Séptima llegue de una vez por todas. Se juega con el corazón en la mano,
+                        un termo abajo del brazo y la fe intacta.</p>
+                    <p class="info-card__texto">El Salto de la Pasión: Una tapita salta a otra hacia un casillero vacío.
+                        La tapita saltada no "se elimina", se va a la tribuna a cantar los pases.</p>
+                    <p class="info-card__texto">Música de Fondo: Es obligatorio jugar escuchando las trompetas de La
+                        Doce. Si jugás en silencio, el movimiento no vale.</p>
+                    <div class="info-controles" aria-hidden="true">
+                        <span class="controles-raton controles-raton--flechas">
+                            <span class="flecha flecha--arriba"></span>
+                            <span class="flecha flecha--izquierda"></span>
+                            <span class="flecha flecha--derecha"></span>
+                            <span class="flecha flecha--abajo"></span>
+                            <img class="raton" src="assets/mouse-blanco.svg" alt="">
+                        </span>
+                        <img class="raton" src="assets/mouse.svg" alt="">
+                    </div>
+                </article>
+
+                <article class="info-card">
+                    <h2 class="info-card__titulo">¿Que es Peg?</h2>
+                    <p class="info-card__texto">PEG es un juego de lógica y estrategia individual. Consiste en un
+                        tablero con hoyos donde se colocan clavijas (pegs), dejando uno vacío al inicio. El jugador
+                        mueve las clavijas saltando una sobre otra en línea recta (horizontal o vertical) hacia un
+                        espacio vacío, eliminando la clavija que fue saltada. El desafío es pensar cada movimiento para
+                        que, al final, quede solo una clavija en el tablero. Es un pasatiempo clásico que combina
+                        paciencia, planificación y pensamiento lógico.</p>
+                    <h3 class="info-card__titulo info-card__titulo--sub">Video tutorial</h3>
+                    <div class="info-video">
+                        <iframe class="info-video__frame" src="https://www.youtube-nocookie.com/embed/1NEnM8FiQmk"
+                            title="Video tutorial de Peg Solitary"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe>
+                    </div>
+                    <a class="info-video__link" href="https://youtu.be/1NEnM8FiQmk?si=8FrJNILrToOfVxFm"
+                        target="_blank" rel="noopener">Ver en YouTube</a>
+                </article>
+            </section>
+
+            <aside class="juegos-carrusel" aria-label="Juegos recomendados">
+                <article class="carrusel-card">
+                    <img class="carrusel-card__img" src="assets/carrusel/rdr2.jpg" alt="Red Dead Redemption 2">
+                    <img class="carrusel-card__pro" src="assets/icons/iconoPro.svg" alt="PRO">
+                    <div class="carrusel-card__info">
+                        <h3 class="carrusel-card__titulo">Red Dead Redemption 2</h3>
+                        <img class="carrusel-card__icono" src="assets/icons/categorias-card/accion-card.svg"
+                            alt="Icono de Acción">
+                    </div>
+                </article>
+                <article class="carrusel-card">
+                    <img class="carrusel-card__img" src="assets/carrusel/fc26.jpg" alt="EA Sports FC 26">
+                    <div class="carrusel-card__info">
+                        <h3 class="carrusel-card__titulo">EA Sports FC 26</h3>
+                        <img class="carrusel-card__icono" src="assets/icons/categorias-card/deporte-card.svg"
+                            alt="Icono de Deportes">
+                    </div>
+                </article>
+                <article class="carrusel-card">
+                    <img class="carrusel-card__img" src="assets/carrusel/sekiro.jpg" alt="Sekiro: Shadows Die Twice">
+                    <div class="carrusel-card__info">
+                        <h3 class="carrusel-card__titulo">Sekiro: Shadows Die Twice</h3>
+                        <img class="carrusel-card__icono" src="assets/icons/categorias-card/accion-card.svg"
+                            alt="Icono de Acción">
+                    </div>
+                </article>
+                <article class="carrusel-card">
+                    <img class="carrusel-card__img" src="assets/carrusel/gta-sa.jpg"
+                        alt="Grand Theft Auto: San Andreas">
+                    <div class="carrusel-card__info">
+                        <h3 class="carrusel-card__titulo">Grand Theft Auto: San Andreas</h3>
+                        <img class="carrusel-card__icono" src="assets/icons/categorias-card/accion-card.svg"
+                            alt="Icono de Acción">
+                    </div>
+                </article>
+                <article class="carrusel-card">
+                    <img class="carrusel-card__img" src="assets/carrusel/p3p.jpg" alt="Persona 3 Portable">
+                    <img class="carrusel-card__pro" src="assets/icons/iconoPro.svg" alt="PRO">
+                    <div class="carrusel-card__info">
+                        <h3 class="carrusel-card__titulo">Persona 3 Portable</h3>
+                        <img class="carrusel-card__icono" src="assets/icons/categorias-card/rpg-card.svg"
+                            alt="Icono de RPG">
+                    </div>
+                </article>
+                <article class="carrusel-card">
+                    <img class="carrusel-card__img" src="assets/carrusel/witcher3.jpg" alt="The Witcher 3: Wild Hunt">
+                    <div class="carrusel-card__info">
+                        <h3 class="carrusel-card__titulo">The Witcher 3: Wild Hunt — Game of the Year Edition con todas
+                            las expansiones y contenido descargable incluido</h3>
+                        <img class="carrusel-card__icono" src="assets/icons/categorias-card/rpg-card.svg"
+                            alt="Icono de RPG">
+                    </div>
+                </article>
+            </aside>
+
+            <div class="carrusel-anuncio">
+                <img src="assets/anuncio.png"
+                    alt="Oferta de membresía PRO Primavera: activá tu membresía PRO ahora y disfrutá 40% de descuento con acceso ilimitado, contenidos exclusivos y soporte VIP">
+            </div>
+
+            <section class="comentarios" aria-label="Comentarios">
+                <div class="comentario-card comentario-card--nuevo">
+                    <div class="comentario__fila">
+                        <img class="comentario__avatar" src="assets/avatares/613615518000350130.jpeg" alt="">
+                        <textarea class="comentario__entrada" rows="4" placeholder="Escribe un comentario"
+                            aria-label="Escribe un comentario"></textarea>
+                    </div>
+                    <div class="comentario__acciones">
+                        <button type="button" class="comentario__cancelar">Cancelar</button>
+                        <button type="button" class="comentario__comentar">Comentar</button>
+                    </div>
+                </div>
+
+                <article class="comentario-card comentario">
+                    <div class="comentario__encabezado">
+                        <div class="comentario__autor">
+                            <img class="comentario__avatar" src="assets/avatares/seiya.jpg" alt="">
+                            <span class="comentario__nombre">nar</span>
+                        </div>
+                        <p class="comentario__megusta"><span>67 me gusta</span><img class="comentario__icono-like"
+                                src="assets/icons/like.svg" alt=""></p>
+                    </div>
+                    <p class="comentario__texto">El juego es una bosta. 0/10</p>
+                </article>
+
+                <article class="comentario-card comentario">
+                    <div class="comentario__encabezado">
+                        <div class="comentario__autor">
+                            <img class="comentario__avatar" src="assets/avatares/riquelme.jpg" alt="">
+                            <span class="comentario__nombre">riquelme__@real100%</span>
+                        </div>
+                        <p class="comentario__megusta"><span>12 me gusta</span><img class="comentario__icono-like"
+                                src="assets/icons/like.svg" alt=""></p>
+                    </div>
+                    <p class="comentario__texto">Está bárbaro para jugar el domingo a la tarde. Si salís campeón del Peg
+                        Solitaire, bien, y si perdés, bueno... la gente de Boca sabe que nosotros competimos siempre</p>
+                </article>
+
+                <article class="comentario-card comentario">
+                    <div class="comentario__encabezado">
+                        <div class="comentario__autor">
+                            <img class="comentario__avatar" src="assets/avatares/janson.jpg" alt="">
+                            <span class="comentario__nombre">elPibe_janson</span>
+                        </div>
+                        <p class="comentario__megusta"><span>34 me gusta</span><img class="comentario__icono-like"
+                                src="assets/icons/like.svg" alt=""></p>
+                    </div>
+                    <p class="comentario__texto">el juego me cambio la vida...</p>
+                </article>
+
+                <article class="comentario-card comentario">
+                    <div class="comentario__encabezado">
+                        <div class="comentario__autor">
+                            <img class="comentario__avatar" src="assets/avatares/tito-estando-virgo.jpeg" alt="">
+                            <span class="comentario__nombre">juanceto_01</span>
+                        </div>
+                        <p class="comentario__megusta"><span>34 me gusta</span><img class="comentario__icono-like"
+                                src="assets/icons/like.svg" alt=""></p>
+                    </div>
+                    <p class="comentario__texto">il conto porfavore</p>
+                </article>
+            </section>
+        </div>
+    </main>
+
+    <footer class="fat-footer">
+        <div class="fat-footer__contenido">
+            <div class="fat-footer__col">
+                <h4 class="fat-footer__titulo">Juegos</h4>
+                <p class="fat-footer__subtitulo">Explora el sitio</p>
+                <ul class="fat-footer__lista">
+                    <li><a href="#">home</a></li>
+                    <li><a href="#">Recientes</a></li>
+                    <li><a href="#">Juegos</a></li>
+                </ul>
+                <h4 class="fat-footer__titulo">Categorías</h4>
+                <ul class="fat-footer__lista">
+                    <li><a href="#">ACCION</a></li>
+                    <li><a href="#">Deporte</a></li>
+                    <li><a href="#">Puzzle</a></li>
+                    <li><a href="#">RPG</a></li>
+                </ul>
+            </div>
+
+            <div class="fat-footer__col">
+                <h4 class="fat-footer__titulo">Servicios y Ventajas</h4>
+                <a class="fat-footer__pro" href="#"><img src="assets/icons/iconoPro.svg" alt="PRO"></a>
+                <p class="fat-footer__subtitulo fat-footer__subtitulo">Ventajas de la suscripcion Pro:</p>
+                <ul class="fat-footer__lista">
+                    <li><a href="#">Accesa a todos los titulos Pro</a></li>
+                    <li><a href="#">Sin Anuncios</a></li>
+                    <li><a href="#">Regalos Mensuales</a></li>
+                </ul>
+            </div>
+
+            <div class="fat-footer__col">
+                <h4 class="fat-footer__titulo">Ayuda</h4>
+                <ul class="fat-footer__lista">
+                    <li><a href="#">Sobre Code Play</a></li>
+                    <li><a href="#">Contactanos</a></li>
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Politica de privacidad</a></li>
+                    <li><a href="#">Terminos de servicio</a></li>
+                    <li><a href="#">Blog de desarrollo</a></li>
+                </ul>
+            </div>
+
+            <div class="fat-footer__col">
+                <h4 class="fat-footer__titulo">Pagos y Comunidad</h4>
+                <p class="fat-footer__subtitulo">Metodos de pago aceptados</p>
+                <div class="fat-footer__pagos">
+                    <img src="assets/icons/mastercard.svg" alt="Mastercard">
+                    <img src="assets/icons/visa.svg" alt="Visa">
+                </div>
+                <h4 class="fat-footer__titulo">Seguinos</h4>
+                <div class="fat-footer__redes">
+                    <a href="#" aria-label="Instagram">
+                        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#050E1F" stroke-width="2"
+                            aria-hidden="true">
+                            <rect x="3" y="3" width="18" height="18" rx="5.5"></rect>
+                            <circle cx="12" cy="12" r="4.2"></circle>
+                            <circle cx="17.3" cy="6.7" r="1.2" fill="#050E1F" stroke="none"></circle>
+                        </svg>
+                    </a>
+                    <a href="#" aria-label="TikTok">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="#050E1F" aria-hidden="true">
+                            <path
+                                d="M15.1 2h3c.3 1.9 1.5 3.2 3.4 3.5v3c-1.4 0-2.7-.4-3.7-1.2v6.4a5.7 5.7 0 1 1-5.7-5.7c.3 0 .6 0 .9.1v3.1a2.6 2.6 0 1 0 1.9 2.5V2z">
+                            </path>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <div class="fat-footer__col">
+                <h4 class="fat-footer__titulo">Novedades y Soporte</h4>
+                <ul class="fat-footer__lista">
+                    <li><a href="#">Ultimas Actualizaciones</a></li>
+                    <li><a href="#">Nuevos Lanzamientos</a></li>
+                </ul>
+                <h4 class="fat-footer__titulo">Soporte</h4>
+                <ul class="fat-footer__lista">
+                    <li><a href="#">Soporte Tecnico</a></li>
+                    <li><a href="#">Reportar Problema</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="fat-footer__copy">2026-2027 Code Play, Inc | All Rights Reserved</p>
+    </footer>
+
+    <div class="menu-overlay"></div>
+    <script src="js/header.js"></script>
+    <script src="js/juego.js"></script>
+
+</body>
+
+</html>

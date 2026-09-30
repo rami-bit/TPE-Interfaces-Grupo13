@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Cuenta - CODEPLAY</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/auth.css">
+    <link rel="stylesheet" href="css/signup.css">
+    <script src="js/auth.js" defer></script>
+</head>
+<body class="pagina-registro">
+
+    <main class="tarjeta-registro">
+
+        <header class="encabezado-registro">
+            <h1 class="titulo-registro">¡Create una Cuenta!</h1>
+            <div class="subtitulo-registro">Registrate en CODEPLAY</div>
+        </header>
+
+        <form class="formulario-registro" action="home.html" method="POST">
+
+            <fieldset class="grupo-formulario">
+                <legend class="titulo-grupo">Informacion De Contacto</legend>
+
+                <div class="campo">
+                    <label for="nombre">Nombre</label>
+                    <input type="text" id="nombre" name="nombre" placeholder="tu_nombre">
+                </div>
+
+                <div class="campo">
+                    <label for="apellido">Apellido</label>
+                    <input type="text" id="apellido" name="apellido" placeholder="tu_apellido">
+                </div>
+
+                <div class="campo">
+                    <label for="fecha">Fecha De Nacimiento</label>
+                    <input type="date" id="fecha" name="fecha">
+                </div>
+            </fieldset>
+
+            <fieldset class="grupo-formulario">
+                <legend class="titulo-grupo">Informacion de Cuenta</legend>
+
+                <div class="campo">
+                    <label for="correo">Correo Electronico</label>
+                    <input type="email" id="correo" name="correo" placeholder="tu@correo">
+                </div>
+
+                <div class="campo">
+                    <label for="contrasena">Contraseña</label>
+                    <div class="campo-con-ojo">
+                        <input type="password" id="contrasena" name="contrasena">
+                        <img class="icono-ojo" src="assets/icons/ojo.svg" alt="Mostrar contraseña">
+                    </div>
+                </div>
+
+                <div class="campo">
+                    <label for="repetir-contrasena">Repetir Contraseña</label>
+                    <div class="campo-con-ojo">
+                        <input type="password" id="repetir-contrasena" name="repetir-contrasena">
+                        <img class="icono-ojo" src="assets/icons/ojo.svg" alt="Mostrar contraseña">
+                    </div>
+                </div>
+
+                <p class="ayuda-contrasena">
+                    <img class="icono-alerta" src="assets/icons/alert.svg" alt="Advertencia">
+                    <span>La contraseña debe tener al menos una mayúscula y un carácter especial</span>
+                </p>
+            </fieldset>
+
+            <div class="campo-checkbox">
+                <input type="checkbox" id="terminos" name="terminos">
+                <label for="terminos">Acepto los Terminos y Condiciones</label>
+            </div>
+
+            <img class="recaptcha" src="assets/icons/recaptcha.png" alt="reCAPTCHA - I'm not a robot">
+
+            <button type="submit" class="boton-crear">CREAR CUENTA</button>
+        </form>
+
+        <div class="separador-registro">
+            <span>o Registrate con</span>
+        </div>
+
+        <div class="redes-sociales">
+            <a href="#" class="red-social red-social--google" aria-label="Registrarse con Google">
+                <img src="assets/icons/google.svg" alt="Google">
+            </a>
+            <a href="#" class="red-social red-social--facebook" aria-label="Registrarse con Facebook">
+                <img src="assets/icons/facebook.svg" alt="Facebook">
+            </a>
+        </div>
+
+        <footer class="pie-registro">
+            <p>¿Ya tienes una cuenta?</p>
+            <a href="login.html">Inicia sesión</a>
+        </footer>
+
+    </main>
+
+</body>
+</html>

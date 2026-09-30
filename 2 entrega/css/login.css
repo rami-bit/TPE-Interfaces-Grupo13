@@ -1,0 +1,35 @@
+/* ---------- Login (solo particularidades) ---------- */
+
+.formulario-login {
+    margin-top: 14px;
+}
+
+/* Olvide contrasena */
+
+.olvide-contrasena {
+    color: var(--primario);
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    align-self: flex-start;
+    transition: color 0.3s;
+}
+
+.olvide-contrasena:hover {
+    color: var(--primarioluz2);
+    text-decoration: underline;
+}
+
+/* Espaciado particular del login */
+
+.separador-login {
+    margin: 14px -28px 0;
+}
+
+.redes-sociales {
+    margin-top: 6px;
+}
+
+.pie-login {
+    margin-top: 8px;
+}

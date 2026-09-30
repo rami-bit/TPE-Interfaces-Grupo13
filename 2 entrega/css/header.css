@@ -1,0 +1,552 @@
+.main-header {
+    display: flex;
+    grid-area: header;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+    height: 86px;
+    padding: 0 16px;
+    background-color: var(--secundariosombra);
+    position: relative;
+    z-index: 30;
+}
+.main-header .logo {
+    width: 37px;
+    height: 55px;
+}
+
+
+.main-header .marca {
+    width: 280px;   
+    height: 36px;
+}
+
+/* Grupos del header */
+
+.header-grupo-izquierdo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.header-acciones {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Menu hamburguesa */
+
+.menu-hamburguesa {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    position: relative;
+    width: 40px;
+    height: 32px;
+    margin-right: 20px;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    transition: transform 0.15s ease;
+}
+
+.menu-hamburguesa__barra {
+    width: 40px;
+    height: 8px;
+    border-radius: 999px;
+    background-color: var(--primario);
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.menu-hamburguesa__barra--media {
+    width: 27px;
+    margin-left: 13px;
+}
+
+.menu-hamburguesa__flecha {
+    position: absolute;
+    left: 0;
+    top: 16px;
+    transform: translateY(-50%);
+    width: 11px;
+    height: 13px;
+    background-color: var(--primario);
+    clip-path: path("M2.24 12.42C1.28 13 0 12.37 0 11.33L0.05 1.66C0.05 0.62 1.34 0 2.29 0.59L10.16 5.45C11 5.97 10.99 7.1 10.15 7.62L2.24 12.42Z");
+    transition: background-color 0.2s ease;
+}
+
+.menu-hamburguesa__flecha::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-color: var(--primariosombra2);
+    clip-path: path("M2 4.16L2 8.84Q2 10.24 3.19 8.1L6.86 7.24Q8.05 6.5 6.86 5.76L3.19 3.5Q2 2.76 2 4.16Z");
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.menu-hamburguesa:hover .menu-hamburguesa__barra {
+    background-color: var(--primariosombra2);
+    box-shadow: inset 0 0 0 2px var(--primarioluz2);
+}
+
+.menu-hamburguesa:hover .menu-hamburguesa__flecha {
+    background-color: var(--primarioluz2);
+}
+
+.menu-hamburguesa:hover .menu-hamburguesa__flecha::after {
+    opacity: 1;
+}
+
+
+.menu-hamburguesa.activo {
+    animation: abrirMenu 0.15s ease forwards;
+}
+
+@keyframes abrirMenu {
+    0% {
+        transform: scaleX(1);
+    }
+    100% {
+        transform: scaleX(-1);
+    }
+}
+
+/* Menu desplegable */
+
+.menu-nav {
+    position: fixed;
+    top: 86px;
+    left: 0;
+    z-index: 25;
+    box-sizing: border-box;
+    width: 180px;
+    background-color: var(--secundariosombra);
+    border-right: 2px solid var(--primario);
+    overflow-y: auto;
+    transform-origin: top left;
+    transform: translateX(-6px) scale(0.92);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.15s ease, transform 0.15s ease, visibility 0s 0.15s;
+}
+
+body:has(.menu-hamburguesa.activo) .menu-nav {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), visibility 0s;
+}
+
+.menu-nav__lista {
+    list-style: none;
+    margin: 0;
+    padding: 8px 0;
+}
+
+.menu-nav__lista + .menu-nav__lista {
+    border-top: 2px solid var(--primario);
+}
+
+.menu-nav__link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 16px;
+    color: var(--textoWhite);
+    font-family: var(--fuente);
+    font-size: 15px;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+}
+
+.menu-nav__link:hover {
+    opacity: 0.6;
+}
+
+.menu-nav__icono {
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+}
+
+.menu-nav li {
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+body:has(.menu-hamburguesa.activo) .menu-nav li {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+body:has(.menu-hamburguesa.activo) .menu-nav li:nth-child(1) {
+    transition-delay: 0.06s;
+}
+
+body:has(.menu-hamburguesa.activo) .menu-nav li:nth-child(2) {
+    transition-delay: 0.12s;
+}
+
+body:has(.menu-hamburguesa.activo) .menu-nav li:nth-child(3) {
+    transition-delay: 0.18s;
+}
+
+body:has(.menu-hamburguesa.activo) .menu-nav li:nth-child(4) {
+    transition-delay: 0.24s;
+}
+
+body:has(.menu-hamburguesa.activo) .menu-nav__lista + .menu-nav__lista li:nth-child(1) {
+    transition-delay: 0.3s;
+}
+
+body:has(.menu-hamburguesa.activo) .menu-nav__lista + .menu-nav__lista li:nth-child(2) {
+    transition-delay: 0.36s;
+}
+
+body:has(.menu-hamburguesa.activo) .menu-nav__lista + .menu-nav__lista li:nth-child(3) {
+    transition-delay: 0.42s;
+}
+
+body:has(.menu-hamburguesa.activo) .menu-nav__lista + .menu-nav__lista li:nth-child(4) {
+    transition-delay: 0.48s;
+}
+
+.menu-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    background-color: rgba(6, 17, 39, 0.5);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.2s ease, backdrop-filter 0.2s ease, visibility 0s 0.2s;
+}
+
+body:has(.menu-hamburguesa.activo) .menu-overlay {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition-delay: 0s;
+}
+
+body:has(.menu-hamburguesa.activo) {
+    overflow: hidden;
+}
+
+
+
+/* Buscador */
+
+.header-buscador {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.buscador {
+    box-sizing: border-box;
+    width: 400px;
+    height: 40px;
+    border: none;
+    border-radius: 20px;
+    background-color: var(--secundarioluz2);
+    color: var(--textoWhite);
+    font-family: var(--fuente);
+    font-size: 13px;
+    padding: 0 44px 0 16px;
+}
+
+.buscador::placeholder {
+    color: var(--textoWhite);
+    opacity: 0.6;
+}
+
+.buscador::-webkit-search-cancel-button {
+    display: none;
+}
+
+.buscador__lupa {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    pointer-events: none;
+}
+
+/* Acciones */
+
+.boton-icono {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.boton-favorito {
+    width: 69px;
+    height: 68px;
+    background-color: var(--secundarioluz1);
+    transition: background-color 0.2s ease;
+}
+
+.boton-favorito:hover {
+    background-color: var(--secundarioluz2);
+}
+
+.icono-corazon {
+    width: 43px;
+    height: 43px;
+    background-color: var(--primario);
+    -webkit-mask: url("../assets/icons/favoritos.svg") no-repeat center / contain;
+    mask: url("../assets/icons/favoritos.svg") no-repeat center / contain;
+    transition: background-color 0.2s ease;
+}
+
+.boton-favorito:hover .icono-corazon {
+    background-color: var(--primarioluz2);
+}
+
+.boton-avatar {
+    width: 71px;
+    height: 68px;
+    background-color: var(--secundarioluz2);
+    border: 3px solid transparent;
+    transition: border-color 0.2s ease;
+}
+
+.boton-avatar:hover {
+    border-color: var(--primarioluz2);
+}
+
+.boton-avatar img {
+    width: 49.24px;
+    height: 47px;
+}
+
+@property --angle {
+    syntax: "<angle>";
+    initial-value: 0deg;
+    inherits: false;
+}
+
+.boton-pro {
+    box-sizing: border-box;
+    position: relative;
+    width: 131px;
+    height: 37.83px;
+    padding: 0;
+    border: 3px solid transparent;
+    border-radius: 20px;
+    background-color: var(--acento);
+    color: var(--textoWhite);
+    font-family: var(--fuente);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.3s ease;
+}
+
+.boton-pro::before {
+    content: "";
+    position: absolute;
+    inset: -3px;
+    padding: 3px;
+    border-radius: inherit;
+    --angle: 0deg;
+    background: conic-gradient(from var(--angle), var(--primario), var(--acentoluz), var(--primario));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.boton-pro:hover::before {
+    opacity: 1;
+    animation: pro-borde-gira 3s linear infinite;
+}
+
+.boton-pro:hover {
+    box-shadow: 0 0 12px rgba(155, 100, 233, 0.55);
+}
+
+@keyframes pro-borde-gira {
+    to {
+        --angle: 360deg;
+    }
+}
+
+
+/* Menu cuenta */
+
+.header-cuenta {
+    display: flex;
+}
+
+.cuenta-panel {
+    position: absolute;
+    top: 86px;
+    right: 16px;
+    z-index: 26;
+    box-sizing: border-box;
+    width: max-content;
+    padding: 14px 0 8px;
+    background-color: var(--secundariosombra);
+    opacity: 0;
+    visibility: hidden;
+    transform-origin: top right;
+    transform: translateY(6px) scale(0.92);
+    transition: opacity 0.15s ease, transform 0.15s ease, visibility 0s 0.15s;
+}
+
+.header-cuenta.activo .cuenta-panel {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+    transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), visibility 0s;
+}
+
+.cuenta-perfil {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: calc(100% - 24px);
+    height: 32px;
+    margin: 0 12px;
+    padding: 0;
+    border: none;
+    border-radius: 999px;
+    background-color: var(--primario);
+    color: var(--secundario);
+    font-family: var(--fuente);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: background-color 0.2s ease, opacity 0.3s ease, transform 0.3s ease;
+}
+
+.cuenta-perfil:hover {
+    background-color: var(--primarioluz2);
+}
+
+.cuenta-perfil__icono {
+    width: 16px;
+    height: 16px;
+    background-color: var(--secundario);
+    -webkit-mask: url("../assets/icons/avatar.svg") no-repeat center / contain;
+    mask: url("../assets/icons/avatar.svg") no-repeat center / contain;
+}
+
+.cuenta-menu {
+    list-style: none;
+    margin: 12px 0 0;
+    padding: 0;
+}
+
+.cuenta-menu li {
+    border-bottom: 2px solid var(--textoWhite);
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.header-cuenta.activo .cuenta-perfil,
+.header-cuenta.activo .cuenta-menu li {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.header-cuenta.activo .cuenta-perfil {
+    transition-delay: 0.06s;
+}
+
+.header-cuenta.activo .cuenta-menu li:nth-child(1) {
+    transition-delay: 0.12s;
+}
+
+.header-cuenta.activo .cuenta-menu li:nth-child(2) {
+    transition-delay: 0.2s;
+}
+
+.header-cuenta.activo .cuenta-menu li:nth-child(3) {
+    transition-delay: 0.28s;
+}
+
+.header-cuenta.activo .cuenta-menu li:nth-child(4) {
+    transition-delay: 0.36s;
+}
+
+.cuenta-menu__salir {
+    margin-top: 10px;
+}
+
+.cuenta-menu__link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    color: var(--textoWhite);
+    font-family: var(--fuente);
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: opacity 0.2s ease;
+}
+
+.cuenta-menu__link:hover {
+    opacity: 0.6;
+}
+
+.cuenta-menu__icono {
+    flex: none;
+    width: 16px;
+    height: 16px;
+    background-color: var(--textoWhite);
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+}
+
+.cuenta-menu__icono--corona {
+    background-color: var(--primario);
+    -webkit-mask-image: url("../assets/icons/avatar-noob/pro-card-recomendados/coronaPro-1.svg");
+    mask-image: url("../assets/icons/avatar-noob/pro-card-recomendados/coronaPro-1.svg");
+}
+
+.cuenta-menu__icono--config {
+    -webkit-mask-image: url("../assets/icons/Config.svg");
+    mask-image: url("../assets/icons/Config.svg");
+}
+
+.cuenta-menu__icono--escudo {
+    -webkit-mask-image: url("../assets/icons/escudo.svg");
+    mask-image: url("../assets/icons/escudo.svg");
+}
+
+.cuenta-menu__icono--salir {
+    -webkit-mask-image: url("../assets/icons/salir.svg");
+    mask-image: url("../assets/icons/salir.svg");
+}

@@ -1,0 +1,69 @@
+.loading-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.loading-marca {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.loading-marca__logo {
+    width: 48px;
+    height: auto;
+}
+
+.loading-marca__texto {
+    width: 130px;
+    height: auto;
+}
+
+#loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid var(--primario);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+#loading-bar {
+    width: 560px;
+    height: 30px;
+    border-radius: 15px;
+    background-color: white;
+    overflow: hidden;
+}
+
+#loading-bar-fill {
+    width: 100%;
+    height: 30px;
+    border-radius: 15px;
+    background-color: var(--primario);
+    transform: scaleX(0);
+    transform-origin: left center;
+    animation: loading-bar-animation 3s linear forwards;
+}
+
+@keyframes loading-bar-animation {
+    0% { transform: scaleX(0); }
+    100% { transform: scaleX(1); }
+}
+
+#loading-text {
+    font-size: 18px;
+    color: var(--primario);
+}

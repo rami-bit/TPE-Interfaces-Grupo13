@@ -1,0 +1,108 @@
+/* ============================================================
+   Carrusel vertical de juegos (game.html).
+   Requiere enlazar antes css/style.css (variables y tipografía)
+   y css/game.css (grid .juego-columnas donde se colocan los items).
+   ============================================================ */
+
+
+
+
+.juegos-carrusel {
+    grid-area: 1 / 2;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+
+.carrusel-card {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 392.6 / 220.84;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: var(--secundariosombra);
+    cursor: pointer;
+    transform: scale(1);
+    outline: 2px solid transparent;
+    outline-offset: -2px;
+    transition: transform 0.3s ease, outline-color 0.3s ease;
+}
+
+.carrusel-card:hover {
+    transform: scale(1.04);
+    outline-color: var(--primario);
+}
+
+.carrusel-card__img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.carrusel-card__pro {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    width: 72px;
+    height: 32px;
+}
+
+.carrusel-anuncio {
+    grid-area: 2 / 2;
+    padding: 16px;
+    background-color: var(--secundariosombra);
+    border-radius: 16px;
+}
+
+.carrusel-anuncio img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.carrusel-card__info {
+    position: absolute;
+    bottom: 2px;
+    left: 2px;
+    right: 2px;
+    box-sizing: border-box;
+    width: auto;
+    height: auto;
+    min-height: 45%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 20px;
+    background-color: rgba(5, 14, 31, 0.78);
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+    color: var(--textoWhite);
+    font-family: var(--fuente);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.carrusel-card:hover .carrusel-card__info {
+    opacity: 1;
+}
+
+.carrusel-card__titulo {
+    margin: 0;
+    max-width: 380px;
+    color: var(--textoWhite);
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+}
+
+.carrusel-card__icono {
+    width: 48px;
+    height: auto;
+}

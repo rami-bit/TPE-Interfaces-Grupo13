@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesion - CODEPLAY</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/auth.css">
+    <link rel="stylesheet" href="css/login.css">
+    <script src="js/auth.js" defer></script>
+</head>
+<body class="pagina-login">
+
+    <main class="tarjeta-login">
+
+        <header class="encabezado-login">
+            <h1 class="titulo-login">¡Inicia Sesion!</h1>
+            <div class="subtitulo-login">Ingresa en codeplay</div>
+        </header>
+
+        <form class="formulario-login" action="home.html" method="POST">
+
+            <div class="campo">
+                <label for="correo">Correo Electronico</label>
+                <input type="email" id="correo" name="correo" placeholder="tu@correo">
+            </div>
+
+            <div class="campo">
+                <label for="contrasena">Contraseña</label>
+                <div class="campo-con-ojo">
+                    <input type="password" id="contrasena" name="contrasena">
+                    <img class="icono-ojo" src="assets/icons/ojo.svg" alt="Mostrar contraseña">
+                </div>
+            </div>
+
+            <a class="olvide-contrasena" href="#">¿Olvidaste la contraseña?</a>
+
+            <img class="recaptcha" src="assets/icons/recaptcha.png" alt="reCAPTCHA - I'm not a robot">
+
+            <button type="submit" class="boton-iniciar">Iniciar Sesion</button>
+        </form>
+
+        <div class="separador-login">
+            <span>o Ingresa con</span>
+        </div>
+
+        <div class="redes-sociales">
+            <a href="#" class="red-social red-social--google" aria-label="Iniciar sesion con Google">
+                <img src="assets/icons/google.svg" alt="Google">
+            </a>
+            <a href="#" class="red-social red-social--facebook" aria-label="Iniciar sesion con Facebook">
+                <img src="assets/icons/facebook.svg" alt="Facebook">
+            </a>
+        </div>
+
+        <footer class="pie-login">
+            <p>¿No tienes una cuenta?</p>
+            <a href="signup.html">Registrate</a>
+        </footer>
+
+    </main>
+
+</body>
+</html>
