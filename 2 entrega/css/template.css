@@ -542,6 +542,30 @@ body:has(.btn-hamburguesa.activo) .menu-nav__lista+.menu-nav__lista li:nth-child
     transition-delay: 0.48s;
 }
 
+body:has(.btn-hamburguesa.activo) .menu-nav__lista+.menu-nav__lista li:nth-child(5) {
+    transition-delay: 0.54s;
+}
+
+body:has(.btn-hamburguesa.activo) .menu-nav__lista+.menu-nav__lista li:nth-child(6) {
+    transition-delay: 0.6s;
+}
+
+body:has(.btn-hamburguesa.activo) .menu-nav__lista+.menu-nav__lista li:nth-child(7) {
+    transition-delay: 0.66s;
+}
+
+body:has(.btn-hamburguesa.activo) .menu-nav__lista+.menu-nav__lista li:nth-child(8) {
+    transition-delay: 0.72s;
+}
+
+body:has(.btn-hamburguesa.activo) .menu-nav__lista+.menu-nav__lista li:nth-child(9) {
+    transition-delay: 0.78s;
+}
+
+body:has(.btn-hamburguesa.activo) .menu-nav__lista+.menu-nav__lista li:nth-child(10) {
+    transition-delay: 0.84s;
+}
+
 .menu-overlay {
     position: fixed;
     inset: 0;
