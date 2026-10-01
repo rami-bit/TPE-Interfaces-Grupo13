@@ -601,3 +601,124 @@ document.addEventListener("click", (e) => {
         btnFav.classList.toggle('activo');
     }
 });
+
+/* ========================================================================= */
+/*              SKEW DINÁMICO (Código nuevo, no toca lo existente)           */
+/* ========================================================================= */
+/* Le da "vida" a los carruseles: mientras el track se desplaza, el viewport  */
+/* (el padre con overflow:hidden) se inclina unos grados hacia la dirección   */
+/* del movimiento y vuelve a 0 al detenerse.                                  */
+/*                                                                            */
+/* CLAVE: el skew se aplica en el VIEWPORT, no en el track, así no chocamos   */
+/* con los style.transform que ya escribe la máquina del carrusel.            */
+document.addEventListener("DOMContentLoaded", () => {
+
+    const SKEW_MAX = 10;       // Grados máximos de inclinación
+    const VELOCIDAD_MAX = 2.5; // px/ms a los que se llega al tope de grados
+    const SMOOTHING = 0.25;    // Suavizado del skew (0.1 = lento, 1 = instantáneo)
+    const VENTANA_MEDICION = 700; // ms que medimos tras cada cambio (transición = 500ms)
+
+    // Elegimos la "ventana" de cada carrusel (el padre con overflow:hidden)
+    const viewports = document.querySelectorAll('.hero-viewport, .carrusel-viewport');
+
+    viewports.forEach((viewport) => {
+        const track = viewport.querySelector('.hero-track, .carrusel-track-chico, .carrusel-track-grande, .carrusel-track-mixto');
+        if (!track) return;
+
+        viewport.style.willChange = 'transform'; // Rendimiento: el navegador lo mantiene en GPU
+
+        let ultimaX = null;       // Última posición X leída del track
+        let ultimoTiempo = null;  // Último timestamp de lectura
+        let skewActual = 0;       // Skew actual (grados)
+        let skewObjetivo = 0;     // Hacia dónde tiende el skew
+        let rafId = null;         // ID del bucle de render actual
+        let medirId = null;       // ID del bucle de medición actual
+        let finMedicion = 0;      // Timestamp hasta el cual seguimos midiendo
+
+        // Lee la posición X real del track (refleja la transición en curso)
+        const leerPosX = () => {
+            const estilo = window.getComputedStyle(track).transform;
+            if (!estilo || estilo === 'none') return 0;
+            const matriz = new DOMMatrix(estilo);
+            return matriz.m41; // Traducción en X
+        };
+
+        // --- Bucle de RENDER: interpola el skew del viewport hacia su objetivo ---
+        const renderizar = () => {
+            skewActual += (skewObjetivo - skewActual) * SMOOTHING;
+
+            // Caso de cierre: sin objetivo y ya casi en 0 → limpiamos y paramos
+            if (skewObjetivo === 0 && Math.abs(skewActual) < 0.1) {
+                skewActual = 0;
+                viewport.style.transform = '';
+                rafId = null;
+                return;
+            }
+
+            viewport.style.transform = `skewX(${skewActual.toFixed(2)}deg)`;
+            rafId = requestAnimationFrame(renderizar);
+        };
+
+        const arrancarRender = () => {
+            if (rafId === null) rafId = requestAnimationFrame(renderizar);
+        };
+
+        // --- Bucle de MEDICIÓN: lee el track frame a frame mientras se desplaza ---
+        const medirFrame = () => {
+            const ahora = performance.now();
+            const x = leerPosX();
+
+            if (ultimaX !== null && ultimoTiempo !== null) {
+                const dt = ahora - ultimoTiempo;
+                if (dt > 0) {
+                    // Velocidad en px/ms (negativa = se mueve a la izquierda)
+                    const velocidad = (x - ultimaX) / dt;
+
+                    // Mapeamos la velocidad a grados con tope en SKEW_MAX
+                    skewObjetivo = Math.max(
+                        -SKEW_MAX,
+                        Math.min(SKEW_MAX, (velocidad / VELOCIDAD_MAX) * SKEW_MAX)
+                    );
+                    arrancarRender();
+                }
+            }
+
+            ultimaX = x;
+            ultimoTiempo = ahora;
+
+            if (ahora < finMedicion) {
+                // Seguimos midiendo: la transición dura 500ms
+                medirId = requestAnimationFrame(medirFrame);
+            } else {
+                // Terminó la ventana de medición: el track paró → skew vuelve a 0
+                medirId = null;
+                ultimaX = null;
+                ultimoTiempo = null;
+                skewObjetivo = 0;
+                arrancarRender();
+            }
+        };
+
+        // Activa la medición por frames (reinicia la ventana de 700ms)
+        const activarMedicion = () => {
+            finMedicion = performance.now() + VENTANA_MEDICION;
+            if (medirId === null) {
+                ultimaX = null; // Para que el primer frame solo tome la referencia
+                ultimoTiempo = null;
+                medirId = requestAnimationFrame(medirFrame);
+            }
+        };
+
+        // Cada vez que la máquina existente toca el transform del track,
+        // el observer reinicia la medición (flechas, dots, resize...)
+        const observer = new MutationObserver(activarMedicion);
+        observer.observe(track, { attributes: true, attributeFilter: ['style'] });
+
+        // Para el arrastre (se escribe en cada move) medimos directo también
+        track.addEventListener('touchmove', activarMedicion, { passive: true });
+        track.addEventListener('pointermove', (e) => {
+            if (e.pointerType === 'mouse' && e.buttons === 0) return;
+            activarMedicion();
+        }, { passive: true });
+    });
+});
