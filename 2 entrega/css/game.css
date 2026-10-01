@@ -22,6 +22,16 @@ body {
     font-weight: 700;
 }
 
+.migas a {
+    color: var(--textoWhite);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.migas a:hover {
+    color: var(--primario);
+}
+
 .juego-card {
     width: min(1023.09px, 100%);
     margin: 0 auto;
@@ -366,6 +376,19 @@ body {
     display: block;
     width: 38px;
     height: 59px;
+}
+
+.raton__cuerpo {
+    fill: var(--textoWhite);
+}
+
+/* El click se pinta del color que corresponda según el control */
+.raton__click {
+    fill: var(--textoWhite);
+}
+
+.raton--click-rosa .raton__click {
+    fill: var(--primario);
 }
 
 .flecha {

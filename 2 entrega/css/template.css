@@ -3,7 +3,7 @@
 /* ================== */
 header {
     grid-area: header;
-    height: 60px;
+    height: 56px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -21,20 +21,31 @@ header {
     border: none;
     cursor: pointer;
     padding: 0;
+    display: flex;
+    align-items: center;
     transition: transform 0.15s ease;
 }
 
-.btn-hamburguesa svg {
+/* Span dibujado con las medidas exactas del asset (header.svg) */
+.btn-hamburguesa__icono {
+    display: block;
+    width: 24.52px;
+    height: 19.62px;
+}
+
+.btn-hamburguesa__icono svg {
+    display: block;
+    width: 100%;
+    height: 100%;
     fill: var(--primario);
-    width: 1.8rem;
-    height: auto;
     overflow: visible;
 }
 
 .btn-hamburguesa:hover svg {
     fill: var(--primarioSombra2);
     stroke: var(--primarioLuz2);
-    stroke-width: 2px;
+    /* 3.26 unidades de usuario = ~2px visuales con la escala 0.613 del asset */
+    stroke-width: 3.26px;
 }
 
 /* ================== */
@@ -43,7 +54,7 @@ header {
 .header-izq {
     display: flex;
     align-items: center;
-    gap: 22px;
+    gap: 19.05px;
 }
 
 /* ================== */
@@ -51,8 +62,8 @@ header {
 /* ================== */
 .logo {
     display: flex;
-    align-items: center;
-    gap: 12px;
+    align-items: flex-end;
+    gap: 2.54px;
     text-decoration: none;
     position: absolute;
     left: 50%;
@@ -65,7 +76,7 @@ header {
 
 .logo-texto {
     display: block;
-    height: 18px;
+    height: 19px;
     width: auto;
 }
 
@@ -138,10 +149,15 @@ header {
 /* ================== */
 /*       PERFIL       */
 /* ================== */
+/* Círculo de 32x32 con el avatar extraído del asset header.svg */
 .btn-perfil {
-    width: 40px;
-    height: 40px;
+    width: 32px;
+    height: 32px;
     background-color: var(--secundarioLuz2);
+    background-image: url("../img/avatar-header.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     border-radius: 50%;
     border: 3px solid transparent;
     box-sizing: border-box;
@@ -157,14 +173,9 @@ header {
     border-color: var(--primarioLuz2);
 }
 
-.icono-perfil {
-    width: 28px;
-    height: 28px;
-}
-
-.icono-perfil path {
-    fill: var(--textoWhite);
-    transition: fill 0.3s ease;
+/* El borde se mantiene mientras el panel de cuenta está abierto */
+.header-cuenta.activo .btn-perfil {
+    border-color: var(--primarioLuz2);
 }
 
 /* ======================================= */
@@ -172,36 +183,34 @@ header {
 /* ======================================= */
 @media (min-width: 1024px) {
     header {
-        height: 86px;
-        padding: 0 22px;
+        height: 56px;
+        padding: 0 25px 0 11px;
     }
 
-    .btn-hamburguesa svg {
-        width: 2.5rem;
-    }
-
-    .btn-perfil {
-        width: 71px;
-        height: 68px;
-        background-color: var(--secundarioLuz2);
-    }
-
-    .icono-perfil {
-        width: 50px;
-        height: 47px;
+    /* El asset dibuja el ícono centrado en y=30 (2px bajo el centro de la barra) */
+    .btn-hamburguesa__icono {
+        position: relative;
+        top: 2px;
     }
 
     .logo {
         position: static;
         transform: none;
+        margin-bottom: 3px;
+        /* Con align-items:center, deja la base de ícono y texto en y=39 */
     }
 
     .logo-icono {
         display: block;
+        width: 17.92px;
+        height: 25px;
+        flex: none;
     }
 
     .logo-texto {
-        height: auto;
+        height: 19px;
+        width: auto;
+        flex: none;
     }
 
     .header-izq {
@@ -210,16 +219,22 @@ header {
 
     .buscador {
         display: flex;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        /* x=566 a 1421px de ancho: centro + 22.5px, igual que el SVG */
+        transform: translate(calc(-50% + 22.5px), -50%);
         width: 334px;
         max-width: 334px;
         height: 36px;
         background-color: var(--secundarioLuz2);
-        border-radius: 50px;
+        border-radius: 18px;
         align-items: center;
-        padding: 0 15px;
+        padding: 0 8px 0 16px;
         justify-content: space-between;
-        margin-left: 10px;
+        margin: 0;
         min-width: 0;
+        box-sizing: border-box;
     }
 
     .buscador input {
@@ -228,6 +243,7 @@ header {
         outline: none;
         color: var(--textoWhite);
         width: 100%;
+        min-width: 0;
     }
 
     .buscador input::placeholder {
@@ -237,16 +253,22 @@ header {
     .icono-lupa {
         width: 14px;
         height: 14px;
+        flex: none;
     }
 
     .icono-lupa path {
         fill: var(--textoWhite);
     }
 
+    .header-der {
+        gap: 18px;
+    }
+
     .btn-favoritos {
         display: flex;
-        width: 69px;
-        height: 66px;
+        width: 40px;
+        height: 38px;
+        flex: none;
         background-color: var(--secundarioLuz1);
         border-radius: 50%;
         border: none;
@@ -262,8 +284,12 @@ header {
     }
 
     .icono-corazon {
-        width: 43px;
-        height: 43px;
+        width: 23px;
+        height: 23px;
+        position: relative;
+        /* El asset deja el corazón 0.5px a la izquierda y 0.5px arriba del centro */
+        left: -0.5px;
+        top: -0.5px;
     }
 
     .icono-corazon path {
@@ -275,12 +301,23 @@ header {
         fill: var(--primarioLuz2);
     }
 
+    .header-cuenta {
+        margin-left: 6px;
+        /* PRO -> perfil = 24px (18px del gap + 6px) */
+    }
+
+    .btn-perfil {
+        flex: none;
+    }
+
     .header-der .btn-acento {
         display: flex;
-        width: 128px;
-        height: 37px;
+        width: 100px;
+        height: 32px;
+        flex: none;
         border-radius: 16px;
-        padding: 0;
+        padding: 4px 0 0;
+        /* Baja el rótulo 2px para igualar la línea de base del asset (y=34.16) */
         position: relative;
         border: 3px solid transparent;
         transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.3s ease;
@@ -445,13 +482,13 @@ header {
 /* Menu desplegable */
 .menu-nav {
     position: fixed;
-    top: 60px;
+    top: 56px;
     /* Debajo del header mobile */
     left: 0;
     z-index: 25;
     box-sizing: border-box;
     width: 180px;
-    max-height: calc(100vh - 60px);
+    max-height: calc(100vh - 56px);
     background-color: var(--secundario);
     border-right: 2px solid var(--primario);
     overflow-y: auto;
@@ -527,44 +564,48 @@ body:has(.btn-hamburguesa.activo) .menu-nav li:nth-child(4) {
     transition-delay: 0.24s;
 }
 
-body:has(.btn-hamburguesa.activo) .menu-nav__lista+.menu-nav__lista li:nth-child(1) {
+body:has(.btn-hamburguesa.activo) .menu-nav li:nth-child(5) {
     transition-delay: 0.3s;
 }
 
-body:has(.btn-hamburguesa.activo) .menu-nav__lista+.menu-nav__lista li:nth-child(2) {
+body:has(.btn-hamburguesa.activo) .menu-nav__lista+.menu-nav__lista li:nth-child(1) {
     transition-delay: 0.36s;
 }
 
-body:has(.btn-hamburguesa.activo) .menu-nav__lista+.menu-nav__lista li:nth-child(3) {
+body:has(.btn-hamburguesa.activo) .menu-nav__lista+.menu-nav__lista li:nth-child(2) {
     transition-delay: 0.42s;
 }
 
-body:has(.btn-hamburguesa.activo) .menu-nav__lista+.menu-nav__lista li:nth-child(4) {
+body:has(.btn-hamburguesa.activo) .menu-nav__lista+.menu-nav__lista li:nth-child(3) {
     transition-delay: 0.48s;
 }
 
-body:has(.btn-hamburguesa.activo) .menu-nav__lista+.menu-nav__lista li:nth-child(5) {
+body:has(.btn-hamburguesa.activo) .menu-nav__lista+.menu-nav__lista li:nth-child(4) {
     transition-delay: 0.54s;
 }
 
-body:has(.btn-hamburguesa.activo) .menu-nav__lista+.menu-nav__lista li:nth-child(6) {
-    transition-delay: 0.6s;
+body:has(.btn-hamburguesa.activo) .menu-nav__lista+.menu-nav__lista li:nth-child(5) {
+    transition-delay: 0.60s;
 }
 
-body:has(.btn-hamburguesa.activo) .menu-nav__lista+.menu-nav__lista li:nth-child(7) {
+body:has(.btn-hamburguesa.activo) .menu-nav__lista+.menu-nav__lista li:nth-child(6) {
     transition-delay: 0.66s;
 }
 
-body:has(.btn-hamburguesa.activo) .menu-nav__lista+.menu-nav__lista li:nth-child(8) {
+body:has(.btn-hamburguesa.activo) .menu-nav__lista+.menu-nav__lista li:nth-child(7) {
     transition-delay: 0.72s;
 }
 
-body:has(.btn-hamburguesa.activo) .menu-nav__lista+.menu-nav__lista li:nth-child(9) {
+body:has(.btn-hamburguesa.activo) .menu-nav__lista+.menu-nav__lista li:nth-child(8) {
     transition-delay: 0.78s;
 }
 
-body:has(.btn-hamburguesa.activo) .menu-nav__lista+.menu-nav__lista li:nth-child(10) {
+body:has(.btn-hamburguesa.activo) .menu-nav__lista+.menu-nav__lista li:nth-child(9) {
     transition-delay: 0.84s;
+}
+
+body:has(.btn-hamburguesa.activo) .menu-nav__lista+.menu-nav__lista li:nth-child(10) {
+    transition-delay: 0.90s;
 }
 
 .menu-overlay {
@@ -593,9 +634,14 @@ body:has(.btn-hamburguesa.activo) {
 
 @media (min-width: 1024px) {
     .menu-nav {
-        top: 86px;
+        top: 56px;
         /* Debajo del header desktop */
-        max-height: calc(100vh - 86px);
+        max-height: calc(100vh - 56px);
+    }
+
+    /* En desktop el header ya muestra el botón de Favoritos */
+    .menu-nav__item--solo-movil {
+        display: none;
     }
 }
 
@@ -609,8 +655,8 @@ body:has(.btn-hamburguesa.activo) {
 
 .cuenta-panel {
     position: absolute;
-    top: 60px;
-    /* Debajo del header mobile */
+    top: 56px;
+    /* Debajo del header */
     right: 16px;
     z-index: 26;
     box-sizing: border-box;
@@ -622,13 +668,6 @@ body:has(.btn-hamburguesa.activo) {
     transform-origin: top right;
     transform: matrix(0.92, 0, 0, 0.92, 6, 0);
     transition: opacity 0.15s ease, transform 0.15s ease, visibility 0s 0.15s;
-}
-
-@media (min-width: 1024px) {
-    .cuenta-panel {
-        top: 86px;
-        /* Debajo del header desktop */
-    }
 }
 
 .header-cuenta.activo .cuenta-panel {

@@ -53,7 +53,7 @@
 .carrusel-anuncio {
     grid-area: 2 / 2;
     padding: 16px;
-    background-color: var(--secundariosombra);
+    background-color: var(--secundarioSombra1);
     border-radius: 16px;
 }
 

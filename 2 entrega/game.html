@@ -20,10 +20,12 @@
         <div class="header-izq">
             <!-- menu hamburguesa -->
             <button aria-label="Abrir menú" class="btn-hamburguesa">
-                <svg viewBox="0 0 40 32" xmlns="http://www.w3.org/2000/svg">
-                    <path
-                        d="M39.2071 3.80957C39.2071 1.7056 37.5015 0 35.3975 0H4.01668C1.91272 0 0.207114 1.7056 0.207114 3.80957C0.207114 5.91354 1.91272 7.61914 4.01669 7.61914H35.3975C37.5015 7.61914 39.2071 5.91354 39.2071 3.80957ZM8.28128e-05 20.1572C-0.00986352 20.9576 0.87822 21.445 1.54793 21.0068L7.08114 17.3828C7.67471 16.9938 7.68543 16.1272 7.10165 15.7236L1.66024 11.9639C1.0016 11.5089 0.101827 11.9739 0.0918797 12.7744L8.28128e-05 20.1572ZM39.2071 16C39.2071 13.7909 37.4163 12 35.2071 12H13.2071C10.998 12 9.20711 13.7909 9.20711 16C9.20711 18.2091 10.998 20 13.2071 20H35.2071C37.4163 20 39.2071 18.2091 39.2071 16ZM39.2071 28.1904C39.2071 26.0865 37.5015 24.3809 35.3975 24.3809H4.01668C1.91272 24.3809 0.207114 26.0865 0.207114 28.1904C0.207114 30.2944 1.91272 32 4.01669 32H35.3975C37.5015 32 39.2071 30.2944 39.2071 28.1904Z" />
-                </svg>
+                <span class="btn-hamburguesa__icono">
+                    <svg viewBox="0 0 40 32" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M39.2071 3.80957C39.2071 1.7056 37.5015 0 35.3975 0H4.01668C1.91272 0 0.207114 1.7056 0.207114 3.80957C0.207114 5.91354 1.91272 7.61914 4.01669 7.61914H35.3975C37.5015 7.61914 39.2071 5.91354 39.2071 3.80957ZM8.28128e-05 20.1572C-0.00986352 20.9576 0.87822 21.445 1.54793 21.0068L7.08114 17.3828C7.67471 16.9938 7.68543 16.1272 7.10165 15.7236L1.66024 11.9639C1.0016 11.5089 0.101827 11.9739 0.0918797 12.7744L8.28128e-05 20.1572ZM39.2071 16C39.2071 13.7909 37.4163 12 35.2071 12H13.2071C10.998 12 9.20711 13.7909 9.20711 16C9.20711 18.2091 10.998 20 13.2071 20H35.2071C37.4163 20 39.2071 18.2091 39.2071 16ZM39.2071 28.1904C39.2071 26.0865 37.5015 24.3809 35.3975 24.3809H4.01668C1.91272 24.3809 0.207114 26.0865 0.207114 28.1904C0.207114 30.2944 1.91272 32 4.01669 32H35.3975C37.5015 32 39.2071 30.2944 39.2071 28.1904Z" />
+                    </svg>
+                </span>
             </button>
             <!-- logo -->
             <a href="home.html" class="logo">
@@ -51,19 +53,12 @@
             </button>
 
             <!-- Botón PRO -->
-            <button class="btn-acento body-small">Obtener PRO</button>
+            <button class="btn-acento label">Obtener PRO</button>
 
             <!-- Contenedor del Perfil -->
             <div class="header-cuenta">
                 <!-- Botón Perfil -->
-                <button aria-label="Perfil" class="btn-perfil">
-                    <svg class="icono-perfil" viewBox="0 0 50 47" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                        <path
-                            d="M32.9136 27.4166H16.3245C13.6283 27.4197 11.0435 28.4435 9.13702 30.2633C7.23054 32.0831 6.15804 34.5505 6.15479 37.1241V47H43.0834V37.1241C43.0801 34.5505 42.0076 32.0831 40.1011 30.2633C38.1946 28.4435 35.6098 27.4197 32.9136 27.4166Z" />
-                        <path
-                            d="M24.6191 23.5C31.4175 23.5 36.9286 18.2393 36.9286 11.75C36.9286 5.26065 31.4175 0 24.6191 0C17.8207 0 12.3096 5.26065 12.3096 11.75C12.3096 18.2393 17.8207 23.5 24.6191 23.5Z" />
-                    </svg>
-                </button>
+                <button aria-label="Perfil" class="btn-perfil"></button>
 
                 <!-- Panel desplegable -->
                 <div class="cuenta-panel" id="cuenta-panel">
@@ -104,6 +99,8 @@
         <ul class="menu-nav__lista">
             <li><a class="menu-nav__link body-small" href="home.html"><img class="menu-nav__icono"
                         src="assets/icons/home.svg" alt="">Home</a></li>
+            <li class="menu-nav__item--solo-movil"><a class="menu-nav__link body-small" href="#"><img
+                        class="menu-nav__icono" src="assets/icons/favoritos-contorno.svg" alt="">Favoritos</a></li>
             <li><a class="menu-nav__link body-small" href="#"><img class="menu-nav__icono"
                         src="assets/icons/recientes.svg" alt="">Recientes</a></li>
             <li><a class="menu-nav__link body-small" href="#"><img class="menu-nav__icono"
@@ -137,7 +134,7 @@
         <p class="migas"><a href="home.html">Juegos</a>>>Puzzle>>Peg solitary boca edition</p>
         <article class="juego-card">
             <div class="juego-video">
-                <img src="assets/caratula-peg.png" alt="Peg Solitaire Edition Boca Juniors" class="juego-caratula">
+                <img src="assets/peg-solitary.png" alt="Peg Solitaire Edition Boca Juniors" class="juego-caratula">
                 <button type="button" class="juego-play" aria-label="Jugar">
                     <span class="juego-play__circulo">
                         <span class="juego-play__triangulo"></span>
@@ -189,9 +186,20 @@
                             <span class="flecha flecha--izquierda"></span>
                             <span class="flecha flecha--derecha"></span>
                             <span class="flecha flecha--abajo"></span>
-                            <img class="raton" src="assets/mouse-blanco.svg" alt="">
+                            <svg class="raton" viewBox="0 0 38 59" xmlns="http://www.w3.org/2000/svg" focusable="false">
+                                <path class="raton__cuerpo" fill-rule="evenodd" clip-rule="evenodd"
+                                    d="M0 38.2217V25.6522H14.8783V26.9348C14.8783 28.3457 16.0326 29.5 17.4435 29.5H20.2652C21.6761 29.5 22.8304 28.3457 22.8304 26.9348V25.6522H37.9652V38.2217C37.9652 49.3804 30.6543 59 18.9826 59C7.31087 59 0 49.3804 0 38.2217ZM19.6239 12.1848H18.0848C17.4435 12.1848 16.8022 12.8261 16.8022 13.4674V26.2935C16.8022 26.9348 17.4435 27.5761 18.0848 27.5761H19.6239C20.3935 27.5761 20.9065 26.9348 20.9065 26.2935V13.4674C20.9065 12.8261 20.3935 12.1848 19.6239 12.1848ZM37.9652 23.087H22.8304V12.8261C22.8304 11.4152 21.6761 10.2609 20.2652 10.2609V0H20.3935C30.013 0.256522 37.9652 9.49131 37.9652 20.7783V23.087Z" />
+                                <path class="raton__click" fill-rule="evenodd" clip-rule="evenodd"
+                                    d="M0 23.087V20.7783C0 9.49131 7.95217 0.256522 17.5717 0H17.7V10.2609H17.4435C16.0326 10.2609 14.8783 11.4152 14.8783 12.8261V23.087H0Z" />
+                            </svg>
                         </span>
-                        <img class="raton" src="assets/mouse.svg" alt="">
+                        <svg class="raton raton--click-rosa" viewBox="0 0 38 59" xmlns="http://www.w3.org/2000/svg"
+                            focusable="false">
+                            <path class="raton__cuerpo" fill-rule="evenodd" clip-rule="evenodd"
+                                d="M0 38.2217V25.6522H14.8783V26.9348C14.8783 28.3457 16.0326 29.5 17.4435 29.5H20.2652C21.6761 29.5 22.8304 28.3457 22.8304 26.9348V25.6522H37.9652V38.2217C37.9652 49.3804 30.6543 59 18.9826 59C7.31087 59 0 49.3804 0 38.2217ZM19.6239 12.1848H18.0848C17.4435 12.1848 16.8022 12.8261 16.8022 13.4674V26.2935C16.8022 26.9348 17.4435 27.5761 18.0848 27.5761H19.6239C20.3935 27.5761 20.9065 26.9348 20.9065 26.2935V13.4674C20.9065 12.8261 20.3935 12.1848 19.6239 12.1848ZM37.9652 23.087H22.8304V12.8261C22.8304 11.4152 21.6761 10.2609 20.2652 10.2609V0H20.3935C30.013 0.256522 37.9652 9.49131 37.9652 20.7783V23.087Z" />
+                            <path class="raton__click" fill-rule="evenodd" clip-rule="evenodd"
+                                d="M0 23.087V20.7783C0 9.49131 7.95217 0.256522 17.5717 0H17.7V10.2609H17.4435C16.0326 10.2609 14.8783 11.4152 14.8783 12.8261V23.087H0Z" />
+                        </svg>
                     </div>
                 </article>
 
@@ -217,7 +225,7 @@
 
             <aside class="juegos-carrusel" aria-label="Juegos recomendados">
                 <article class="carrusel-card">
-                    <img class="carrusel-card__img" src="assets/carrusel/rdr2.jpg" alt="Red Dead Redemption 2">
+                    <img class="carrusel-card__img" src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1174180/capsule_616x353.jpg" alt="Red Dead Redemption 2">
                     <img class="carrusel-card__pro" src="assets/icons/iconoPro.svg" alt="PRO">
                     <div class="carrusel-card__info">
                         <h3 class="carrusel-card__titulo">Red Dead Redemption 2</h3>
@@ -226,7 +234,7 @@
                     </div>
                 </article>
                 <article class="carrusel-card">
-                    <img class="carrusel-card__img" src="assets/carrusel/fc26.jpg" alt="EA Sports FC 26">
+                    <img class="carrusel-card__img" src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3405690/7a4a2467300194840eb2116c2126c2d2422b4e12/capsule_616x353.jpg" alt="EA Sports FC 26">
                     <div class="carrusel-card__info">
                         <h3 class="carrusel-card__titulo">EA Sports FC 26</h3>
                         <img class="carrusel-card__icono" src="assets/icons/categorias-card/deporte-card.svg"
@@ -234,7 +242,7 @@
                     </div>
                 </article>
                 <article class="carrusel-card">
-                    <img class="carrusel-card__img" src="assets/carrusel/sekiro.jpg" alt="Sekiro: Shadows Die Twice">
+                    <img class="carrusel-card__img" src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/814380/capsule_616x353.jpg" alt="Sekiro: Shadows Die Twice">
                     <div class="carrusel-card__info">
                         <h3 class="carrusel-card__titulo">Sekiro: Shadows Die Twice</h3>
                         <img class="carrusel-card__icono" src="assets/icons/categorias-card/accion-card.svg"
@@ -242,7 +250,7 @@
                     </div>
                 </article>
                 <article class="carrusel-card">
-                    <img class="carrusel-card__img" src="assets/carrusel/gta-sa.jpg"
+                    <img class="carrusel-card__img" src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1547000/capsule_616x353.jpg"
                         alt="Grand Theft Auto: San Andreas">
                     <div class="carrusel-card__info">
                         <h3 class="carrusel-card__titulo">Grand Theft Auto: San Andreas</h3>
@@ -251,7 +259,7 @@
                     </div>
                 </article>
                 <article class="carrusel-card">
-                    <img class="carrusel-card__img" src="assets/carrusel/p3p.jpg" alt="Persona 3 Portable">
+                    <img class="carrusel-card__img" src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1809700/capsule_616x353.jpg" alt="Persona 3 Portable">
                     <img class="carrusel-card__pro" src="assets/icons/iconoPro.svg" alt="PRO">
                     <div class="carrusel-card__info">
                         <h3 class="carrusel-card__titulo">Persona 3 Portable</h3>
@@ -260,7 +268,7 @@
                     </div>
                 </article>
                 <article class="carrusel-card">
-                    <img class="carrusel-card__img" src="assets/carrusel/witcher3.jpg" alt="The Witcher 3: Wild Hunt">
+                    <img class="carrusel-card__img" src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/capsule_616x353.jpg" alt="The Witcher 3: Wild Hunt">
                     <div class="carrusel-card__info">
                         <h3 class="carrusel-card__titulo">The Witcher 3: Wild Hunt — Game of the Year Edition con todas
                             las expansiones y contenido descargable incluido</h3>
@@ -271,14 +279,14 @@
             </aside>
 
             <div class="carrusel-anuncio">
-                <img src="assets/anuncio.png"
+                <img src="assets/banner.png"
                     alt="Oferta de membresía PRO Primavera: activá tu membresía PRO ahora y disfrutá 40% de descuento con acceso ilimitado, contenidos exclusivos y soporte VIP">
             </div>
 
             <section class="comentarios" aria-label="Comentarios">
                 <div class="comentario-card comentario-card--nuevo">
                     <div class="comentario__fila">
-                        <img class="comentario__avatar" src="assets/avatares/613615518000350130.jpeg" alt="">
+                        <img class="comentario__avatar" src="assets/avatar/tio.jpeg" alt="">
                         <textarea class="comentario__entrada" rows="4" placeholder="Escribe un comentario"
                             aria-label="Escribe un comentario"></textarea>
                     </div>
@@ -291,7 +299,7 @@
                 <article class="comentario-card comentario">
                     <div class="comentario__encabezado">
                         <div class="comentario__autor">
-                            <img class="comentario__avatar" src="assets/avatares/seiya.jpg" alt="">
+                            <img class="comentario__avatar" src="assets/avatar/Camus%20de%20Aqu%C3%A1rio.jpeg" alt="">
                             <span class="comentario__nombre">nar</span>
                         </div>
                         <p class="comentario__megusta"><span>67 me gusta</span><img class="comentario__icono-like"
@@ -303,7 +311,7 @@
                 <article class="comentario-card comentario">
                     <div class="comentario__encabezado">
                         <div class="comentario__autor">
-                            <img class="comentario__avatar" src="assets/avatares/riquelme.jpg" alt="">
+                            <img class="comentario__avatar" src="assets/avatar/riquelme.jpeg" alt="">
                             <span class="comentario__nombre">riquelme__@real100%</span>
                         </div>
                         <p class="comentario__megusta"><span>12 me gusta</span><img class="comentario__icono-like"
@@ -316,7 +324,7 @@
                 <article class="comentario-card comentario">
                     <div class="comentario__encabezado">
                         <div class="comentario__autor">
-                            <img class="comentario__avatar" src="assets/avatares/janson.jpg" alt="">
+                            <img class="comentario__avatar" src="assets/avatar/Lucas%20Jason.jpeg" alt="">
                             <span class="comentario__nombre">elPibe_janson</span>
                         </div>
                         <p class="comentario__megusta"><span>34 me gusta</span><img class="comentario__icono-like"
@@ -328,7 +336,7 @@
                 <article class="comentario-card comentario">
                     <div class="comentario__encabezado">
                         <div class="comentario__autor">
-                            <img class="comentario__avatar" src="assets/avatares/tito-estando-virgo.jpeg" alt="">
+                            <img class="comentario__avatar" src="assets/avatar/tito.jpeg" alt="">
                             <span class="comentario__nombre">juanceto_01</span>
                         </div>
                         <p class="comentario__megusta"><span>34 me gusta</span><img class="comentario__icono-like"
