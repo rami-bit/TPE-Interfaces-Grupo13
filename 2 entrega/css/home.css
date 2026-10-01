@@ -2,7 +2,7 @@
 main {
     display: flex;
     flex-direction: column;
-    gap: 40px;
+    gap: 24px;
 }
 
 /* ======================================= */
@@ -257,7 +257,8 @@ main {
         display: flex;
         align-items: center;
         justify-content: center;
-        overflow: hidden; /* Para que el joystick no se vea antes de entrar */
+        overflow: hidden;
+        /* Para que el joystick no se vea antes de entrar */
     }
 
     /* Joystick oculto y achicado por defecto */
@@ -322,7 +323,7 @@ main {
     .btn-fav-hero.activo {
         border: 2px solid var(--primario);
     }
-    
+
     .btn-fav-hero.activo svg {
         /* Animación de rebote al click */
         animation: latido-pro 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
@@ -340,11 +341,25 @@ main {
 
 /* Keyframes globales para el home */
 @keyframes latido-pro {
-    0% { transform: matrix(1, 0, 0, 1, 0, 0); }
-    30% { transform: matrix(1.1, 0, 0, 0.6, 0, 4); }
-    60% { transform: matrix(1.4, 0, 0, 1.4, 0, -6); }
-    80% { transform: matrix(0.9, 0, 0, 1.2, 0, 2); }
-    100% { transform: matrix(1.1, 0, 0, 1.1, 0, 0); }
+    0% {
+        transform: matrix(1, 0, 0, 1, 0, 0);
+    }
+
+    30% {
+        transform: matrix(1.1, 0, 0, 0.6, 0, 4);
+    }
+
+    60% {
+        transform: matrix(1.4, 0, 0, 1.4, 0, -6);
+    }
+
+    80% {
+        transform: matrix(0.9, 0, 0, 1.2, 0, 2);
+    }
+
+    100% {
+        transform: matrix(1.1, 0, 0, 1.1, 0, 0);
+    }
 }
 
 /* ======================================= */
@@ -353,8 +368,8 @@ main {
 
 .titulo-seccion {
     color: var(--textoWhite);
-    margin-bottom: 8px;
-    /* Reducido en mobile para que no quede lejos */
+    margin-bottom: 0;
+    /* Reducido en mobile para que no quede lejos (el padding del carrusel aporta aire) */
     padding-left: 16px;
     /* Mantiene la alineacion con el header */
 }
@@ -388,7 +403,7 @@ main {
 @media (min-width: 1024px) {
     .titulo-seccion {
         padding-left: 22px;
-        margin-bottom: 24px;
+        margin-bottom: 8px;
     }
 
     .carrusel-track-chico {
