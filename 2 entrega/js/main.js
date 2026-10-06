@@ -654,8 +654,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 rafId = null;
                 return;
             }
-
-            viewport.style.transform = `skewX(${skewActual.toFixed(2)}deg)`;
+            let grados = (skewActual * Math.PI) / 180;
+            let tan=Math.tan(grados);
+            viewport.style.transform = `matrix(0.9, 0, ${tan}, 0.9, 0, 0)`;
+            
+            //viewport.style.transform = `skewX(${skewActual.toFixed(2)}deg) scale(0.9)`;
             rafId = requestAnimationFrame(renderizar);
         };
 
