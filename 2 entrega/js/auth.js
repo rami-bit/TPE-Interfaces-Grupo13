@@ -31,7 +31,10 @@ document.addEventListener("DOMContentLoaded", () => {
         ojo.addEventListener("click", () => {
             let visible = input.type === "text";
             input.type = visible ? "password" : "text";
-            ojo.src = visible ? "assets/icons/ojo.svg" : "assets/icons/mostrado.svg";
+            ojo.src = visible ? "assets/ojoCerrado.svg" : "assets/icons/ojo.svg";
+            let texto = visible ? "Mostrar contraseña" : "Ocultar contraseña";
+            ojo.alt = texto;
+            ojo.setAttribute("aria-label", texto);
         });
     });
 });

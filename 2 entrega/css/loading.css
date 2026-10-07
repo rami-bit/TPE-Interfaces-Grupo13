@@ -55,7 +55,7 @@
     background-color: var(--primario);
     transform: scaleX(0);
     transform-origin: left center;
-    animation: loading-bar-animation 3s linear forwards;
+    animation: loading-bar-animation 5s linear forwards;
 }
 
 @keyframes loading-bar-animation {
@@ -66,4 +66,14 @@
 #loading-text {
     font-size: 18px;
     color: var(--primario);
+}
+
+
+@keyframes movingUp {
+    0% {
+        transform: translateY(0) rotate(0deg);
+    }
+    100% {
+        transform: translateY(-600px) rotate(360deg);
+    }
 }

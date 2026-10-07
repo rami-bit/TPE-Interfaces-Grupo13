@@ -3,7 +3,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // MENÚ HAMBURGUESA Y PERFIL (HEADER)
     // ==========================================
     const btnHamburguesa = document.querySelector('.btn-hamburguesa');
-    const menuOverlay = document.querySelector('.menu-overlay');
     const cuenta = document.querySelector(".header-cuenta");
     const btnCuenta = document.querySelector(".btn-perfil");
 

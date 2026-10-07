@@ -546,66 +546,7 @@ body:has(.btn-hamburguesa.activo) .menu-nav {
 body:has(.btn-hamburguesa.activo) .menu-nav li {
     opacity: 1;
     transform: translateY(0);
-}
-
-body:has(.btn-hamburguesa.activo) .menu-nav li:nth-child(1) {
-    transition-delay: 0.06s;
-}
-
-body:has(.btn-hamburguesa.activo) .menu-nav li:nth-child(2) {
-    transition-delay: 0.12s;
-}
-
-body:has(.btn-hamburguesa.activo) .menu-nav li:nth-child(3) {
-    transition-delay: 0.18s;
-}
-
-body:has(.btn-hamburguesa.activo) .menu-nav li:nth-child(4) {
-    transition-delay: 0.24s;
-}
-
-body:has(.btn-hamburguesa.activo) .menu-nav li:nth-child(5) {
-    transition-delay: 0.3s;
-}
-
-body:has(.btn-hamburguesa.activo) .menu-nav__lista+.menu-nav__lista li:nth-child(1) {
-    transition-delay: 0.36s;
-}
-
-body:has(.btn-hamburguesa.activo) .menu-nav__lista+.menu-nav__lista li:nth-child(2) {
-    transition-delay: 0.42s;
-}
-
-body:has(.btn-hamburguesa.activo) .menu-nav__lista+.menu-nav__lista li:nth-child(3) {
-    transition-delay: 0.48s;
-}
-
-body:has(.btn-hamburguesa.activo) .menu-nav__lista+.menu-nav__lista li:nth-child(4) {
-    transition-delay: 0.54s;
-}
-
-body:has(.btn-hamburguesa.activo) .menu-nav__lista+.menu-nav__lista li:nth-child(5) {
-    transition-delay: 0.60s;
-}
-
-body:has(.btn-hamburguesa.activo) .menu-nav__lista+.menu-nav__lista li:nth-child(6) {
-    transition-delay: 0.66s;
-}
-
-body:has(.btn-hamburguesa.activo) .menu-nav__lista+.menu-nav__lista li:nth-child(7) {
-    transition-delay: 0.72s;
-}
-
-body:has(.btn-hamburguesa.activo) .menu-nav__lista+.menu-nav__lista li:nth-child(8) {
-    transition-delay: 0.78s;
-}
-
-body:has(.btn-hamburguesa.activo) .menu-nav__lista+.menu-nav__lista li:nth-child(9) {
-    transition-delay: 0.84s;
-}
-
-body:has(.btn-hamburguesa.activo) .menu-nav__lista+.menu-nav__lista li:nth-child(10) {
-    transition-delay: 0.90s;
+    transition-delay: calc((16 - var(--i, 0)) * 0.06s);
 }
 
 .menu-overlay {
