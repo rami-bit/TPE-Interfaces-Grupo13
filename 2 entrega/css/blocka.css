@@ -1,0 +1,292 @@
+/* ============================================================
+   ZONA DE EJECUCIÓN DEL JUEGO (canvas con la blocka)
+   ============================================================ */
+
+.blocka-mock {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 28px;
+    box-sizing: border-box;
+    padding: 24px 16px;
+    background-color: var(--secundarioSombra1);
+}
+
+/* Contenedor del canvas + rótulo de ayuda */
+
+.blocka-tablero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    width: min(320px, 100%);
+}
+
+.blocka-lienzo {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.blocka-canvas {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    background-color: var(--textoBlack);
+    touch-action: manipulation;
+    cursor: default;
+}
+
+.blocka-canvas--activo {
+    cursor: pointer;
+}
+
+.blocka-ayuda {
+    margin: 0;
+    color: var(--textoWhite);
+    opacity: 0.7;
+
+    font-size: 12px;
+    text-align: center;
+}
+
+/* Overlay de fin de nivel */
+
+.blocka-fin {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 16px;
+    border-radius: 8px;
+    background-color: rgba(5, 14, 31, 0.85);
+    text-align: center;
+}
+
+.blocka-fin[hidden] {
+    display: none;
+}
+
+/* display del botón no debe pisar el atributo hidden */
+.blocka-hud__comenzar[hidden] {
+    display: none;
+}
+
+.blocka-fin__titulo {
+    margin: 0;
+    color: var(--primario);
+
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.blocka-fin__tiempo {
+    margin: 0 0 6px;
+    color: var(--textoWhite);
+
+    font-size: 16px;
+    font-variant-numeric: tabular-nums;
+}
+
+.blocka-fin__acciones {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+}
+
+.blocka-fin__menu {
+    min-width: 150px;
+    text-decoration: none;
+}
+
+/* HUD: nivel, temporizador, récord y botón Comenzar */
+
+.blocka-hud {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    text-align: center;
+}
+
+.blocka-hud__nivel {
+    color: var(--primario);
+
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.blocka-hud__tiempo {
+    color: var(--textoWhite);
+
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+}
+
+.blocka-hud__record {
+    margin-bottom: 6px;
+    color: var(--secundarioLuz2);
+
+    font-size: 14px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+}
+
+.blocka-hud__comenzar {
+    min-width: 150px;
+}
+
+@media (min-width: 768px) {
+    .blocka-mock {
+        flex-direction: row;
+        gap: clamp(32px, 6vw, 80px);
+        aspect-ratio: 1023.09 / 523.48;
+        padding: 32px 48px;
+    }
+
+    .blocka-tablero {
+        width: auto;
+        height: 100%;
+        max-height: 100%;
+    }
+
+    .blocka-lienzo {
+        flex: 1 1 auto;
+        min-height: 0;
+        width: auto;
+    }
+
+    .blocka-canvas {
+        width: auto;
+        height: auto;
+        max-width: 100%;
+        max-height: 100%;
+    }
+
+    .blocka-hud {
+        flex: 0 1 260px;
+    }
+}
+
+/* ============================================================
+   TUTORIAL "CÓMO SE JUEGA": ratón + flecha de rotación
+   ============================================================ */
+
+.blocka-controles {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 40px;
+}
+
+.control-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+}
+
+.control-visual {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+/* Mismo SVG del ratón del template; espejado resalta el botón derecho */
+.raton--espejo {
+    transform: scaleX(-1);
+}
+
+.flecha-rot {
+    display: block;
+    width: 46px;
+    height: 46px;
+}
+
+.flecha-rot__arco {
+    fill: none;
+    stroke: var(--primario);
+    stroke-width: 3;
+    stroke-linecap: round;
+}
+
+.flecha-rot__punta {
+    fill: var(--primario);
+}
+
+.flecha-rot--der {
+    transform: scaleX(-1);
+}
+
+.control-rotulo {
+    margin: 0;
+    color: var(--textoWhite);
+
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+}
+
+/* ============================================================
+   NIVELES Y FILTROS
+   ============================================================ */
+
+.blocka-niveles {
+    margin: 8px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.blocka-niveles li {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    color: var(--textoWhite);
+
+    font-size: 14px;
+    line-height: 1.55;
+}
+
+.blocka-niveles li:last-child {
+    margin-bottom: 0;
+}
+
+.blocka-niveles strong {
+    color: var(--primario);
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+/* ============================================================
+   GALERÍA DE IMÁGENES REPRESENTATIVAS
+   ============================================================ */
+
+.blocka-galeria {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.blocka-galeria img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+@media (min-width: 768px) {
+    .blocka-galeria {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}

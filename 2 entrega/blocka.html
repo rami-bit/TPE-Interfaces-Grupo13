@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/template.css">
+    <link rel="stylesheet" href="css/game.css">
+    <link rel="stylesheet" href="css/carrusel.css">
+    <link rel="stylesheet" href="css/blocka.css">
+    <title>Blocka | Code Play</title>
+</head>
+
+<body>
+    <header>
+        <div class="header-izq">
+            <!-- menu hamburguesa -->
+            <button aria-label="Abrir menú" class="btn-hamburguesa">
+                <span class="btn-hamburguesa__icono">
+                    <svg viewBox="0 0 40 32" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M39.2071 3.80957C39.2071 1.7056 37.5015 0 35.3975 0H4.01668C1.91272 0 0.207114 1.7056 0.207114 3.80957C0.207114 5.91354 1.91272 7.61914 4.01669 7.61914H35.3975C37.5015 7.61914 39.2071 5.91354 39.2071 3.80957ZM8.28128e-05 20.1572C-0.00986352 20.9576 0.87822 21.445 1.54793 21.0068L7.08114 17.3828C7.67471 16.9938 7.68543 16.1272 7.10165 15.7236L1.66024 11.9639C1.0016 11.5089 0.101827 11.9739 0.0918797 12.7744L8.28128e-05 20.1572ZM39.2071 16C39.2071 13.7909 37.4163 12 35.2071 12H13.2071C10.998 12 9.20711 13.7909 9.20711 16C9.20711 18.2091 10.998 20 13.2071 20H35.2071C37.4163 20 39.2071 18.2091 39.2071 16ZM39.2071 28.1904C39.2071 26.0865 37.5015 24.3809 35.3975 24.3809H4.01668C1.91272 24.3809 0.207114 26.0865 0.207114 28.1904C0.207114 30.2944 1.91272 32 4.01669 32H35.3975C37.5015 32 39.2071 30.2944 39.2071 28.1904Z" />
+                    </svg>
+                </span>
+            </button>
+            <!-- logo -->
+            <a href="home.html" class="logo">
+                <img src="img/logo.svg" alt="Icono de Code Play" class="logo-icono">
+                <img src="img/logoTexto.svg" alt="Texto de Code Play" class="logo-texto">
+            </a>
+            <!-- Buscador -->
+        </div>
+        <form class="buscador" action="#">
+
+            <input type="search" class="label" placeholder="Buscar juegos y categorias" aria-label="Buscar">
+            <svg class="icono-lupa" viewBox="0 0 14 14" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path
+                    d="M13.7433 12.5097L11.0337 9.7989C13.0612 7.08945 12.5083 3.24936 9.7989 1.22186C7.08945 -0.805644 3.24936 -0.25281 1.22186 2.45664C-0.805644 5.16609 -0.25281 9.00617 2.45664 11.0337C4.6331 12.6623 7.62241 12.6623 9.7989 11.0337L12.5097 13.7445C12.8504 14.0852 13.4027 14.0852 13.7433 13.7445C14.084 13.4038 14.084 12.8515 13.7433 12.5109L13.7433 12.5097ZM6.15036 10.5105C3.74233 10.5105 1.79025 8.55839 1.79025 6.15036C1.79025 3.74233 3.74233 1.79025 6.15036 1.79025C8.55839 1.79025 10.5105 3.74233 10.5105 6.15036C10.5079 8.5573 8.55733 10.5079 6.15036 10.5105Z" />
+            </svg>
+        </form>
+
+        <div class="header-der">
+            <!-- Botón Favoritos -->
+            <button aria-label="Favoritos" class="btn-favoritos">
+                <svg class="icono-corazon" viewBox="0 0 43 43" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path
+                        d="M21.4999 36.9083L18.902 34.5433C9.67492 26.1763 3.58325 20.64 3.58325 13.8854C3.58325 8.34917 7.91909 4.03125 13.4374 4.03125C16.5549 4.03125 19.547 5.4825 21.4999 7.75792C23.4528 5.4825 26.4449 4.03125 29.5624 4.03125C35.0808 4.03125 39.4166 8.34917 39.4166 13.8854C39.4166 20.64 33.3249 26.1763 24.0978 34.5433L21.4999 36.9083Z" />
+                </svg>
+            </button>
+
+            <!-- Botón PRO -->
+            <button class="btn-acento label">Obtener PRO</button>
+
+            <!-- Contenedor del Perfil -->
+            <div class="header-cuenta">
+                <!-- Botón Perfil -->
+                <button aria-label="Perfil" class="btn-perfil"></button>
+
+                <!-- Panel desplegable -->
+                <div class="cuenta-panel" id="cuenta-panel">
+                    <button type="button" class="btn-primario cuenta-perfil label">
+                        <span class="cuenta-perfil__icono"></span>
+                        Ver Perfil
+                    </button>
+                    <ul class="cuenta-menu">
+                        <li><a class="cuenta-menu__link body-small" href="#"><span
+                                    class="cuenta-menu__icono cuenta-menu__icono--corona"></span>Mejorar Plan Pro</a>
+                        </li>
+                        <li><a class="cuenta-menu__link body-small" href="#"><span
+                                    class="cuenta-menu__icono cuenta-menu__icono--config"></span>Configuracion de
+                                cuenta</a></li>
+                        <li><a class="cuenta-menu__link body-small" href="#"><span
+                                    class="cuenta-menu__icono cuenta-menu__icono--escudo"></span>Preferencias de
+                                privacidad</a></li>
+                        <li class="cuenta-menu__item-movil"><a class="cuenta-menu__link body-small" href="#"><span
+                                    class="cuenta-menu__icono cuenta-menu__icono--fav-perfil"></span>Favoritos</a></li>
+                        <li class="cuenta-menu__salir"><a class="cuenta-menu__link body-small" href="#"><span
+                                    class="cuenta-menu__icono cuenta-menu__icono--salir"></span>Cerrar Sesion</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MENU HAMBURGUESA -->
+    <div class="menu-overlay"></div>
+    <nav class="menu-nav" aria-label="Menú principal">
+        <form class="buscador-movil" action="#">
+            <svg class="icono-lupa" viewBox="0 0 14 14" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path
+                    d="M13.7433 12.5097L11.0337 9.7989C13.0612 7.08945 12.5083 3.24936 9.7989 1.22186C7.08945 -0.805644 3.24936 -0.25281 1.22186 2.45664C-0.805644 5.16609 -0.25281 9.00617 2.45664 11.0337C4.6331 12.6623 7.62241 12.6623 9.7989 11.0337L12.5097 13.7445C12.8504 14.0852 13.4027 14.0852 13.7433 13.7445C14.084 13.4038 14.084 12.8515 13.7433 12.5109L13.7433 12.5097ZM6.15036 10.5105C3.74233 10.5105 1.79025 8.55839 1.79025 6.15036C1.79025 3.74233 3.74233 1.79025 6.15036 1.79025C8.55839 1.79025 10.5105 3.74233 10.5105 6.15036C10.5079 8.5573 8.55733 10.5079 6.15036 10.5105Z" />
+            </svg>
+            <input type="search" class="body-small" placeholder="Buscar juegos y categorias" aria-label="Buscar">
+        </form>
+        <ul class="menu-nav__lista">
+            <li style="--i:1"><a class="menu-nav__link body-small" href="home.html"><img class="menu-nav__icono"
+                        src="assets/icons/home.svg" alt="">Home</a></li>
+            <li class="menu-nav__item--solo-movil" style="--i:2"><a class="menu-nav__link body-small" href="#"><img
+                        class="menu-nav__icono" src="assets/icons/favoritos-contorno.svg" alt="">Favoritos</a></li>
+            <li style="--i:3"><a class="menu-nav__link body-small" href="#"><img class="menu-nav__icono"
+                        src="assets/icons/recientes.svg" alt="">Recientes</a></li>
+            <li style="--i:4"><a class="menu-nav__link body-small" href="#"><img class="menu-nav__icono"
+                        src="assets/icons/juegos-gratis/predeterminado.svg" alt="">Juegos Gratis</a></li>
+            <li style="--i:5"><a class="menu-nav__link body-small" href="#"><img class="menu-nav__icono"
+                        src="assets/icons/juegos-gratis/juegos-pro.svg" alt="">Juegos Pro</a></li>
+        </ul>
+        <ul class="menu-nav__lista">
+            <li style="--i:6"><a class="menu-nav__link body-small" href="#"><img class="menu-nav__icono"
+                        src="assets/icons/accion.svg" alt="">Accion</a></li>
+            <li style="--i:7"><a class="menu-nav__link body-small" href="#"><img class="menu-nav__icono"
+                        src="assets/icons/deporte.svg" alt="">Deporte</a></li>
+            <li style="--i:8"><a class="menu-nav__link body-small" href="#"><img class="menu-nav__icono"
+                        src="assets/icons/puzzle.svg" alt="">Puzzle</a></li>
+            <li style="--i:9"><a class="menu-nav__link body-small" href="#"><img class="menu-nav__icono"
+                        src="assets/icons/rpg.svg" alt="">RPG</a></li>
+            <li style="--i:10"><a class="menu-nav__link body-small" href="#"><img class="menu-nav__icono"
+                        src="assets/icons/aventura.svg" alt="">Aventura</a>
+            </li>
+            <li style="--i:11"><a class="menu-nav__link body-small" href="#"><img class="menu-nav__icono"
+                        src="assets/icons/carrera.svg" alt="">Carrera</a>
+            </li>
+            <li style="--i:12"><a class="menu-nav__link body-small" href="#"><img class="menu-nav__icono"
+                        src="assets/icons/terror.svg" alt="">Terror</a></li>
+            <li style="--i:13"><a class="menu-nav__link body-small" href="#"><img class="menu-nav__icono"
+                        src="assets/icons/estrategia.svg" alt="">Estrategia</a>
+            </li>
+            <li style="--i:14"><a class="menu-nav__link body-small" href="#"><img class="menu-nav__icono"
+                        src="assets/icons/simulacion.svg" alt="">Simulacion</a>
+            </li>
+            <li style="--i:15"><a class="menu-nav__link body-small" href="#"><img class="menu-nav__icono"
+                        src="assets/icons/arcade.svg" alt="">Arcade</a></li>
+        </ul>
+    </nav>
+
+    <main class="juego-main">
+        <p class="migas"><a href="home.html">Juegos</a>>>Puzzle>>Blocka boca edition</p>
+        <article class="juego-card">
+            <!-- Lugar de ejecución: canvas con la blocka (nivel 1, filtro gris) -->
+            <div class="blocka-mock">
+                <div class="blocka-tablero">
+                    <div class="blocka-lienzo">
+                        <canvas id="blocka-canvas" class="blocka-canvas" width="420" height="315"
+                            aria-label="Tablero de Blocka"></canvas>
+                        <div id="blocka-fin" class="blocka-fin" hidden>
+                            <p class="blocka-fin__titulo">¡Imagen resuelta!</p>
+                            <p class="blocka-fin__tiempo">Tiempo: <strong id="blocka-tiempo-final">00:00</strong></p>
+                            <div class="blocka-fin__acciones">
+                                <button type="button" class="btn-primario" id="blocka-reiniciar">Jugar de nuevo</button>
+                                <a class="btn-primario blocka-fin__menu" href="home.html">Menú Ppal</a>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="blocka-ayuda">Clic izquierda: gira a la izquierda · Clic derecha: gira a la
+                        derecha</p>
+                </div>
+                <div class="blocka-hud">
+                    <span class="blocka-hud__nivel">Nivel 1</span>
+                    <span id="blocka-tiempo" class="blocka-hud__tiempo">00:00</span>
+                    <span id="blocka-record" class="blocka-hud__record">Récord: --:--</span>
+                    <button type="button" id="blocka-comenzar" class="btn-primario blocka-hud__comenzar">Comenzar</button>
+                </div>
+            </div>
+            <div class="juego-barra">
+                <div class="juego-barra__nombre">
+                    <img src="assets/logo.svg" alt="" class="juego-barra__icono">
+                    <span class="juego-barra__titulo">Blocka</span>
+                </div>
+                <div class="juego-barra__botones">
+                    <button type="button" class="btn-juego btn-juego--compartir" aria-label="Compartir">
+                        <span class="btn-juego__icono"></span>
+                    </button>
+                    <button type="button" class="btn-juego btn-juego--fav" aria-label="Favorito">
+                        <span class="btn-juego__icono"></span>
+                    </button>
+                    <button type="button" class="btn-juego btn-juego--full" aria-label="Pantalla completa">
+                        <span class="btn-juego__icono"></span>
+                    </button>
+                </div>
+            </div>
+        </article>
+
+        <div class="juego-columnas">
+            <section class="juego-info" aria-label="Información del juego">
+                <article class="info-card">
+                    <h2 class="info-card__titulo">Sobre el juego</h2>
+                    <p class="info-card__linea">Desarrollador : BocaGames</p>
+                    <p class="info-card__linea">Calificacion: 9.4</p>
+                    <p class="info-card__linea">Fecha de publicacion: 09/10/2026</p>
+                    <p class="info-card__linea">Ejecucion: blocka.html en el navegador</p>
+                    <p class="info-card__linea">Categoria/s</p>
+                    <span class="info-categoria" aria-hidden="true"></span>
+                </article>
+
+                <article class="info-card">
+                    <h2 class="info-card__titulo">Como Se Juega</h2>
+                    <p class="info-card__texto">La blocka es una imagen del Xeneize partida en cuatro. Cada parte
+                        arranca rotada y con un filtro que te tapa la joda: acomodalas y devolveles el color original.
+                        Cuando las cuatro encajan, el filtro se cae y aparece la foto en todo su esplendor.</p>
+                    <p class="info-card__texto">El reloj no perdona: apretás "Comenzar" y el cronómetro arranca. Al
+                        resolver la imagen se frena y ese tiempo queda como récord del nivel. Dale a "Siguiente nivel"
+                        y arranca otra foto al azar del banco.</p>
+                    <p class="info-card__texto">Para rotar cada sub-imagen, clickeala con un botón del mouse:</p>
+
+                    <div class="info-controles blocka-controles">
+                        <div class="control-item">
+                            <div class="control-visual">
+                                <svg class="raton raton--click-rosa" viewBox="0 0 38 59"
+                                    xmlns="http://www.w3.org/2000/svg" focusable="false">
+                                    <path class="raton__cuerpo" fill-rule="evenodd" clip-rule="evenodd"
+                                        d="M0 38.2217V25.6522H14.8783V26.9348C14.8783 28.3457 16.0326 29.5 17.4435 29.5H20.2652C21.6761 29.5 22.8304 28.3457 22.8304 26.9348V25.6522H37.9652V38.2217C37.9652 49.3804 30.6543 59 18.9826 59C7.31087 59 0 49.3804 0 38.2217ZM19.6239 12.1848H18.0848C17.4435 12.1848 16.8022 12.8261 16.8022 13.4674V26.2935C16.8022 26.9348 17.4435 27.5761 18.0848 27.5761H19.6239C20.3935 27.5761 20.9065 26.9348 20.9065 26.2935V13.4674C20.9065 12.8261 20.3935 12.1848 19.6239 12.1848ZM37.9652 23.087H22.8304V12.8261C22.8304 11.4152 21.6761 10.2609 20.2652 10.2609V0H20.3935C30.013 0.256522 37.9652 9.49131 37.9652 20.7783V23.087Z" />
+                                    <path class="raton__click" fill-rule="evenodd" clip-rule="evenodd"
+                                        d="M0 23.087V20.7783C0 9.49131 7.95217 0.256522 17.5717 0H17.7V10.2609H17.4435C16.0326 10.2609 14.8783 11.4152 14.8783 12.8261V23.087H0Z" />
+                                </svg>
+                                <svg class="flecha-rot" viewBox="0 0 46 46" xmlns="http://www.w3.org/2000/svg"
+                                    aria-hidden="true" focusable="false">
+                                    <path class="flecha-rot__arco"
+                                        d="M23 9 A14 14 0 1 0 37 23" />
+                                    <path class="flecha-rot__punta" d="M37 15.5 L42 24.5 L32 24.5 Z" />
+                                </svg>
+                            </div>
+                            <p class="control-rotulo">Clic izquierdo: gira a la izquierda</p>
+                        </div>
+
+                        <div class="control-item">
+                            <div class="control-visual">
+                                <svg class="raton raton--click-rosa raton--espejo" viewBox="0 0 38 59"
+                                    xmlns="http://www.w3.org/2000/svg" focusable="false">
+                                    <path class="raton__cuerpo" fill-rule="evenodd" clip-rule="evenodd"
+                                        d="M0 38.2217V25.6522H14.8783V26.9348C14.8783 28.3457 16.0326 29.5 17.4435 29.5H20.2652C21.6761 29.5 22.8304 28.3457 22.8304 26.9348V25.6522H37.9652V38.2217C37.9652 49.3804 30.6543 59 18.9826 59C7.31087 59 0 49.3804 0 38.2217ZM19.6239 12.1848H18.0848C17.4435 12.1848 16.8022 12.8261 16.8022 13.4674V26.2935C16.8022 26.9348 17.4435 27.5761 18.0848 27.5761H19.6239C20.3935 27.5761 20.9065 26.9348 20.9065 26.2935V13.4674C20.9065 12.8261 20.3935 12.1848 19.6239 12.1848ZM37.9652 23.087H22.8304V12.8261C22.8304 11.4152 21.6761 10.2609 20.2652 10.2609V0H20.3935C30.013 0.256522 37.9652 9.49131 37.9652 20.7783V23.087Z" />
+                                    <path class="raton__click" fill-rule="evenodd" clip-rule="evenodd"
+                                        d="M0 23.087V20.7783C0 9.49131 7.95217 0.256522 17.5717 0H17.7V10.2609H17.4435C16.0326 10.2609 14.8783 11.4152 14.8783 12.8261V23.087H0Z" />
+                                </svg>
+                                <svg class="flecha-rot flecha-rot--der" viewBox="0 0 46 46"
+                                    xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                                    <path class="flecha-rot__arco"
+                                        d="M23 9 A14 14 0 1 0 37 23" />
+                                    <path class="flecha-rot__punta" d="M37 15.5 L42 24.5 L32 24.5 Z" />
+                                </svg>
+                            </div>
+                            <p class="control-rotulo">Clic derecho: gira a la derecha</p>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="info-card">
+                    <h2 class="info-card__titulo">Niveles y Filtros</h2>
+                    <p class="info-card__texto">Son al menos tres niveles. La imagen se elige al azar de un banco de
+                        seis fotos y los filtros se aplican al cargar el nivel: por eso al principio no se ve un choto.
+                        Cuando terminás de armar la imagen, los filtros se caen y queda la foto original en RGB.</p>
+                    <ul class="blocka-niveles">
+                        <li><strong>Nivel 1</strong><span>La imagen completa con escala de grises.</span></li>
+                        <li><strong>Nivel 2</strong><span>La imagen completa con brillo +30%.</span></li>
+                        <li><strong>Nivel 3</strong><span>Cada sub-imagen con su propio filtro: grises, brillo o
+                                negativo.</span></li>
+                    </ul>
+                </article>
+
+                <article class="info-card">
+                    <h2 class="info-card__titulo">Imágenes Representativas</h2>
+                    <p class="info-card__texto">Banco de imágenes del juego: cada nivel elige una al azar. Armá todas
+                        y contá cuál te costó más.</p>
+                    <div class="blocka-galeria">
+                        <img src="assets/bancoImagenes/bombonera.jpg" alt="La Bombonera, estadio de Boca Juniors">
+                        <img src="assets/bancoImagenes/escudoBoca.png" alt="Escudo de Boca Juniors">
+                        <img src="assets/bancoImagenes/palermo.jpeg" alt="Martín Palermo, ídolo de Boca">
+                        <img src="assets/bancoImagenes/paredes.jpeg" alt="Leandro Paredes, jugador de Boca">
+                        <img src="assets/bancoImagenes/ennerGodLencia.jpeg"
+                            alt="Enner Valencia, goleador de Boca">
+                        <img src="assets/bancoImagenes/sancorSeguros.jpeg"
+                            alt="Sancor Seguros, patrocinador de Boca">
+                    </div>
+                </article>
+            </section>
+
+            <aside class="juegos-carrusel" aria-label="Juegos recomendados">
+                <article class="carrusel-card">
+                    <img class="carrusel-card__img"
+                        src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1174180/capsule_616x353.jpg"
+                        alt="Red Dead Redemption 2">
+                    <img class="carrusel-card__pro" src="assets/icons/iconoPro.svg" alt="PRO">
+                    <div class="carrusel-card__info">
+                        <h3 class="carrusel-card__titulo">Red Dead Redemption 2</h3>
+                        <img class="carrusel-card__icono" src="assets/icons/categorias-card/accion-card.svg"
+                            alt="Icono de Acción">
+                    </div>
+                </article>
+                <article class="carrusel-card">
+                    <img class="carrusel-card__img"
+                        src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3405690/7a4a2467300194840eb2116c2126c2d2422b4e12/capsule_616x353.jpg"
+                        alt="EA Sports FC 26">
+                    <div class="carrusel-card__info">
+                        <h3 class="carrusel-card__titulo">EA Sports FC 26</h3>
+                        <img class="carrusel-card__icono" src="assets/icons/categorias-card/deporte-card.svg"
+                            alt="Icono de Deportes">
+                    </div>
+                </article>
+                <article class="carrusel-card">
+                    <img class="carrusel-card__img"
+                        src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/814380/capsule_616x353.jpg"
+                        alt="Sekiro: Shadows Die Twice">
+                    <div class="carrusel-card__info">
+                        <h3 class="carrusel-card__titulo">Sekiro: Shadows Die Twice</h3>
+                        <img class="carrusel-card__icono" src="assets/icons/categorias-card/accion-card.svg"
+                            alt="Icono de Acción">
+                    </div>
+                </article>
+                <article class="carrusel-card">
+                    <img class="carrusel-card__img"
+                        src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1547000/capsule_616x353.jpg"
+                        alt="Grand Theft Auto: San Andreas">
+                    <div class="carrusel-card__info">
+                        <h3 class="carrusel-card__titulo">Grand Theft Auto: San Andreas</h3>
+                        <img class="carrusel-card__icono" src="assets/icons/categorias-card/accion-card.svg"
+                            alt="Icono de Acción">
+                    </div>
+                </article>
+                <article class="carrusel-card">
+                    <img class="carrusel-card__img"
+                        src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1809700/capsule_616x353.jpg"
+                        alt="Persona 3 Portable">
+                    <img class="carrusel-card__pro" src="assets/icons/iconoPro.svg" alt="PRO">
+                    <div class="carrusel-card__info">
+                        <h3 class="carrusel-card__titulo">Persona 3 Portable</h3>
+                        <img class="carrusel-card__icono" src="assets/icons/categorias-card/rpg-card.svg"
+                            alt="Icono de RPG">
+                    </div>
+                </article>
+                <article class="carrusel-card">
+                    <img class="carrusel-card__img"
+                        src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/292030/capsule_616x353.jpg"
+                        alt="The Witcher 3: Wild Hunt">
+                    <div class="carrusel-card__info">
+                        <h3 class="carrusel-card__titulo">The Witcher 3: Wild Hunt — Game of the Year Edition con todas
+                            las expansiones y contenido descargable incluido</h3>
+                        <img class="carrusel-card__icono" src="assets/icons/categorias-card/rpg-card.svg"
+                            alt="Icono de RPG">
+                    </div>
+                </article>
+            </aside>
+
+            <div class="carrusel-anuncio">
+                <img src="assets/banner.png"
+                    alt="Oferta de membresía PRO Primavera: activá tu membresía PRO ahora y disfrutá 40% de descuento con acceso ilimitado, contenidos exclusivos y soporte VIP">
+            </div>
+
+            <section class="comentarios" aria-label="Comentarios">
+                <div class="comentario-card comentario-card--nuevo">
+                    <div class="comentario__fila">
+                        <img class="comentario__avatar" src="assets/avatar/tio.jpeg" alt="">
+                        <textarea class="comentario__entrada" rows="4" placeholder="Escribe un comentario"
+                            aria-label="Escribe un comentario"></textarea>
+                    </div>
+                    <div class="comentario__acciones">
+                        <button type="button" class="comentario__cancelar">Cancelar</button>
+                        <button type="button" class="comentario__comentar">Comentar</button>
+                    </div>
+                </div>
+
+                <article class="comentario-card comentario">
+                    <div class="comentario__encabezado">
+                        <div class="comentario__autor">
+                            <img class="comentario__avatar" src="assets/avatar/Camus%20de%20Aqu%C3%A1rio.jpeg" alt="">
+                            <span class="comentario__nombre">nar</span>
+                        </div>
+                        <p class="comentario__megusta"><span>67 me gusta</span><img class="comentario__icono-like"
+                                src="assets/icons/like.svg" alt=""></p>
+                    </div>
+                    <p class="comentario__texto">El juego es una bosta. 0/10</p>
+                </article>
+
+                <article class="comentario-card comentario">
+                    <div class="comentario__encabezado">
+                        <div class="comentario__autor">
+                            <img class="comentario__avatar" src="assets/avatar/riquelme.jpeg" alt="">
+                            <span class="comentario__nombre">riquelme__@real100%</span>
+                        </div>
+                        <p class="comentario__megusta"><span>12 me gusta</span><img class="comentario__icono-like"
+                                src="assets/icons/like.svg" alt=""></p>
+                    </div>
+                    <p class="comentario__texto">Está bárbaro para jugar el domingo a la tarde. Si armás la blocka
+                        campeón del mundo, bien, y si no la armás, bueno... la gente de Boca sabe que nosotros
+                        competimos siempre</p>
+                </article>
+
+                <article class="comentario-card comentario">
+                    <div class="comentario__encabezado">
+                        <div class="comentario__autor">
+                            <img class="comentario__avatar" src="assets/avatar/Lucas%20Jason.jpeg" alt="">
+                            <span class="comentario__nombre">elPibe_janson</span>
+                        </div>
+                        <p class="comentario__megusta"><span>34 me gusta</span><img class="comentario__icono-like"
+                                src="assets/icons/like.svg" alt=""></p>
+                    </div>
+                    <p class="comentario__texto">el juego me cambio la vida...</p>
+                </article>
+
+                <article class="comentario-card comentario">
+                    <div class="comentario__encabezado">
+                        <div class="comentario__autor">
+                            <img class="comentario__avatar" src="assets/avatar/tito.jpeg" alt="">
+                            <span class="comentario__nombre">juanceto_01</span>
+                        </div>
+                        <p class="comentario__megusta"><span>34 me gusta</span><img class="comentario__icono-like"
+                                src="assets/icons/like.svg" alt=""></p>
+                    </div>
+                    <p class="comentario__texto">il conto porfavore</p>
+                </article>
+            </section>
+        </div>
+    </main>
+
+    <footer class="fat-footer">
+        <div class="fat-footer__contenido">
+            <div class="fat-footer__col">
+                <h4 class="fat-footer__titulo h3">Juegos</h4>
+                <p class="fat-footer__subtitulo body-small">Explora el sitio</p>
+                <ul class="fat-footer__lista body-small">
+                    <li><a href="home.html">home</a></li>
+                    <li><a href="#">Recientes</a></li>
+                    <li><a href="#">Juegos</a></li>
+                </ul>
+                <h4 class="fat-footer__titulo h3">Categorías</h4>
+                <ul class="fat-footer__lista body-small">
+                    <li><a href="#">ACCION</a></li>
+                    <li><a href="#">Deporte</a></li>
+                    <li><a href="#">Puzzle</a></li>
+                    <li><a href="#">RPG</a></li>
+                </ul>
+            </div>
+
+            <div class="fat-footer__col">
+                <h4 class="fat-footer__titulo h3">Servicios y Ventajas</h4>
+                <a class="fat-footer__pro" href="#"><img src="assets/icons/iconoPro.svg" alt="PRO"></a>
+                <p class="fat-footer__subtitulo body-small">Ventajas de la suscripcion Pro:</p>
+                <ul class="fat-footer__lista body-small">
+                    <li><a href="#">Accesa a todos los titulos Pro</a></li>
+                    <li><a href="#">Sin Anuncios</a></li>
+                    <li><a href="#">Regalos Mensuales</a></li>
+                </ul>
+            </div>
+
+            <div class="fat-footer__col">
+                <h4 class="fat-footer__titulo h3">Ayuda</h4>
+                <ul class="fat-footer__lista body-small">
+                    <li><a href="#">Sobre Code Play</a></li>
+                    <li><a href="#">Contactanos</a></li>
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Politica de privacidad</a></li>
+                    <li><a href="#">Terminos de servicio</a></li>
+                    <li><a href="#">Blog de desarrollo</a></li>
+                </ul>
+            </div>
+
+            <div class="fat-footer__col">
+                <h4 class="fat-footer__titulo h3">Pagos y Comunidad</h4>
+                <p class="fat-footer__subtitulo body-small">Metodos de pago aceptados</p>
+                <div class="fat-footer__pagos">
+                    <img src="assets/icons/mastercard.svg" alt="Mastercard">
+                    <img src="assets/icons/visa.svg" alt="Visa">
+                </div>
+                <h4 class="fat-footer__titulo h3">Seguinos</h4>
+                <div class="fat-footer__redes">
+                    <a href="#" aria-label="Instagram">
+                        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#050E1F" stroke-width="2"
+                            aria-hidden="true">
+                            <rect x="3" y="3" width="18" height="18" rx="5.5"></rect>
+                            <circle cx="12" cy="12" r="4.2"></circle>
+                            <circle cx="17.3" cy="6.7" r="1.2" fill="#050E1F" stroke="none"></circle>
+                        </svg>
+                    </a>
+                    <a href="#" aria-label="TikTok">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="#050E1F" aria-hidden="true">
+                            <path
+                                d="M15.1 2h3c.3 1.9 1.5 3.2 3.4 3.5v3c-1.4 0-2.7-.4-3.7-1.2v6.4a5.7 5.7 0 1 1-5.7-5.7c.3 0 .6 0 .9.1v3.1a2.6 2.6 0 1 0 1.9 2.5V2z">
+                            </path>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <div class="fat-footer__col">
+                <h4 class="fat-footer__titulo h3">Novedades y Soporte</h4>
+                <ul class="fat-footer__lista body-small">
+                    <li><a href="#">Ultimas Actualizaciones</a></li>
+                    <li><a href="#">Nuevos Lanzamientos</a></li>
+                </ul>
+                <h4 class="fat-footer__titulo h3">Soporte</h4>
+                <ul class="fat-footer__lista body-small">
+                    <li><a href="#">Soporte Tecnico</a></li>
+                    <li><a href="#">Reportar Problema</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="fat-footer__copy label">2026-2027 Code Play, Inc | All Rights Reserved</p>
+    </footer>
+
+
+    <script src="js/header.js"></script>
+    <script src="js/juego.js"></script>
+    <script src="js/blocka.js"></script>
+
+</body>
+
+</html>
