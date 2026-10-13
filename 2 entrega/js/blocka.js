@@ -29,21 +29,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let intervalo = null;
     let idSetup = 0;
 
-    /* ---------- Filtros (misma técnica de la cátedra: pixel a pixel) ---------- */
+    /* ---------- Filtros desacoplados en js/filtros.js ---------- */
 
-    function aplicarFiltroGrises(cv) {
-        const c = cv.getContext('2d');
-        const imageData = c.getImageData(0, 0, cv.width, cv.height);
-        const data = imageData.data;
-        for (let i = 0; i < data.length; i += 4) {
-            const gris = data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114;
-            data[i] = gris;
-            data[i + 1] = gris;
-            data[i + 2] = gris;
-            data[i + 3] = 255;
-        }
-        c.putImageData(imageData, 0, 0);
-    }
 
     /* ---------- Banco de imágenes ---------- */
 
@@ -127,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
             cv.width = z.w;
             cv.height = z.h;
             cv.getContext('2d').drawImage(fuente, z.x, z.y, z.w, z.h, 0, 0, z.w, z.h);
-            aplicarFiltroGrises(cv);
+            Filtros.grises(cv);
             return {
                 canvas: cv,
                 x: z.x,
