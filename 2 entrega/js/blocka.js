@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'assets/bancoImagenes/sancorSeguros.jpeg'
     ];
     const LADO_MAX = 420;
-    const CLAVE_RECORD = 'blocka-record-nivel-1';
+    const TOTAL_NIVELES = 3;
     const ANGULOS_BARAJA = [90, 180, 270];
 
     const canvas = document.getElementById('blocka-canvas');
@@ -16,10 +16,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnComenzar = document.getElementById('blocka-comenzar');
     const elTiempo = document.getElementById('blocka-tiempo');
     const elRecord = document.getElementById('blocka-record');
+    const elNivel = document.getElementById('blocka-nivel');
     const elFin = document.getElementById('blocka-fin');
+    const elFinTitulo = document.getElementById('blocka-fin-titulo');
     const elTiempoFinal = document.getElementById('blocka-tiempo-final');
     const btnReiniciar = document.getElementById('blocka-reiniciar');
 
+    let nivelActual = 1;
+    let ultimaImagenSrc = null;
     let fuente = null;
     let piezas = [];
     let enJuego = false;
@@ -55,15 +59,39 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function cargarImagenSegura() {
-        const orden = elegirImagenAlAzar();
+        let orden = elegirImagenAlAzar();
+        if (ultimaImagenSrc && orden.length > 1) {
+            orden = orden.filter((src) => src !== ultimaImagenSrc).concat([ultimaImagenSrc]);
+        }
         for (const src of orden) {
             try {
-                return await cargarImagen(src);
+                const img = await cargarImagen(src);
+                ultimaImagenSrc = src;
+                return img;
             } catch (e) {
                 console.warn(e.message);
             }
         }
         throw new Error('Ninguna imagen del banco pudo cargarse');
+    }
+
+    /* ---------- Selector de filtros según nivel ---------- */
+
+    function aplicarFiltroSegunNivel(cv, indicePieza, nivel) {
+        if (nivel === 1) {
+            Filtros.grises(cv);
+        } else if (nivel === 2) {
+            Filtros.brillo(cv);
+        } else if (nivel === 3) {
+            if (typeof Filtros.negativo === 'function') {
+                if (indicePieza % 3 === 0) Filtros.grises(cv);
+                else if (indicePieza % 3 === 1) Filtros.brillo(cv);
+                else Filtros.negativo(cv);
+            } else {
+                if (indicePieza % 2 === 0) Filtros.grises(cv);
+                else Filtros.brillo(cv);
+            }
+        }
     }
 
     /* ---------- Setup del nivel: split en 4 cuadrantes + filtro + barajar ---------- */
@@ -75,6 +103,9 @@ document.addEventListener('DOMContentLoaded', () => {
         detenerReloj();
         transcurridoMs = 0;
         mostrarTiempo(0);
+        actualizarRetro();
+        if (elFinTitulo) elFinTitulo.textContent = '¡Imagen resuelta!';
+        btnReiniciar.textContent = 'Jugar de nuevo';
         elFin.hidden = true;
         btnComenzar.hidden = false;
         canvas.classList.remove('blocka-canvas--activo');
@@ -109,12 +140,12 @@ document.addEventListener('DOMContentLoaded', () => {
             { x: anchoIzq, y: altoArr, w: anchoDer, h: altoAba }
         ];
 
-        piezas = zonas.map((z) => {
+        piezas = zonas.map((z, idx) => {
             const cv = document.createElement('canvas');
             cv.width = z.w;
             cv.height = z.h;
             cv.getContext('2d').drawImage(fuente, z.x, z.y, z.w, z.h, 0, 0, z.w, z.h);
-            Filtros.grises(cv);
+            aplicarFiltroSegunNivel(cv, idx, nivelActual);
             return {
                 canvas: cv,
                 x: z.x,
@@ -190,27 +221,40 @@ document.addEventListener('DOMContentLoaded', () => {
         detenerReloj();
         render();
         const seg = Math.floor(transcurridoMs / 1000);
-        guardarRecord(seg);
+        guardarRecord(seg, nivelActual);
         elTiempoFinal.textContent = formatear(seg);
+
+        if (nivelActual < TOTAL_NIVELES) {
+            if (elFinTitulo) elFinTitulo.textContent = '¡Nivel ' + nivelActual + ' superado!';
+            btnReiniciar.textContent = 'Siguiente nivel';
+        } else {
+            if (elFinTitulo) elFinTitulo.textContent = '¡Juego completado!';
+            btnReiniciar.textContent = 'Volver a jugar';
+        }
+
         elFin.hidden = false;
         btnComenzar.hidden = true;
         canvas.classList.remove('blocka-canvas--activo');
     }
 
-    function leerRecord() {
+    function claveRecord(nivel) {
+        return 'blocka-record-nivel-' + nivel;
+    }
+
+    function leerRecord(nivel = nivelActual) {
         try {
-            const v = localStorage.getItem(CLAVE_RECORD);
+            const v = localStorage.getItem(claveRecord(nivel));
             return v === null ? null : parseInt(v, 10);
         } catch (e) {
             return null;
         }
     }
 
-    function guardarRecord(seg) {
-        const previo = leerRecord();
+    function guardarRecord(seg, nivel = nivelActual) {
+        const previo = leerRecord(nivel);
         if (previo === null || seg < previo) {
             try {
-                localStorage.setItem(CLAVE_RECORD, String(seg));
+                localStorage.setItem(claveRecord(nivel), String(seg));
             } catch (e) {
                 /* sin localStorage sigue jugando igual */
             }
@@ -219,7 +263,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function actualizarRetro() {
-        const r = leerRecord();
+        if (elNivel) elNivel.textContent = 'Nivel ' + nivelActual;
+        const r = leerRecord(nivelActual);
         elRecord.textContent = 'Récord: ' + (r === null ? '--:--' : formatear(r));
     }
 
@@ -262,6 +307,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     btnReiniciar.addEventListener('click', () => {
+        if (resuelto) {
+            if (nivelActual < TOTAL_NIVELES) {
+                nivelActual++;
+            } else {
+                nivelActual = 1;
+            }
+        }
         setupNivel();
     });
 
@@ -281,7 +333,22 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             ganar();
         },
+        avanzarNivel: () => {
+            if (nivelActual < TOTAL_NIVELES) {
+                nivelActual++;
+            } else {
+                nivelActual = 1;
+            }
+            setupNivel();
+        },
+        irANivel: (n) => {
+            if (n >= 1 && n <= TOTAL_NIVELES) {
+                nivelActual = n;
+                setupNivel();
+            }
+        },
         estado: () => ({
+            nivelActual,
             enJuego,
             resuelto,
             angulos: piezas.map((p) => p.angulo),
