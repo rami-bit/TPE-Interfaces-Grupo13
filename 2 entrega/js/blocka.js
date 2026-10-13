@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'assets/bancoImagenes/sancorSeguros.jpeg'
     ];
     const LADO_MAX = 420;
-    const TOTAL_NIVELES = 3;
+    const TOTAL_NIVELES = 4;
     const ANGULOS_BARAJA = [90, 180, 270];
 
     const canvas = document.getElementById('blocka-canvas');
@@ -78,12 +78,34 @@ document.addEventListener('DOMContentLoaded', () => {
     /* ---------- Selector de filtros según nivel ---------- */
 
     function aplicarFiltroSegunNivel(cv, indicePieza, nivel) {
-        if (nivel === 1) {
-            Filtros.grises(cv);
-        } else if (nivel === 2) {
-            Filtros.brillo(cv);
-        } else if (nivel === 3) {
-            Filtros.negativo(cv);
+        switch (nivel) {
+            case 1:
+                Filtros.grises(cv);
+                break;
+            case 2:
+                Filtros.brillo(cv);
+                break;
+            case 3:
+                Filtros.negativo(cv);
+                break;
+            case 4:
+                switch (indicePieza) {
+                    case 0:
+                        Filtros.grises(cv);
+                        break;
+                    case 1:
+                        Filtros.brillo(cv);
+                        break;
+                    case 2:
+                        Filtros.negativo(cv);
+                        break;
+                    default:
+                        // Pieza 3: se conserva en color original RGB (sin filtro)
+                        break;
+                }
+                break;
+            default:
+                break;
         }
     }
 
