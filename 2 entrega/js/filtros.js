@@ -34,6 +34,22 @@ const Filtros = {
             data[i + 2] = Math.max(0, Math.min(255, data[i + 2] + incremento));
         }
         c.putImageData(imageData, 0, 0);
+    },
+
+    /**
+     * Nivel 3: Filtro negativo (inversión de colores: 255 - canal)
+     */
+    negativo(cv) {
+        const c = cv.getContext('2d');
+        const imageData = c.getImageData(0, 0, cv.width, cv.height);
+        const data = imageData.data;
+        for (let i = 0; i < data.length; i += 4) {
+            data[i] = 255 - data[i];
+            data[i + 1] = 255 - data[i + 1];
+            data[i + 2] = 255 - data[i + 2];
+            data[i + 3] = 255;
+        }
+        c.putImageData(imageData, 0, 0);
     }
 };
 

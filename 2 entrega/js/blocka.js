@@ -83,14 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (nivel === 2) {
             Filtros.brillo(cv);
         } else if (nivel === 3) {
-            if (typeof Filtros.negativo === 'function') {
-                if (indicePieza % 3 === 0) Filtros.grises(cv);
-                else if (indicePieza % 3 === 1) Filtros.brillo(cv);
-                else Filtros.negativo(cv);
-            } else {
-                if (indicePieza % 2 === 0) Filtros.grises(cv);
-                else Filtros.brillo(cv);
-            }
+            Filtros.negativo(cv);
         }
     }
 
