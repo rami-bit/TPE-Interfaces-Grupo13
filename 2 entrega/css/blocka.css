@@ -143,6 +143,16 @@
     color: var(--primario);
 }
 
+/* Derrota por tiempo agotado: mismo overlay, tono de alerta */
+.blocka-fin--perdido .blocka-fin__titulo {
+    color: var(--alerta);
+}
+
+.blocka-fin__detalle {
+    margin: 0 0 4px;
+    color: var(--secundarioLuz2);
+}
+
 .blocka-fin__tiempo {
     margin: 0 0 6px;
     color: var(--textoWhite);
@@ -233,12 +243,120 @@
     font-weight: 700;
     line-height: 1;
     font-variant-numeric: tabular-nums;
+    transition: color 0.3s ease;
+}
+
+/* Semáforo del temporizador en niveles contrarreloj (cuenta regresiva):
+   urgencia gradual por umbrales — ámbar, rojo, rojo pulsante. */
+.blocka-hud__tiempo--advertencia {
+    color: var(--advertencia);
+}
+
+.blocka-hud__tiempo--alerta {
+    color: var(--alerta);
+}
+
+.blocka-hud__tiempo--pulso {
+    animation: blocka-tiempo-pulso 1s ease-in-out infinite;
+}
+
+@keyframes blocka-tiempo-pulso {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.55;
+        transform: scale(1.06);
+    }
+}
+
+/* Badge "Límite" del HUD: persiste durante todo el nivel contrarreloj */
+.blocka-hud__limite {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    border-radius: 14px;
+    border: 1px solid rgba(245, 165, 36, 0.45);
+    background-color: rgba(245, 165, 36, 0.12);
+    color: var(--advertencia);
+    font-variant-numeric: tabular-nums;
+}
+
+.blocka-hud__limite[hidden] {
+    display: none;
+}
+
+/* Aviso previo sobre el canvas antes de apretar "Comenzar" */
+.blocka-aviso-limite {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    right: 12px;
+    z-index: 4;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--advertencia);
+    background-color: rgba(5, 14, 31, 0.92);
+    color: var(--textoWhite);
+    text-align: center;
+    pointer-events: none;
+}
+
+.blocka-aviso-limite[hidden] {
+    display: none;
+}
+
+.blocka-aviso-limite strong {
+    color: var(--advertencia);
+    font-variant-numeric: tabular-nums;
 }
 
 .blocka-hud__record {
     margin-bottom: 6px;
     color: var(--secundarioLuz2);
     font-variant-numeric: tabular-nums;
+}
+
+/* Ayudita: bombilla que fija una pieza (+5s) */
+
+.blocka-ayudita {
+    padding: 10px 12px;
+    margin-bottom: 6px;
+}
+
+.blocka-ayudita__icono {
+    display: block;
+    width: 22px;
+    height: 22px;
+    fill: currentColor;
+}
+
+.blocka-ayudita:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.blocka-ayudita--flash {
+    animation: blocka-ayudita-flash 0.6s ease;
+}
+
+@keyframes blocka-ayudita-flash {
+    0% {
+        box-shadow: 0 0 0 0 var(--primario);
+    }
+
+    45% {
+        box-shadow: 0 0 16px 5px var(--primario), 0 0 28px var(--primarioSombra1);
+        transform: scale(1.1);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 transparent;
+        transform: scale(1);
+    }
 }
 
 @media (min-width: 768px) {
@@ -354,6 +472,14 @@
     color: var(--primario);
     font-weight: 700;
     white-space: nowrap;
+}
+
+.blocka-niveles__nota {
+    color: var(--secundarioLuz2);
+}
+
+.blocka-niveles__nota span {
+    display: block;
 }
 
 /* ============================================================

@@ -15,6 +15,19 @@ input {
     font-family: inherit;
 }
 
+/* Utilidad: solo para lectores de pantalla */
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+}
+
 /*COLORES Y VARIABLES DE DISEÑO*/
 :root {
     --primario: #FFB8F5;
@@ -29,6 +42,9 @@ input {
     --secundarioLuz1: #0B1936;
     --secundarioLuz2: #6A707D;
     --acentoSombra1: #6831B6;
+    /* Semáforo de urgencia (temporizadores con tiempo máximo) */
+    --advertencia: #F5A524;
+    --alerta: #E5484D;
     /* FUENTES (Tamaños Base Mobile) */
     --fs-h1: 24px;
     --lh-h1: 32px;

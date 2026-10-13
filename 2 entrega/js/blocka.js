@@ -10,6 +10,28 @@ document.addEventListener('DOMContentLoaded', () => {
     const LADO_MAX = 420;
     const TOTAL_NIVELES = 4;
     const ANGULOS_BARAJA = [90, 180, 270];
+    const PENALIZACION_AYUDA_MS = 5000;
+    const DURACION_PULSO_MS = 1500;
+    /* Niveles contrarreloj: límite base por nivel y bonificación por cantidad de piezas */
+    const CONFIG_NIVELES = {
+        1: { limiteMs: null },
+        2: { limiteMs: null },
+        3: { limiteMs: 60000 },
+        4: { limiteMs: 45000 }
+    };
+    const FACTOR_PIEZAS = { 4: 1, 6: 1.3, 8: 1.6 };
+    /* Semáforo de urgencia: umbrales sobre el tiempo RESTANTE */
+    const UMBRAL_ADVERTENCIA_MS = 30000;
+    const UMBRAL_ALERTA_MS = 10000;
+    const UMBRAL_PULSO_MS = 5000;
+    const COLOR_SELECCION = (() => {
+        try {
+            const v = getComputedStyle(document.documentElement).getPropertyValue('--primario').trim();
+            return v || '#FFB8F5';
+        } catch (e) {
+            return '#FFB8F5';
+        }
+    })();
     const CONFIG_GRILLAS = {
         4: { cols: 2, filas: 2 },
         6: { cols: 3, filas: 2 },
@@ -29,6 +51,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnsDificultad = Array.from(document.querySelectorAll('.btn-dificultad'));
     const elTiempoFinal = document.getElementById('blocka-tiempo-final');
     const btnReiniciar = document.getElementById('blocka-reiniciar');
+    const btnAyudita = document.getElementById('blocka-ayudita');
+    const elLimite = document.getElementById('blocka-limite');
+    const elLimiteTiempo = document.getElementById('blocka-limite-tiempo');
+    const elAvisoLimite = document.getElementById('blocka-aviso-limite');
+    const elAvisoTiempo = document.getElementById('blocka-aviso-tiempo');
+    const elFinDetalle = document.getElementById('blocka-fin-detalle');
+    const elAvisoA11y = document.getElementById('blocka-aviso-a11y');
 
     let nivelActual = 1;
     let cantPiezas = 4;
@@ -37,6 +66,12 @@ document.addEventListener('DOMContentLoaded', () => {
     let piezas = [];
     let enJuego = false;
     let resuelto = false;
+    let perdido = false;
+    let ayudaUsada = false;
+    let pulsoResaltado = null;
+    let limiteMs = null;
+    let estadoSemaforo = '';
+    let ultimoUmbralAvisado = null;
     let inicioMs = 0;
     let transcurridoMs = 0;
     let intervalo = null;
@@ -189,12 +224,26 @@ document.addEventListener('DOMContentLoaded', () => {
         const id = ++idSetup;
         enJuego = false;
         resuelto = false;
+        perdido = false;
+        ayudaUsada = false;
+        pulsoResaltado = null;
+        limiteMs = limiteEfectivoMs();
+        estadoSemaforo = '';
+        ultimoUmbralAvisado = null;
         detenerReloj();
         transcurridoMs = 0;
-        mostrarTiempo(0);
+        mostrarTiempo(limiteMs !== null ? limiteMs : 0);
+        actualizarAriaTiempo();
+        actualizarInfoLimite();
         actualizarRetro();
         actualizarBotonesDificultad();
+        if (btnAyudita) {
+            btnAyudita.disabled = true;
+            btnAyudita.classList.remove('blocka-ayudita--flash');
+        }
         if (elFinTitulo) elFinTitulo.textContent = '¡Imagen resuelta!';
+        if (elFin) elFin.classList.remove('blocka-fin--perdido');
+        if (elFinDetalle) elFinDetalle.hidden = true;
         btnReiniciar.textContent = 'Jugar de nuevo';
         elFin.hidden = true;
         btnComenzar.hidden = true;
@@ -260,7 +309,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     h: ladoPieza,
                     cx: x + ladoPieza / 2,
                     cy: y + ladoPieza / 2,
-                    angulo: ANGULOS_BARAJA[Math.floor(Math.random() * ANGULOS_BARAJA.length)]
+                    angulo: ANGULOS_BARAJA[Math.floor(Math.random() * ANGULOS_BARAJA.length)],
+                    fija: false
                 });
             }
         }
@@ -283,6 +333,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.drawImage(p.canvas, -p.w / 2, -p.h / 2);
             ctx.restore();
         }
+        dibujarResaltado();
     }
 
     /* ---------- Rotación ---------- */
@@ -292,9 +343,98 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function rotar(p, delta) {
+        if (p.fija) return;
         p.angulo = ((p.angulo + delta) % 360 + 360) % 360;
         render();
         verificarVictoria();
+    }
+
+    /* ---------- Resaltado de la pieza ayudada (dibujado en canvas) ---------- */
+
+    function dibujarResaltado() {
+        for (const p of piezas) {
+            if (!p.fija) continue;
+            let onda = 0;
+            if (pulsoResaltado && pulsoResaltado.pieza === p) {
+                const t = Math.min(1, (performance.now() - pulsoResaltado.inicio) / DURACION_PULSO_MS);
+                if (t < 1) {
+                    onda = (0.5 + 0.5 * Math.cos(t * 4 * Math.PI)) * (1 - t);
+                }
+            }
+            ctx.save();
+            ctx.strokeStyle = COLOR_SELECCION;
+            ctx.lineWidth = 4 + 3 * onda;
+            ctx.shadowColor = COLOR_SELECCION;
+            ctx.shadowBlur = 8 + 20 * onda;
+            ctx.beginPath();
+            if (typeof ctx.roundRect === 'function') {
+                ctx.roundRect(p.x, p.y, p.w, p.h, 10);
+            } else {
+                ctx.rect(p.x, p.y, p.w, p.h);
+            }
+            ctx.stroke();
+            ctx.restore();
+        }
+    }
+
+    function animarPulsoResaltado(pieza) {
+        pulsoResaltado = { pieza, inicio: performance.now() };
+        function paso() {
+            if (!pulsoResaltado || pulsoResaltado.pieza !== pieza) return;
+            if (piezas.indexOf(pieza) === -1 || resuelto) {
+                pulsoResaltado = null;
+                render();
+                return;
+            }
+            if (performance.now() - pulsoResaltado.inicio >= DURACION_PULSO_MS) {
+                pulsoResaltado = null;
+                render();
+                return;
+            }
+            render();
+            requestAnimationFrame(paso);
+        }
+        render();
+        requestAnimationFrame(paso);
+    }
+
+    /* ---------- Ayudita: fija una pieza al azar y suma 5s ---------- */
+
+    function usarAyudita() {
+        if (!enJuego || resuelto || ayudaUsada || !btnAyudita) return;
+        const candidatas = piezas.filter((p) => p.angulo % 360 !== 0);
+        if (!candidatas.length) return;
+
+        const p = candidatas[Math.floor(Math.random() * candidatas.length)];
+        p.angulo = 0;
+        p.fija = true;
+
+        ayudaUsada = true;
+        btnAyudita.disabled = true;
+
+        if (limiteMs !== null) {
+            /* Cuenta regresiva: mover el origen hacia adelante RESTA lo transcurrido
+               → el jugador gana 5 s de margen (la ayuda premia en contrarreloj). */
+            inicioMs += PENALIZACION_AYUDA_MS;
+        } else {
+            /* Cuenta progresiva: retroceder el origen suma 5 s al tiempo final (penalización). */
+            inicioMs -= PENALIZACION_AYUDA_MS;
+        }
+        tick();
+
+        animarPulsoResaltado(p);
+        verificarVictoria();
+
+        btnAyudita.classList.remove('blocka-ayudita--flash');
+        void btnAyudita.offsetWidth;
+        btnAyudita.classList.add('blocka-ayudita--flash');
+        btnAyudita.addEventListener('animationend', () => {
+            btnAyudita.classList.remove('blocka-ayudita--flash');
+        }, { once: true });
+    }
+
+    if (btnAyudita) {
+        btnAyudita.addEventListener('click', usarAyudita);
     }
 
     canvas.addEventListener('mousedown', (event) => {
@@ -326,12 +466,16 @@ document.addEventListener('DOMContentLoaded', () => {
         resuelto = true;
         enJuego = false;
         detenerReloj();
+        pulsoResaltado = null;
         render();
         actualizarBotonesDificultad();
+        if (btnAyudita) btnAyudita.disabled = true;
         const seg = Math.floor(transcurridoMs / 1000);
         guardarRecord(seg, nivelActual, cantPiezas);
         elTiempoFinal.textContent = formatear(seg);
 
+        if (elFin) elFin.classList.remove('blocka-fin--perdido');
+        if (elFinDetalle) elFinDetalle.hidden = true;
         if (nivelActual < TOTAL_NIVELES) {
             if (elFinTitulo) elFinTitulo.textContent = '¡Nivel ' + nivelActual + ' superado!';
             btnReiniciar.textContent = 'Siguiente nivel';
@@ -340,6 +484,33 @@ document.addEventListener('DOMContentLoaded', () => {
             btnReiniciar.textContent = 'Volver a jugar';
         }
 
+        elFin.hidden = false;
+        btnComenzar.hidden = true;
+        canvas.classList.remove('blocka-canvas--activo');
+    }
+
+    function perder() {
+        if (perdido || resuelto) return;
+        perdido = true;
+        enJuego = false;
+        detenerReloj();
+        pulsoResaltado = null;
+        render();
+        actualizarBotonesDificultad();
+        if (btnAyudita) btnAyudita.disabled = true;
+        if (elAvisoA11y) elAvisoA11y.textContent = 'Se acabó el tiempo. Perdiste el nivel.';
+
+        const segLimite = limiteMs !== null
+            ? Math.round(limiteMs / 1000)
+            : Math.floor(transcurridoMs / 1000);
+        if (elFinTitulo) elFinTitulo.textContent = '¡Se acabó el tiempo!';
+        if (elFinDetalle) {
+            elFinDetalle.textContent = 'Perdiste el nivel: no alcanzaste a resolver la imagen a tiempo.';
+            elFinDetalle.hidden = false;
+        }
+        elTiempoFinal.textContent = formatear(segLimite);
+        btnReiniciar.textContent = 'Reintentar';
+        if (elFin) elFin.classList.add('blocka-fin--perdido');
         elFin.hidden = false;
         btnComenzar.hidden = true;
         canvas.classList.remove('blocka-canvas--activo');
@@ -387,13 +558,92 @@ document.addEventListener('DOMContentLoaded', () => {
         return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
     }
 
+    /* ---------- Niveles contrarreloj: límite, semáforo y avisos ---------- */
+
+    function limiteEfectivoMs() {
+        const cfg = CONFIG_NIVELES[nivelActual];
+        if (!cfg || cfg.limiteMs == null) return null;
+        return Math.round(cfg.limiteMs * (FACTOR_PIEZAS[cantPiezas] || 1));
+    }
+
+    function actualizarInfoLimite() {
+        const tieneLimite = limiteMs !== null;
+        if (tieneLimite) {
+            const txt = formatear(Math.round(limiteMs / 1000));
+            if (elLimite && elLimiteTiempo) {
+                elLimiteTiempo.textContent = txt;
+                elLimite.hidden = false;
+            }
+            if (elAvisoLimite && elAvisoTiempo) {
+                elAvisoTiempo.textContent = txt;
+                elAvisoLimite.hidden = false;
+            }
+        } else {
+            if (elLimite) elLimite.hidden = true;
+            if (elAvisoLimite) elAvisoLimite.hidden = true;
+            /* Sin límite no puede quedar el semáforo "colgado" del nivel anterior */
+            if (elTiempo) {
+                elTiempo.classList.remove('blocka-hud__tiempo--advertencia',
+                    'blocka-hud__tiempo--alerta', 'blocka-hud__tiempo--pulso');
+            }
+        }
+    }
+
+    function actualizarAriaTiempo() {
+        if (!elTiempo) return;
+        if (limiteMs !== null) {
+            const restante = Math.max(0, limiteMs - transcurridoMs);
+            elTiempo.setAttribute('aria-label', 'Tiempo restante ' + formatear(Math.floor(restante / 1000)));
+        } else {
+            elTiempo.setAttribute('aria-label', 'Tiempo transcurrido ' + formatear(Math.floor(transcurridoMs / 1000)));
+        }
+    }
+
+    function pintarSemaforo(restante) {
+        if (!elTiempo) return;
+        let estado = '';
+        if (restante <= UMBRAL_PULSO_MS) estado = 'pulso';
+        else if (restante <= UMBRAL_ALERTA_MS) estado = 'alerta';
+        else if (restante <= UMBRAL_ADVERTENCIA_MS) estado = 'advertencia';
+        if (estado === estadoSemaforo) return;
+        estadoSemaforo = estado;
+        elTiempo.classList.toggle('blocka-hud__tiempo--advertencia', estado === 'advertencia');
+        elTiempo.classList.toggle('blocka-hud__tiempo--alerta', estado === 'alerta' || estado === 'pulso');
+        elTiempo.classList.toggle('blocka-hud__tiempo--pulso', estado === 'pulso');
+    }
+
+    function anunciarUmbral(restante) {
+        let umbral = null;
+        if (restante <= UMBRAL_PULSO_MS) umbral = 5;
+        else if (restante <= UMBRAL_ALERTA_MS) umbral = 10;
+        else if (restante <= UMBRAL_ADVERTENCIA_MS) umbral = 30;
+        if (umbral !== null && umbral !== ultimoUmbralAvisado) {
+            ultimoUmbralAvisado = umbral;
+            if (elAvisoA11y) elAvisoA11y.textContent = umbral + ' segundos restantes';
+        }
+    }
+
     function mostrarTiempo(ms) {
         elTiempo.textContent = formatear(Math.floor(ms / 1000));
     }
 
     function tick() {
+        if (perdido) return;
         transcurridoMs = Date.now() - inicioMs;
-        mostrarTiempo(transcurridoMs);
+        if (limiteMs !== null) {
+            const restante = Math.max(0, limiteMs - transcurridoMs);
+            mostrarTiempo(restante);
+            pintarSemaforo(restante);
+            anunciarUmbral(restante);
+            actualizarAriaTiempo();
+            if (restante <= 0) {
+                perder();
+                return;
+            }
+        } else {
+            mostrarTiempo(transcurridoMs);
+            actualizarAriaTiempo();
+        }
     }
 
     function detenerReloj() {
@@ -438,13 +688,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (enJuego || resuelto) return;
         enJuego = true;
         btnComenzar.hidden = true;
+        if (elAvisoLimite) elAvisoLimite.hidden = true;
         actualizarBotonesDificultad();
         canvas.classList.add('blocka-canvas--activo');
         iniciarReloj();
+        if (btnAyudita) btnAyudita.disabled = false;
     });
 
     btnReiniciar.addEventListener('click', () => {
-        if (resuelto) {
+        if (resuelto && !perdido) {
             if (nivelActual < TOTAL_NIVELES) {
                 nivelActual++;
             } else {
@@ -469,6 +721,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 transcurridoMs = 0;
             }
             ganar();
+        },
+        perder: () => {
+            perder();
         },
         avanzarNivel: () => {
             if (nivelActual < TOTAL_NIVELES) {
@@ -495,7 +750,11 @@ document.addEventListener('DOMContentLoaded', () => {
             cantPiezas,
             enJuego,
             resuelto,
+            perdido,
+            limiteMs,
+            restanteMs: limiteMs !== null ? Math.max(0, limiteMs - transcurridoMs) : null,
             angulos: piezas.map((p) => p.angulo),
+            fijas: piezas.map((p) => p.fija),
             tiempoMs: transcurridoMs
         })
     };

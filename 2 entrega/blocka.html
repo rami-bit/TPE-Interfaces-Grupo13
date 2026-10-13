@@ -146,6 +146,10 @@
                     <div class="blocka-lienzo">
                         <canvas id="blocka-canvas" class="blocka-canvas" width="420" height="315"
                             aria-label="Tablero de Blocka"></canvas>
+                        <div id="blocka-aviso-limite" class="blocka-aviso-limite label" hidden>
+                            ⏱ Nivel contrarreloj — <strong id="blocka-aviso-tiempo">01:00</strong>:
+                            si se termina el tiempo, perdés el nivel
+                        </div>
                         <div id="blocka-sorteo" class="blocka-sorteo" hidden>
                             <p class="label blocka-sorteo__titulo">Sorteando imagen...</p>
                             <div class="blocka-sorteo__grilla" id="blocka-sorteo-grilla">
@@ -159,6 +163,7 @@
                         </div>
                         <div id="blocka-fin" class="blocka-fin" hidden>
                             <p id="blocka-fin-titulo" class="h1 blocka-fin__titulo">¡Imagen resuelta!</p>
+                            <p id="blocka-fin-detalle" class="body-small blocka-fin__detalle" hidden></p>
                             <p class="body-base blocka-fin__tiempo">Tiempo: <strong id="blocka-tiempo-final">00:00</strong></p>
                             <div class="blocka-fin__acciones">
                                 <button type="button" class="btn-primario" id="blocka-reiniciar">Jugar de nuevo</button>
@@ -179,8 +184,24 @@
                             <button type="button" class="btn-dificultad" data-piezas="8">8</button>
                         </div>
                     </div>
-                    <span id="blocka-tiempo" class="blocka-hud__tiempo">00:00</span>
+                    <span id="blocka-tiempo" class="blocka-hud__tiempo" role="timer"
+                        aria-label="Tiempo transcurrido 00:00">00:00</span>
+                    <span id="blocka-limite" class="label blocka-hud__limite" hidden>⏱ Límite
+                        <strong id="blocka-limite-tiempo">01:00</strong></span>
+                    <p id="blocka-aviso-a11y" class="visually-hidden" aria-live="polite"></p>
                     <span id="blocka-record" class="body-small blocka-hud__record">Récord: --:--</span>
+                    <button type="button" id="blocka-ayudita" class="btn-primario blocka-ayudita" disabled
+                        aria-label="Ayudita: ubica una pieza correctamente, suma 5 segundos"
+                        title="Ayudita: ubica una pieza (+5s)">
+                        <svg class="blocka-ayudita__icono" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
+                            aria-hidden="true" focusable="false">
+                            <path
+                                d="M12 2a7 7 0 0 0-4.2 12.6c.6.5 1.2 1.4 1.2 2.4v.5h6v-.5c0-1 .6-1.9 1.2-2.4A7 7 0 0 0 12 2Z" />
+                            <path d="M9.5 18.5h5v1.2a.8.8 0 0 1-.8.8h-3.4a.8.8 0 0 1-.8-.8v-1.2Z" />
+                            <path
+                                d="M10.2 21.2h3.6a.7.7 0 0 1 .7.7v.1a.7.7 0 0 1-.7.7h-3.6a.7.7 0 0 1-.7-.7v-.1a.7.7 0 0 1 .7-.7Z" />
+                        </svg>
+                    </button>
                     <button type="button" id="blocka-comenzar" class="btn-primario blocka-hud__comenzar">Comenzar</button>
                 </div>
             </div>
@@ -268,14 +289,17 @@
 
                 <article class="info-card">
                     <h2 class="info-card__titulo">Niveles y Filtros</h2>
-                    <p class="info-card__texto">Son al menos tres niveles. La imagen se elige al azar de un banco de
+                    <p class="info-card__texto">Son cuatro niveles. La imagen se elige al azar de un banco de
                         seis fotos y los filtros se aplican al cargar el nivel: por eso al principio no se ve un choto.
-                        Cuando terminás de armar la imagen, los filtros se caen y queda la foto original en RGB.</p>
+                        Cuando terminás de armar la imagen, los filtros se caen y queda la foto original en RGB.
+                        Los niveles 3 y 4 son <strong>contrarreloj</strong>: si se te termina el tiempo, perdés el nivel
+                        y tenés que reintentar.</p>
                     <ul class="body-small blocka-niveles">
                         <li><strong>Nivel 1</strong><span>La imagen completa con escala de grises.</span></li>
                         <li><strong>Nivel 2</strong><span>La imagen completa con brillo +30%.</span></li>
-                        <li><strong>Nivel 3</strong><span>La imagen completa con negativo.</span></li>
-                        <li><strong>Nivel 4</strong><span>Combinación: cuadrantes con grises, brillo, negativo y color original.</span></li>
+                        <li><strong>Nivel 3</strong><span>La imagen completa con negativo. <em>Contrarreloj: 1:00.</em></span></li>
+                        <li><strong>Nivel 4</strong><span>Combinación: cuadrantes con grises, brillo, negativo y color original. <em>Contrarreloj: 0:45.</em></span></li>
+                        <li class="blocka-niveles__nota"><span>Con más piezas el tiempo extra: 6 piezas = +30%, 8 piezas = +60% sobre el límite base.</span></li>
                     </ul>
                 </article>
 
