@@ -18,6 +18,22 @@ const Filtros = {
             data[i + 3] = 255;
         }
         c.putImageData(imageData, 0, 0);
+    },
+
+    /**
+     * Nivel 2: Brillo aumentado en un porcentaje (por defecto 30% = +76.5 sobre 255)
+     */
+    brillo(cv, porcentaje = 0.3) {
+        const c = cv.getContext('2d');
+        const imageData = c.getImageData(0, 0, cv.width, cv.height);
+        const data = imageData.data;
+        const incremento = 255 * porcentaje;
+        for (let i = 0; i < data.length; i += 4) {
+            data[i] = Math.max(0, Math.min(255, data[i] + incremento));
+            data[i + 1] = Math.max(0, Math.min(255, data[i + 1] + incremento));
+            data[i + 2] = Math.max(0, Math.min(255, data[i + 2] + incremento));
+        }
+        c.putImageData(imageData, 0, 0);
     }
 };
 
