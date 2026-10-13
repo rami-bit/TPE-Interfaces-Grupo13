@@ -13,6 +13,7 @@ implementación real dentro del sitio.
 | Archivo | Rol |
 |---|---|
 | `2 entrega/blocka.html` | Página del juego. El `<article class="juego-card">` contiene la zona de ejecución: canvas + HUD (nivel, selector de 4/6/8 piezas, cronómetro, récord) + overlay de sorteo + overlay de fin. |
+| `2 entrega/home.html` | Portal principal: contiene el segundo slide destacado del Hero Banner 
 | `2 entrega/js/filtros.js` | **Módulo independiente de filtros**: grises (ITU-R BT.601), brillo (+30%) y negativo sobre `ImageData`. |
 | `2 entrega/js/blocka.js` | **Toda la lógica del juego**: banco de imágenes, división dinámica en 4/6/8 piezas cuadradas, sorteo previo, progresión de 4 niveles, rotación, temporizador, récord por nivel/piezas y victoria. |
 | `2 entrega/css/blocka.css` | Layout de la zona de ejecución (canvas, HUD, selector de dificultad, sorteo, overlay de fin, ayuda) y de las cards informativas. |

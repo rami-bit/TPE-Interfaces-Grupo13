@@ -5,8 +5,8 @@ document.addEventListener("DOMContentLoaded", () => {
         .then(response => response.json())
         .then(games => {
 
-            // --- HERO BANNER (Juegos 0, 1, 2) ---
-            renderizarHeroBanner(games.slice(0, 3));
+            // --- HERO BANNER (Juegos 0 y 1 de la API + 2 locales = 4 slides) ---
+            renderizarHeroBanner(games.slice(0, 2));
             inicializarCarruselHero('hero-track', 'btn-prev', 'btn-next', '.punto');
 
             // --- CARRUSEL TENDENCIAS (Juegos 3 al 10) ---
