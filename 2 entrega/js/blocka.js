@@ -19,6 +19,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const elNivel = document.getElementById('blocka-nivel');
     const elFin = document.getElementById('blocka-fin');
     const elFinTitulo = document.getElementById('blocka-fin-titulo');
+    const elSorteo = document.getElementById('blocka-sorteo');
+    const thumbsSorteo = elSorteo ? Array.from(elSorteo.querySelectorAll('.blocka-sorteo__thumb')) : [];
     const elTiempoFinal = document.getElementById('blocka-tiempo-final');
     const btnReiniciar = document.getElementById('blocka-reiniciar');
 
@@ -109,6 +111,71 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    /* ---------- Animación de sorteo previo (Extra 1) ---------- */
+
+    function animarSorteo(srcElegido, idActual) {
+        return new Promise((resolve) => {
+            if (!elSorteo || !thumbsSorteo.length) {
+                resolve();
+                return;
+            }
+
+            let targetIdx = thumbsSorteo.findIndex((th) => th.dataset.src === srcElegido);
+            if (targetIdx === -1) targetIdx = 0;
+
+            thumbsSorteo.forEach((th) => {
+                th.classList.remove('activo', 'ganador', 'descarte');
+            });
+            elSorteo.hidden = false;
+
+            const vueltas = 2;
+            const totalPasos = vueltas * thumbsSorteo.length + targetIdx;
+            let paso = 0;
+
+            function ejecutarPaso() {
+                if (idActual !== idSetup) {
+                    resolve();
+                    return;
+                }
+
+                const idxActual = paso % thumbsSorteo.length;
+                thumbsSorteo.forEach((th, i) => {
+                    if (i === idxActual) {
+                        th.classList.add('activo');
+                    } else {
+                        th.classList.remove('activo');
+                    }
+                });
+
+                if (paso >= totalPasos) {
+                    thumbsSorteo.forEach((th, i) => {
+                        th.classList.remove('activo');
+                        if (i === targetIdx) {
+                            th.classList.add('ganador');
+                        } else {
+                            th.classList.add('descarte');
+                        }
+                    });
+
+                    setTimeout(() => {
+                        if (idActual === idSetup) {
+                            elSorteo.hidden = true;
+                        }
+                        resolve();
+                    }, 800);
+                    return;
+                }
+
+                paso++;
+                const progreso = paso / totalPasos;
+                const delay = 60 + Math.floor(Math.pow(progreso, 2) * 220);
+                setTimeout(ejecutarPaso, delay);
+            }
+
+            ejecutarPaso();
+        });
+    }
+
     /* ---------- Setup del nivel: split en 4 cuadrantes + filtro + barajar ---------- */
 
     async function setupNivel() {
@@ -122,11 +189,16 @@ document.addEventListener('DOMContentLoaded', () => {
         if (elFinTitulo) elFinTitulo.textContent = '¡Imagen resuelta!';
         btnReiniciar.textContent = 'Jugar de nuevo';
         elFin.hidden = true;
-        btnComenzar.hidden = false;
+        btnComenzar.hidden = true;
         canvas.classList.remove('blocka-canvas--activo');
 
         const img = await cargarImagenSegura();
         if (id !== idSetup) return;
+
+        await animarSorteo(ultimaImagenSrc, id);
+        if (id !== idSetup) return;
+
+        btnComenzar.hidden = false;
 
         // Recorte central a cuadrado: los cuadrantes quedan cuadrados y
         // rotarlos 90° no descubre huecos entre piezas.
