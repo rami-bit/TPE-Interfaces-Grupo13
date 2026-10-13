@@ -48,8 +48,6 @@
     margin: 0;
     color: var(--textoWhite);
     opacity: 0.7;
-
-    font-size: 12px;
     text-align: center;
 }
 
@@ -69,11 +67,7 @@
     text-align: center;
 }
 
-.blocka-fin[hidden] {
-    display: none;
-}
-
-/* display del botón no debe pisar el atributo hidden */
+.blocka-fin[hidden],
 .blocka-hud__comenzar[hidden] {
     display: none;
 }
@@ -81,16 +75,11 @@
 .blocka-fin__titulo {
     margin: 0;
     color: var(--primario);
-
-    font-size: 24px;
-    font-weight: 700;
 }
 
 .blocka-fin__tiempo {
     margin: 0 0 6px;
     color: var(--textoWhite);
-
-    font-size: 16px;
     font-variant-numeric: tabular-nums;
 }
 
@@ -101,7 +90,9 @@
     gap: 12px;
 }
 
-.blocka-fin__menu {
+/* Botones principales de acción unificados */
+.blocka-fin__menu,
+.blocka-hud__comenzar {
     min-width: 150px;
     text-decoration: none;
 }
@@ -118,16 +109,11 @@
 
 .blocka-hud__nivel {
     color: var(--primario);
-
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
     text-transform: uppercase;
 }
 
 .blocka-hud__tiempo {
     color: var(--textoWhite);
-
     font-size: 48px;
     font-weight: 700;
     line-height: 1;
@@ -137,14 +123,7 @@
 .blocka-hud__record {
     margin-bottom: 6px;
     color: var(--secundarioLuz2);
-
-    font-size: 14px;
-    font-weight: 500;
     font-variant-numeric: tabular-nums;
-}
-
-.blocka-hud__comenzar {
-    min-width: 150px;
 }
 
 @media (min-width: 768px) {
@@ -231,9 +210,6 @@
 .control-rotulo {
     margin: 0;
     color: var(--textoWhite);
-
-    font-size: 14px;
-    font-weight: 500;
     text-align: center;
 }
 
@@ -252,8 +228,6 @@
     gap: 10px;
     margin-bottom: 10px;
     color: var(--textoWhite);
-
-    font-size: 14px;
     line-height: 1.55;
 }
 

@@ -147,21 +147,21 @@
                         <canvas id="blocka-canvas" class="blocka-canvas" width="420" height="315"
                             aria-label="Tablero de Blocka"></canvas>
                         <div id="blocka-fin" class="blocka-fin" hidden>
-                            <p class="blocka-fin__titulo">¡Imagen resuelta!</p>
-                            <p class="blocka-fin__tiempo">Tiempo: <strong id="blocka-tiempo-final">00:00</strong></p>
+                            <p class="h1 blocka-fin__titulo">¡Imagen resuelta!</p>
+                            <p class="body-base blocka-fin__tiempo">Tiempo: <strong id="blocka-tiempo-final">00:00</strong></p>
                             <div class="blocka-fin__acciones">
                                 <button type="button" class="btn-primario" id="blocka-reiniciar">Jugar de nuevo</button>
                                 <a class="btn-primario blocka-fin__menu" href="home.html">Menú Ppal</a>
                             </div>
                         </div>
                     </div>
-                    <p class="blocka-ayuda">Clic izquierda: gira a la izquierda · Clic derecha: gira a la
+                    <p class="label blocka-ayuda">Clic izquierda: gira a la izquierda · Clic derecha: gira a la
                         derecha</p>
                 </div>
                 <div class="blocka-hud">
-                    <span class="blocka-hud__nivel">Nivel 1</span>
+                    <span class="label blocka-hud__nivel">Nivel 1</span>
                     <span id="blocka-tiempo" class="blocka-hud__tiempo">00:00</span>
-                    <span id="blocka-record" class="blocka-hud__record">Récord: --:--</span>
+                    <span id="blocka-record" class="body-small blocka-hud__record">Récord: --:--</span>
                     <button type="button" id="blocka-comenzar" class="btn-primario blocka-hud__comenzar">Comenzar</button>
                 </div>
             </div>
@@ -223,7 +223,7 @@
                                     <path class="flecha-rot__punta" d="M37 15.5 L42 24.5 L32 24.5 Z" />
                                 </svg>
                             </div>
-                            <p class="control-rotulo">Clic izquierdo: gira a la izquierda</p>
+                            <p class="body-small control-rotulo">Clic izquierdo: gira a la izquierda</p>
                         </div>
 
                         <div class="control-item">
@@ -242,7 +242,7 @@
                                     <path class="flecha-rot__punta" d="M37 15.5 L42 24.5 L32 24.5 Z" />
                                 </svg>
                             </div>
-                            <p class="control-rotulo">Clic derecho: gira a la derecha</p>
+                            <p class="body-small control-rotulo">Clic derecho: gira a la derecha</p>
                         </div>
                     </div>
                 </article>
@@ -252,7 +252,7 @@
                     <p class="info-card__texto">Son al menos tres niveles. La imagen se elige al azar de un banco de
                         seis fotos y los filtros se aplican al cargar el nivel: por eso al principio no se ve un choto.
                         Cuando terminás de armar la imagen, los filtros se caen y queda la foto original en RGB.</p>
-                    <ul class="blocka-niveles">
+                    <ul class="body-small blocka-niveles">
                         <li><strong>Nivel 1</strong><span>La imagen completa con escala de grises.</span></li>
                         <li><strong>Nivel 2</strong><span>La imagen completa con brillo +30%.</span></li>
                         <li><strong>Nivel 3</strong><span>Cada sub-imagen con su propio filtro: grises, brillo o
