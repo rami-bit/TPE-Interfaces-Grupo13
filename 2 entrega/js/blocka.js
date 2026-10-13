@@ -10,6 +10,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const LADO_MAX = 420;
     const TOTAL_NIVELES = 4;
     const ANGULOS_BARAJA = [90, 180, 270];
+    const CONFIG_GRILLAS = {
+        4: { cols: 2, filas: 2 },
+        6: { cols: 3, filas: 2 },
+        8: { cols: 4, filas: 2 }
+    };
 
     const canvas = document.getElementById('blocka-canvas');
     const ctx = canvas.getContext('2d');
@@ -21,10 +26,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const elFinTitulo = document.getElementById('blocka-fin-titulo');
     const elSorteo = document.getElementById('blocka-sorteo');
     const thumbsSorteo = elSorteo ? Array.from(elSorteo.querySelectorAll('.blocka-sorteo__thumb')) : [];
+    const btnsDificultad = Array.from(document.querySelectorAll('.btn-dificultad'));
     const elTiempoFinal = document.getElementById('blocka-tiempo-final');
     const btnReiniciar = document.getElementById('blocka-reiniciar');
 
     let nivelActual = 1;
+    let cantPiezas = 4;
     let ultimaImagenSrc = null;
     let fuente = null;
     let piezas = [];
@@ -91,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 Filtros.negativo(cv);
                 break;
             case 4:
-                switch (indicePieza) {
+                switch (indicePieza % 4) {
                     case 0:
                         Filtros.grises(cv);
                         break;
@@ -102,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         Filtros.negativo(cv);
                         break;
                     default:
-                        // Pieza 3: se conserva en color original RGB (sin filtro)
+                        // Pieza con índice % 4 === 3: color original RGB (sin filtro)
                         break;
                 }
                 break;
@@ -176,7 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    /* ---------- Setup del nivel: split en 4 cuadrantes + filtro + barajar ---------- */
+    /* ---------- Setup del nivel: split dinámico en piezas + filtro + barajar ---------- */
 
     async function setupNivel() {
         const id = ++idSetup;
@@ -186,6 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
         transcurridoMs = 0;
         mostrarTiempo(0);
         actualizarRetro();
+        actualizarBotonesDificultad();
         if (elFinTitulo) elFinTitulo.textContent = '¡Imagen resuelta!';
         btnReiniciar.textContent = 'Jugar de nuevo';
         elFin.hidden = true;
@@ -200,50 +208,62 @@ document.addEventListener('DOMContentLoaded', () => {
 
         btnComenzar.hidden = false;
 
-        // Recorte central a cuadrado: los cuadrantes quedan cuadrados y
-        // rotarlos 90° no descubre huecos entre piezas.
-        const lado = Math.min(img.naturalWidth, img.naturalHeight);
-        const escala = LADO_MAX / lado;
-        const cw = Math.max(2, Math.round(lado * escala));
-        const ch = cw;
-        const sx = (img.naturalWidth - lado) / 2;
-        const sy = (img.naturalHeight - lado) / 2;
+        const config = CONFIG_GRILLAS[cantPiezas] || CONFIG_GRILLAS[4];
+        const cols = config.cols;
+        const filas = config.filas;
+
+        // Cada sub-imagen es un cuadrado perfecto de lado "ladoPieza":
+        const ladoPieza = Math.floor(LADO_MAX / cols);
+        const cw = ladoPieza * cols;
+        const ch = ladoPieza * filas;
         canvas.width = cw;
         canvas.height = ch;
+
+        // Recorte central proporcional a la relación de aspecto de la grilla (cols : filas)
+        const ratioGrilla = cols / filas;
+        const ratioImg = img.naturalWidth / img.naturalHeight;
+        let cropW, cropH, sx, sy;
+
+        if (ratioImg > ratioGrilla) {
+            cropH = img.naturalHeight;
+            cropW = Math.round(cropH * ratioGrilla);
+            sx = Math.round((img.naturalWidth - cropW) / 2);
+            sy = 0;
+        } else {
+            cropW = img.naturalWidth;
+            cropH = Math.round(cropW / ratioGrilla);
+            sx = 0;
+            sy = Math.round((img.naturalHeight - cropH) / 2);
+        }
 
         fuente = document.createElement('canvas');
         fuente.width = cw;
         fuente.height = ch;
-        fuente.getContext('2d').drawImage(img, sx, sy, lado, lado, 0, 0, cw, ch);
+        fuente.getContext('2d').drawImage(img, sx, sy, cropW, cropH, 0, 0, cw, ch);
 
-        const anchoIzq = Math.floor(cw / 2);
-        const anchoDer = cw - anchoIzq;
-        const altoArr = Math.floor(ch / 2);
-        const altoAba = ch - altoArr;
-        const zonas = [
-            { x: 0, y: 0, w: anchoIzq, h: altoArr },
-            { x: anchoIzq, y: 0, w: anchoDer, h: altoArr },
-            { x: 0, y: altoArr, w: anchoIzq, h: altoAba },
-            { x: anchoIzq, y: altoArr, w: anchoDer, h: altoAba }
-        ];
-
-        piezas = zonas.map((z, idx) => {
-            const cv = document.createElement('canvas');
-            cv.width = z.w;
-            cv.height = z.h;
-            cv.getContext('2d').drawImage(fuente, z.x, z.y, z.w, z.h, 0, 0, z.w, z.h);
-            aplicarFiltroSegunNivel(cv, idx, nivelActual);
-            return {
-                canvas: cv,
-                x: z.x,
-                y: z.y,
-                w: z.w,
-                h: z.h,
-                cx: z.x + z.w / 2,
-                cy: z.y + z.h / 2,
-                angulo: ANGULOS_BARAJA[Math.floor(Math.random() * ANGULOS_BARAJA.length)]
-            };
-        });
+        piezas = [];
+        for (let fila = 0; fila < filas; fila++) {
+            for (let col = 0; col < cols; col++) {
+                const idx = fila * cols + col;
+                const x = col * ladoPieza;
+                const y = fila * ladoPieza;
+                const cv = document.createElement('canvas');
+                cv.width = ladoPieza;
+                cv.height = ladoPieza;
+                cv.getContext('2d').drawImage(fuente, x, y, ladoPieza, ladoPieza, 0, 0, ladoPieza, ladoPieza);
+                aplicarFiltroSegunNivel(cv, idx, nivelActual);
+                piezas.push({
+                    canvas: cv,
+                    x,
+                    y,
+                    w: ladoPieza,
+                    h: ladoPieza,
+                    cx: x + ladoPieza / 2,
+                    cy: y + ladoPieza / 2,
+                    angulo: ANGULOS_BARAJA[Math.floor(Math.random() * ANGULOS_BARAJA.length)]
+                });
+            }
+        }
 
         render();
     }
@@ -307,8 +327,9 @@ document.addEventListener('DOMContentLoaded', () => {
         enJuego = false;
         detenerReloj();
         render();
+        actualizarBotonesDificultad();
         const seg = Math.floor(transcurridoMs / 1000);
-        guardarRecord(seg, nivelActual);
+        guardarRecord(seg, nivelActual, cantPiezas);
         elTiempoFinal.textContent = formatear(seg);
 
         if (nivelActual < TOTAL_NIVELES) {
@@ -324,24 +345,29 @@ document.addEventListener('DOMContentLoaded', () => {
         canvas.classList.remove('blocka-canvas--activo');
     }
 
-    function claveRecord(nivel) {
-        return 'blocka-record-nivel-' + nivel;
+    function claveRecord(nivel, piezas = cantPiezas) {
+        return 'blocka-record-n' + nivel + '-p' + piezas;
     }
 
-    function leerRecord(nivel = nivelActual) {
+    function leerRecord(nivel = nivelActual, piezas = cantPiezas) {
         try {
-            const v = localStorage.getItem(claveRecord(nivel));
-            return v === null ? null : parseInt(v, 10);
+            const v = localStorage.getItem(claveRecord(nivel, piezas));
+            if (v !== null) return parseInt(v, 10);
+            if (piezas === 4) {
+                const vViejo = localStorage.getItem('blocka-record-nivel-' + nivel);
+                if (vViejo !== null) return parseInt(vViejo, 10);
+            }
+            return null;
         } catch (e) {
             return null;
         }
     }
 
-    function guardarRecord(seg, nivel = nivelActual) {
-        const previo = leerRecord(nivel);
+    function guardarRecord(seg, nivel = nivelActual, piezas = cantPiezas) {
+        const previo = leerRecord(nivel, piezas);
         if (previo === null || seg < previo) {
             try {
-                localStorage.setItem(claveRecord(nivel), String(seg));
+                localStorage.setItem(claveRecord(nivel, piezas), String(seg));
             } catch (e) {
                 /* sin localStorage sigue jugando igual */
             }
@@ -351,7 +377,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function actualizarRetro() {
         if (elNivel) elNivel.textContent = 'Nivel ' + nivelActual;
-        const r = leerRecord(nivelActual);
+        const r = leerRecord(nivelActual, cantPiezas);
         elRecord.textContent = 'Récord: ' + (r === null ? '--:--' : formatear(r));
     }
 
@@ -385,10 +411,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /* ---------- Controles ---------- */
 
+    function actualizarBotonesDificultad() {
+        btnsDificultad.forEach((btn) => {
+            const p = parseInt(btn.dataset.piezas, 10);
+            if (p === cantPiezas) {
+                btn.classList.add('btn-dificultad--activo');
+            } else {
+                btn.classList.remove('btn-dificultad--activo');
+            }
+            btn.disabled = enJuego;
+        });
+    }
+
+    btnsDificultad.forEach((btn) => {
+        btn.addEventListener('click', () => {
+            if (enJuego) return;
+            const p = parseInt(btn.dataset.piezas, 10);
+            if (p !== cantPiezas) {
+                cantPiezas = p;
+                setupNivel();
+            }
+        });
+    });
+
     btnComenzar.addEventListener('click', () => {
         if (enJuego || resuelto) return;
         enJuego = true;
         btnComenzar.hidden = true;
+        actualizarBotonesDificultad();
         canvas.classList.add('blocka-canvas--activo');
         iniciarReloj();
     });
@@ -434,8 +484,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 setupNivel();
             }
         },
+        setPiezas: (cant) => {
+            if ([4, 6, 8].includes(cant)) {
+                cantPiezas = cant;
+                setupNivel();
+            }
+        },
         estado: () => ({
             nivelActual,
+            cantPiezas,
             enJuego,
             resuelto,
             angulos: piezas.map((p) => p.angulo),

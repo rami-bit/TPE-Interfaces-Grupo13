@@ -178,6 +178,55 @@
     text-transform: uppercase;
 }
 
+/* Selector de dificultad (cantidad de piezas - Extra 2) */
+
+.blocka-dificultad {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 2px 0;
+}
+
+.blocka-dificultad__label {
+    color: var(--secundarioLuz2);
+    text-transform: uppercase;
+}
+
+.blocka-dificultad__botones {
+    display: inline-flex;
+    background-color: var(--secundarioSombra1);
+    padding: 3px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 184, 245, 0.18);
+    gap: 3px;
+}
+
+.btn-dificultad {
+    background: none;
+    border: none;
+    color: var(--textoWhite);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-dificultad:hover:not(:disabled) {
+    color: var(--primario);
+}
+
+.btn-dificultad--activo {
+    background-color: var(--primario);
+    color: var(--secundarioSombra1);
+}
+
+.btn-dificultad:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
 .blocka-hud__tiempo {
     color: var(--textoWhite);
     font-size: 48px;

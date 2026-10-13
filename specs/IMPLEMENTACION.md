@@ -1,8 +1,8 @@
-# Blocka — Implementación del juego (Nivel 1)
+# Blocka — Implementación del juego
 
 Este documento explica **cómo está implementado** el juego ejecutable de Blocka
-(`2 entrega/blocka.html` + `js/blocka.js` + `css/blocka.css`), pensado para la
-defensa y como referencia para modificarlo. La mecánica general y los filtros de
+(`2 entrega/blocka.html` + `js/blocka.js` + `js/filtros.js` + `css/blocka.css`), pensado para la
+defensa y como referencia. La mecánica general y los filtros de
 la cátedra están en [`DOCUMENTACION.md`](DOCUMENTACION.md); acá se describe la
 implementación real dentro del sitio.
 
@@ -12,26 +12,33 @@ implementación real dentro del sitio.
 
 | Archivo | Rol |
 |---|---|
-| `2 entrega/blocka.html` | Página del juego. El `<article class="juego-card">` contiene la zona de ejecución: canvas + HUD + overlay de fin. |
-| `2 entrega/js/blocka.js` | **Toda la lógica**: banco de imágenes, split en 4 piezas, filtro gris, rotación, temporizador, récord y victoria. |
-| `2 entrega/css/blocka.css` | Layout de la zona de ejecución (canvas, HUD, overlay, ayuda) y de las cards informativas de la página. |
+| `2 entrega/blocka.html` | Página del juego. El `<article class="juego-card">` contiene la zona de ejecución: canvas + HUD (nivel, selector de 4/6/8 piezas, cronómetro, récord) + overlay de sorteo + overlay de fin. |
+| `2 entrega/js/filtros.js` | **Módulo independiente de filtros**: grises (ITU-R BT.601), brillo (+30%) y negativo sobre `ImageData`. |
+| `2 entrega/js/blocka.js` | **Toda la lógica del juego**: banco de imágenes, división dinámica en 4/6/8 piezas cuadradas, sorteo previo, progresión de 4 niveles, rotación, temporizador, récord por nivel/piezas y victoria. |
+| `2 entrega/css/blocka.css` | Layout de la zona de ejecución (canvas, HUD, selector de dificultad, sorteo, overlay de fin, ayuda) y de las cards informativas. |
 | `2 entrega/assets/bancoImagenes/*` | Banco de imágenes (6 fotos de Boca). |
 
-El HTML relevant de la zona de ejecución:
+El HTML relevante de la zona de ejecución:
 
 ```html
 <div class="blocka-mock">
     <div class="blocka-tablero">
         <div class="blocka-lienzo">
             <canvas id="blocka-canvas" class="blocka-canvas"></canvas>
+            <div id="blocka-sorteo" class="blocka-sorteo" hidden> … ruleta de 6 miniaturas … </div>
             <div id="blocka-fin" class="blocka-fin" hidden> … overlay de victoria … </div>
         </div>
         <p class="blocka-ayuda">Clic izquierda: gira a la izquierda · Clic derecha: gira a la derecha</p>
     </div>
     <div class="blocka-hud">
-        <span class="blocka-hud__nivel">Nivel 1</span>
+        <span id="blocka-nivel" class="label blocka-hud__nivel">Nivel 1</span>
+        <div class="blocka-dificultad" role="group">
+            <button class="btn-dificultad btn-dificultad--activo" data-piezas="4">4</button>
+            <button class="btn-dificultad" data-piezas="6">6</button>
+            <button class="btn-dificultad" data-piezas="8">8</button>
+        </div>
         <span id="blocka-tiempo" class="blocka-hud__tiempo">00:00</span>
-        <span id="blocka-record" class="blocka-hud__record">Récord: --:--</span>
+        <span id="blocka-record" class="body-small blocka-hud__record">Récord: --:--</span>
         <button type="button" id="blocka-comenzar" class="btn-primario">Comenzar</button>
     </div>
 </div>
@@ -39,66 +46,38 @@ El HTML relevant de la zona de ejecución:
 
 ---
 
-## 2. Cómo se divide la imagen en 4 sub-imágenes (las piezas)
+## 2. Cómo se divide la imagen en sub-imágenes (4, 6 u 8 piezas)
 
 Todo ocurre en `setupNivel()` de `js/blocka.js`. El flujo es:
 
-1. **Recorte central a cuadrado.** La imagen se recorta por el centro a un
-   cuadrado de lado `min(ancho, alto)`:
+1. **Configuración de la grilla:**
+   * **4 piezas:** 2 columnas × 2 filas (proporción 1:1, cuadrada).
+   * **6 piezas:** 3 columnas × 2 filas (proporción 3:2).
+   * **8 piezas:** 4 columnas × 2 filas (proporción 2:1).
 
-   ```js
-   const lado = Math.min(img.naturalWidth, img.naturalHeight);
-   const sx = (img.naturalWidth - lado) / 2;   // desplazamiento horizontal
-   const sy = (img.naturalHeight - lado) / 2;  // desplazamiento vertical
-   ```
+   **¿Por qué las piezas deben ser cuadradas?** Si una sub-imagen fuera rectangular, al rotarla 90° o 270° su ancho y su alto se intercambiarían, invadiendo casilleros vecinos y dejando huecos. Al mantener cada celda como un cuadrado perfecto de `ladoPieza × ladoPieza`, cualquier rotación a 90°/180°/270° ocupa exactamente su mismo lugar.
 
-   **¿Por qué?** Los cuadrantes deben ser **cuadrados**: si la pieza no es
-   cuadrada, al rotarla 90° descubre huecos negros entre piezas (el ancho y el
-   alto se intercambian). Con recorte cuadrado, una pieza rotada 90° ocupa
-   exactamente su mismo lugar en el tablero.
+2. **Dimensiones del canvas y recorte de la imagen `fuente`:**
+   Se calcula `ladoPieza = Math.floor(LADO_MAX / cols)`, `cw = ladoPieza * cols` y `ch = ladoPieza * filas`.
+   La imagen original se recorta por el centro respetando la proporción `cols / filas`:
+   * Si la foto es más ancha que la grilla, se recortan los laterales sobrantes de manera simétrica.
+   * Si la foto es más alta que la grilla, se recortan los extremos superior e inferior simétricamente.
+   El canvas offscreen `fuente` almacena la imagen recortada **original sin filtros** en RGB.
 
-2. **Canvas fuente.** El cuadrado se dibuja escalado (lado máximo 420 px) en un
-   canvas offscreen llamado `fuente`:
-
-   ```js
-   fuente.getContext('2d').drawImage(img, sx, sy, lado, lado, 0, 0, cw, ch);
-   ```
-
-   `fuente` guarda la imagen **original sin filtro** (se usa al ganar, para
-   mostrar el RGB).
-
-3. **Split en 4 cuadrantes.** Se calculan los límites con mitades enteras (para
-   lados impares el sobrante va a la derecha/abajo):
-
-   ```js
-   const anchoIzq = Math.floor(cw / 2);
-   const anchoDer = cw - anchoIzq;
-   const altoArr = Math.floor(ch / 2);
-   const altoAba = ch - altoArr;
-   const zonas = [
-       { x: 0,         y: 0,        w: anchoIzq, h: altoArr }, // sup-izq
-       { x: anchoIzq,  y: 0,        w: anchoDer, h: altoArr }, // sup-der
-       { x: 0,         y: altoArr,  w: anchoIzq, h: altoAba }, // inf-izq
-       { x: anchoIzq,  y: altoArr,  w: anchoDer, h: altoAba }  // inf-der
-   ];
-   ```
-
-4. **Canvas por pieza.** Cada zona se extrae con `drawImage` a un canvas propio
-   (mismo primitivo que la cátedra, con la fuente como origen):
-
+3. **Generación dinámica de piezas:**
+   Mediante dos bucles (`fila` y `col`), cada zona se extrae a un canvas propio:
    ```js
    const cv = document.createElement('canvas');
-   cv.width = z.w; cv.height = z.h;
-   cv.getContext('2d').drawImage(fuente, z.x, z.y, z.w, z.h, 0, 0, z.w, z.h);
-   aplicarFiltroGrises(cv);            // el filtro vive en la pieza, no en el canvas visible
+   cv.width = ladoPieza; cv.height = ladoPieza;
+   cv.getContext('2d').drawImage(fuente, x, y, ladoPieza, ladoPieza, 0, 0, ladoPieza, ladoPieza);
+   aplicarFiltroSegunNivel(cv, idx, nivelActual);
    ```
 
-5. **Estado de cada pieza.** El array `piezas` es el modelo de estado del juego:
-
+4. **Estado de cada pieza.** El array `piezas` es el modelo de estado del juego:
    ```js
-   { canvas,          // canvas offscreen con la pieza YA filtrada
+   { canvas,          // canvas offscreen con la sub-imagen YA filtrada
      x, y, w, h,      // rectángulo de destino dentro del canvas visible
-     cx, cy,          // centro de rotación (= centro del cuadrante)
+     cx, cy,          // centro de rotación (pivote)
      angulo }         // 0 | 90 | 180 | 270 (arranca barajado en 90/180/270)
    ```
 
@@ -164,78 +143,56 @@ canvas.addEventListener('contextmenu', (e) => e.preventDefault()); // sin menú 
 
 ---
 
-## 5. Filtro del nivel 1: escala de grises
+## 5. Módulo de filtros y progresión de niveles
 
-`aplicarFiltroGrises(cv)` aplica la fórmula de luminancia ITU-R BT.601 de la
-cátedra **a cada canvas de pieza**, en el setup:
+Los filtros viven en `2 entrega/js/filtros.js` y se invocan desde `blocka.js` mediante la función `aplicarFiltroSegunNivel(cv, indicePieza, nivel)`:
 
-```js
-const gris = data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114;
-data[i] = data[i + 1] = data[i + 2] = gris;
-```
+| Nivel | Filtro aplicado | Descripción |
+|---|---|---|
+| **Nivel 1** | Escala de grises (`Filtros.grises`) | Fórmula estándar de luminosidad ITU-R BT.601 (`0.299*R + 0.587*G + 0.114*B`). |
+| **Nivel 2** | Brillo +30% (`Filtros.brillo`) | Suma offset aditivo de +76.5 (`255 * 0.3`) con clamping `[0, 255]`. |
+| **Nivel 3** | Negativo (`Filtros.negativo`) | Inversión de cada canal haciendo `255 - valor`. |
+| **Nivel 4** | Combinación de filtros | Cuadrantes alternan grises, brillo, negativo y color original RGB usando `indicePieza % 4`. |
 
-Claves del diseño:
-
-- El filtro se aplica **por pieza y una sola vez**, en el setup del nivel
-  (nunca durante el juego), como pide el enunciado.
-- El canvas visible **nunca se filtra**: siempre se dibuja desde las piezas ya
-  filtradas. Así, al ganar basta dibujar `fuente` (que nunca se tocó) para ver
-  la foto original en RGB.
-- Al estar el filtro acoplado a la creación de la pieza, el nivel 3 (filtro
-  distinto por pieza) sólo requiere cambiar **qué función** se llama en el
-  `map` de zonas (ver `EXTENSION.md`).
+Al ganar cualquier nivel, se remueven todos los filtros dibujando `fuente` (que nunca se mutó) para revelar la foto original en RGB.
 
 ---
 
-## 6. Temporizador y récord
+## 6. Temporizador y récord por nivel y dificultad
 
-- **Temporizador**: arranca con el botón **“Comenzar”**
-  (`iniciarReloj()`: `setInterval` cada 200 ms que calcula
-  `Date.now() - inicioMs` y muestra `mm:ss`). Se frena al resolver.
-- **Récord**: se guarda en `localStorage` con la clave `blocka-record-nivel-1`
-  (sólo segundos; sólo se actualiza si el tiempo nuevo es mejor). Se muestra en
-  el HUD como `Récord: mm:ss`. Si el navegador no da `localStorage`, el juego
-  sigue funcionando sin persistir el récord (`try/catch`).
+- **Temporizador**: arranca únicamente al presionar el botón **“Comenzar”** (`setInterval` cada 200 ms que calcula `Date.now() - inicioMs`). Se detiene al completar la imagen.
+- **Récord independiente**: se almacena en `localStorage` con una clave compuesta por nivel y piezas: `blocka-record-n{nivel}-p{piezas}` (por ejemplo, `blocka-record-n1-p4`, `blocka-record-n2-p6`). Si el usuario juega en otra dificultad o avanza de nivel, cada combinación mantiene su propia mejor marca.
 
 ---
 
-## 7. Condición de victoria y fin de nivel
+## 7. Condición de victoria, avance y extras implementados
 
-Después de **cada** rotación se llama `verificarVictoria()`:
+1. **Sorteo previo de imágenes (Punto Extra 1)**:
+   Al iniciar o cambiar de nivel, un overlay muestra la grilla de las 6 miniaturas. Una animación con desaceleración natural (*easing*) recorre las opciones y se detiene con un resplandor en la foto elegida. Al finalizar, revela el tablero barajado y habilita el botón "Comenzar".
 
-```js
-if (piezas.every((p) => p.angulo % 360 === 0)) ganar();
-```
+2. **Configuración de dificultad (Punto Extra 2)**:
+   El HUD incluye botones para seleccionar **4, 6 u 8 piezas**. Mientras el cronómetro corre, los botones se bloquean para evitar cambios durante la partida.
 
-Es decir: **las 4 piezas en ángulo 0** ⇒ imagen armada. En `ganar()`:
-
-1. `resuelto = true` (los clicks quedan bloqueados y `render()` dibuja `fuente`
-   sin filtros → RGB).
-2. Se frena el cronómetro.
-3. Se guarda/actualiza el récord.
-4. Se muestra el overlay `#blocka-fin` con el tiempo final y los botones
-   **“Jugar de nuevo”** (nueva imagen al azar, mismo nivel) y **“Menú Ppal”**
-   (link a `home.html`). El botón “Comenzar” se oculta.
-
-“Jugar de nuevo” llama `setupNivel()`: nueva imagen aleatoria, nuevo split,
-nuevo barajo de ángulos, cronómetro a 00:00.
+3. **Avance entre niveles y victoria final**:
+   Al resolver el nivel (`piezas.every((p) => p.angulo % 360 === 0)`):
+   * En niveles 1 a 3: el overlay muestra el tiempo y el botón **“Siguiente nivel”**, que carga una imagen distinta y aplica el siguiente filtro.
+   * En nivel 4: el overlay anuncia **“¡Juego completado!”** y ofrece **“Volver a jugar”** reiniciando desde el Nivel 1.
 
 ---
 
-## 8. Estados del nivel
+## 8. Estados del juego
 
 ```
-setup (imagen aleatoria, barajada, gris, clicks BLOQUEADOS)
-   │  click “Comenzar”
-   ▼
-en juego (timer ON, clicks activos: izq -90° / der +90°)
-   │  4/4 ángulos = 0
-   ▼
-resuelto (sin filtros, RGB, timer OFF, récord, overlay)
-   │                    │
-“Jugar de nuevo”    “Menú Ppal” → home.html
+setupNivel (carga imagen) → Sorteo de miniaturas (Extra 1) → Espera click “Comenzar”
    │
-   └──→ setup (loop)
+   ▼
+enJuego (timer ON, clicks activos: izq -90° / der +90°, dificultad bloqueada)
+   │
+   ▼
+resuelto (RGB original, timer OFF, récord actualizado)
+   │
+   ├─ Si nivel < 4 ──→ Click “Siguiente nivel” ──→ setupNivel (nivel + 1)
+   └─ Si nivel = 4 ──→ Click “Volver a jugar”  ──→ setupNivel (nivel 1)
 ```
 
 ---
