@@ -50,6 +50,48 @@ const Filtros = {
             data[i + 3] = 255;
         }
         c.putImageData(imageData, 0, 0);
+    },
+
+    /**
+     * Nivel 5: Blur por filtro de vecinos (ventana 5x5, radio K=2).
+     * Cada píxele pasa a ser el promedio de su ventana. Se lee de "origen"
+     * y se escribe en "destino" (dos buffers: si se escribiera sobre el mismo
+     * array, los promedios se contaminarían con valores ya modificados).
+     * En el borde faltan vecinos: se cuenta n y se divide por los que existen.
+     */
+    blur(cv, K = 2, iteraciones = 1) {
+        const c = cv.getContext('2d');
+        const origen = c.getImageData(0, 0, cv.width, cv.height);
+        const destino = c.createImageData(cv.width, cv.height);
+        let src = origen.data;
+        const dst = destino.data;
+        const width = cv.width, height = cv.height;
+
+        for (let iter = 0; iter < iteraciones; iter++) {
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    let r = 0, g = 0, b = 0, n = 0;
+                    for (let dy = -K; dy <= K; dy++) {
+                        for (let dx = -K; dx <= K; dx++) {
+                            const nx = x + dx, ny = y + dy;
+                            if (nx < 0 || ny < 0 || nx >= width || ny >= height) continue;
+                            const j = (nx + ny * width) * 4;
+                            r += src[j]; g += src[j + 1]; b += src[j + 2];
+                            n++;
+                        }
+                    }
+                    const i = (x + y * width) * 4;
+                    dst[i] = r / n;
+                    dst[i + 1] = g / n;
+                    dst[i + 2] = b / n;
+                    dst[i + 3] = src[i + 3];
+                }
+            }
+            if (iter < iteraciones - 1) {
+                src.set(dst);
+            }
+        }
+        c.putImageData(destino, 0, 0);
     }
 };
 

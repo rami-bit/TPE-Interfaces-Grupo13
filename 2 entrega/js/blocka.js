@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'assets/bancoImagenes/sancorSeguros.jpeg'
     ];
     const LADO_MAX = 420;
-    const TOTAL_NIVELES = 4;
+    const TOTAL_NIVELES = 5;
     const ANGULOS_BARAJA = [90, 180, 270];
     const PENALIZACION_AYUDA_MS = 5000;
     const DURACION_PULSO_MS = 1500;
@@ -17,7 +17,8 @@ document.addEventListener('DOMContentLoaded', () => {
         1: { limiteMs: null },
         2: { limiteMs: null },
         3: { limiteMs: 60000 },
-        4: { limiteMs: 45000 }
+        4: { limiteMs: 45000 },
+        5: { limiteMs: 30000 }
     };
     const FACTOR_PIEZAS = { 4: 1, 6: 1.3, 8: 1.6 };
     /* Semáforo de urgencia: umbrales sobre el tiempo RESTANTE */
@@ -147,6 +148,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         // Pieza con índice % 4 === 3: color original RGB (sin filtro)
                         break;
                 }
+                break;
+            case 5:
+                Filtros.blur(cv, 10, 2);
                 break;
             default:
                 break;

@@ -22,9 +22,10 @@ filtro visual desaparece (se dibuja la imagen `fuente` original) y se guarda el 
 
 Características actuales:
 
-- 4 niveles con filtros distintos (el nivel 4 combina filtros por pieza).
+- 5 niveles con filtros distintos (el nivel 4 combina filtros por pieza; el nivel 5 aplica
+  **blur** por filtro de vecinos, ventana 5×5).
 - 3 cantidades de piezas: 4 (2×2), 6 (3×2) y 8 (4×2).
-- **Niveles contrarreloj**: los niveles 3 y 4 tienen tiempo máximo (1:00 y 0:45 base); si se
+- **Niveles contrarreloj**: los niveles 3, 4 y 5 tienen tiempo máximo (1:00, 0:45 y 0:30 base); si se
   termina el tiempo, se pierde el nivel y hay que reintentar. El límite se bonifica con más
   piezas (+30% con 6, +60% con 8).
 - Sorteo animado de una de 6 imágenes del banco antes de cada nivel.
@@ -40,7 +41,7 @@ Características actuales:
 |---|---|---|
 | `2 entrega/blocka.html` | Página del juego: zona de ejecución (canvas + overlays + HUD), tarjetas "Cómo se juega" / "Niveles" / "Galería". | Agregar botones al HUD, thumbnails de imágenes, textos de ayuda. |
 | `2 entrega/js/blocka.js` | **Toda la lógica**: banco de imágenes, setup del nivel, piezas, rotación, reloj, récord, victoria, ayudita y API pública. | Cambiar reglas del juego, tiempos, niveles, agregar power-ups. |
-| `2 entrega/js/filtros.js` | Módulo independiente `Filtros` (global vía `window.Filtros`): grises, brillo, negativo sobre `ImageData`. | Agregar o ajustar filtros de color. |
+| `2 entrega/js/filtros.js` | Módulo independiente `Filtros` (global vía `window.Filtros`): grises, brillo, negativo y blur (filtro de vecinos) sobre `ImageData`. | Agregar o ajustar filtros de color/difuminado. |
 | `2 entrega/css/blocka.css` | Layout de la zona de ejecución (canvas, HUD, dificultad, sorteo, fin, ayudita) y cards informativas. | Visual del HUD, animaciones, overlays. |
 | `2 entrega/css/global.css` | Variables de diseño (`--primario`, etc.), tipografía (`Plus Jakarta Sans`) y botones globales (`btn-primario`, `btn-acento`). | Colores y estilos de botón compartidos por todo el sitio. |
 | `2 entrega/assets/bancoImagenes/*` | Fotos jugables (6 actualmente). | Sumar fotos nuevas. |
@@ -145,7 +146,7 @@ mousedown en pieza → rotar(±90) → verificarVictoria() ───────
 - Cambiar la dificultad (4/6/8) solo está permitido **antes** de apretar Comenzar; si se cambia,
   se llama `setupNivel()` de nuevo y se pierde el estado anterior. En niveles con límite, el
   límite efectivo se recalcula (ver bonificación en §9).
-- Ganar el nivel 4 y apretar "Volver a jugar" reinicia en nivel 1.
+- Ganar el nivel 5 (el último) y apretar "Volver a jugar" reinicia en nivel 1.
 
 ### El token `idSetup` (importante)
 
@@ -202,7 +203,7 @@ Todo el estado vive en variables del cierre de `blocka.js`:
 ```
 
 La condición de victoria es `angulo % 360 === 0` para **todas** las piezas
-(`verificarVictoria()`, blocka.js:459).
+(`verificarVictoria()`, blocka.js:463).
 
 ---
 
@@ -240,14 +241,54 @@ La condición de victoria es `angulo % 360 === 0` para **todas** las piezas
 | `0.299R + 0.587G + 0.114B` (ITU-R BT.601) | `grises(cv)` | Nivel 1 y pieza 0 del nivel 4 |
 | `canal + 255*0.3` (con tope 255) | `brillo(cv, 0.3)` | Nivel 2 y pieza 1 del nivel 4 |
 | `255 - canal` | `negativo(cv)` | Nivel 3 y pieza 2 del nivel 4 |
+| promedio de la ventana 5×5 (radio `K=2`), dividido por los vecinos que existen | `blur(cv, 2)` | **Nivel 5** (todas las piezas) |
+
+**Mapa de archivos y líneas (post-nivel 5):**
+
+| Qué | Dónde |
+|---|---|
+| Filtro grises | `2 entrega/js/filtros.js:9` (`Filtros.grises`) |
+| Filtro brillo | `2 entrega/js/filtros.js:26` (`Filtros.brillo`) |
+| Filtro negativo | `2 entrega/js/filtros.js:42` (`Filtros.negativo`) |
+| Filtro blur (vecinos) | `2 entrega/js/filtros.js:62` (`Filtros.blur`) |
+| Selector nivel → filtro | `2 entrega/js/blocka.js:125-158` (`aplicarFiltroSegunNivel`) |
+| Única llamada que filtra (por pieza, en el setup) | `2 entrega/js/blocka.js:307` |
+| Export al mundo | `filtros.js:92` → `window.Filtros` (se carga **antes** que `blocka.js` en el HTML) |
 
 La asignación nivel → filtro vive en `aplicarFiltroSegunNivel(cv, indicePieza, nivel)`
-(blocka.js:124). El nivel 4 usa `indicePieza % 4` para dar un filtro distinto por cuadrante
-(queda 1 pieza sin filtro, en RGB original).
+(blocka.js:125): `case 1` grises, `case 2` brillo, `case 3` negativo, `case 4` un filtro
+distinto por cuadrante usando `indicePieza % 4` (queda 1 pieza sin filtro, en RGB original) y
+`case 5` → `Filtros.blur(cv)` (blocka.js:152-154).
+
+### El blur del nivel 5 (filtro de vecinos)
+
+A diferencia de los filtros "por píxel" (grises/brillo/negativo), el blur **mira a la ventana
+5×5** de cada píxel (`K = 2` ⇒ `dy, dx ∈ [-2, 2]`, 25 vecinos en el interior):
+
+```js
+blur(cv, K = 2) {
+    const origen = c.getImageData(0, 0, cv.width, cv.height);   // se lee de acá
+    const destino = c.createImageData(cv.width, cv.height);     // se escribe acá
+    // por cada píxel: sumo R/G/B de los vecinos, cuento n y divido por n
+    // si un vecino cae fuera de la imagen, no existe ⇒ n < 25
+}
+```
+
+Dos detalles importantes de la defensa:
+
+1. **Dos buffers separados** (`origen.data` para leer, `destino.data` para escribir): si se
+   escribiera sobre el mismo array, los promedios se contaminarían con valores ya modificados
+   en la misma pasada.
+2. **Bordes:** en el borde faltan vecinos (esquina ⇒ sólo 9). Por eso se cuenta `n` y se divide
+   por los vecinos que **existen de verdad**, no siempre por 25. `alpha` se copia tal cual.
+
+Como el filtro corre **por pieza** (canvas chico de `ladoPieza`), el blur no "cruza" el borde
+entre piezas: cada sub-imagen se desenfoca de forma independiente dentro de su propia ventana.
 
 ### Cómo agregar un filtro nuevo (2 pasos)
 
-1. En `filtros.js`:
+1. En `2 entrega/js/filtros.js`, sumar la función al objeto `Filtros` (antes de
+   `window.Filtros = Filtros`):
 
 ```js
 sepia(cv) {
@@ -263,10 +304,13 @@ sepia(cv) {
 }
 ```
 
-2. En `aplicarFiltroSegunNivel`, agregar un `case` para el nivel nuevo.
+2. En `aplicarFiltroSegunNivel` (blocka.js:125) agregar un `case` para el nivel nuevo, p. ej.
+   `case 6: Filtros.sepia(cv); break;`, y subir `TOTAL_NIVELES` (blocka.js:11) + agregar
+   `6: { limiteMs: … }` en `CONFIG_NIVELES` (blocka.js:16) si el nivel nuevo tiene (o no)
+   tiempo máximo. No olvidar la card "Niveles y Filtros" del HTML.
 
-> Los filtros se aplican **una sola vez**, al crear la pieza. No se reevalúan al rotar: la pieza
-> ya contiene sus píxeles filtrados.
+> Los filtros se aplican **una sola vez**, al crear la pieza (blocka.js:307). No se reevalúan
+> al rotar: la pieza ya contiene sus píxeles filtrados.
 
 ---
 
@@ -335,7 +379,7 @@ piezas están en 0° → `ganar()`:
 - El récord guarda **el tiempo final, incluida la penalización de la Ayudita** (si usaste la
   bombilla, los +5s entran en la cuenta del récord).
 
-### Tiempo máximo (niveles 3 y 4, contrarreloj)
+### Tiempo máximo (niveles 3, 4 y 5, contrarreloj)
 
 Los niveles avanzados tienen **límite de tiempo**: si el jugador no resuelve la imagen antes
 de que se agote, **pierde el nivel** (sin récord) y puede reintentar.
@@ -347,13 +391,15 @@ const CONFIG_NIVELES = {          // límite BASE por nivel (null = sin límite)
     1: { limiteMs: null },
     2: { limiteMs: null },
     3: { limiteMs: 60000 },       // 1:00
-    4: { limiteMs: 45000 }        // 0:45
+    4: { limiteMs: 45000 },       // 0:45
+    5: { limiteMs: 30000 }        // 0:30  (nivel blur, el más difícil)
 };
 const FACTOR_PIEZAS = { 4: 1, 6: 1.3, 8: 1.6 };   // bonificación por cantidad de piezas
 ```
 
 `limiteEfectivoMs()` devuelve `base × factor` (redondeado); ese valor es `limiteMs` y es lo
-que se muestra al jugador. Ejemplos: nivel 3 con 6 piezas → 78 s; nivel 4 con 8 piezas → 72 s.
+que se muestra al jugador. Ejemplos: nivel 3 con 6 piezas → 78 s; nivel 4 con 8 piezas → 72 s;
+nivel 5 con 4 piezas → 30 s, con 6 → 39 s, con 8 → 48 s.
 La bonificación se aplica **para que la dificultad extra de 6/8 piezas no vuelva el nivel
 imposible** (UX: desafío que escala, no frustración aleatoria). Como el límite se recalcula en
 `setupNivel()`, cambiar 4/6/8 antes de "Comenzar" actualiza badge y aviso automáticamente.
@@ -375,7 +421,11 @@ Los cambios de clase los decide `pintarSemaforo(restante)` comparando contra
 `UMBRAL_ADVERTENCIA_MS` / `UMBRAL_ALERTA_MS` / `UMBRAL_PULSO_MS`, y solo toca `classList`
 cuando el estado cambia (evita trabajo por tick). Al entrar a un nivel **sin** límite,
 `actualizarInfoLimite()` quita las tres clases del semáforo: así el rojo/pulso de un nivel
-contrarreloj nunca queda "colgado" en los niveles 1-2 ni entre transiciones.
+contrarreloj nunca queda "colgado" en los niveles sin límite (1-2) ni entre transiciones.
+
+> **Nota del nivel 5:** su límite base (0:30) es igual al umbral `UMBRAL_ADVERTENCIA_MS`, así
+> que con 4 piezas el reloj arranca **ya en ámbar** (es el nivel más difícil: la urgencia es
+> constante); con 6 piezas (0:39) el ámbar aparece a los 9 s y con 8 (0:48) a los 18 s.
 
 **Flujo de derrota (`perder()`):**
 
@@ -418,7 +468,7 @@ correctamente una sub-imagen y la deja fija; a cambio suma 5 segundos al contado
 mismo estilo/fuente del resto de los botones del sitio) + clase propia `blocka-ayudita` (solo
 tamaño del icono y estados). El icono es un SVG inline de bombilla con `fill: currentColor`.
 
-**Comportamiento (`usarAyudita()`, blocka.js:403):**
+**Comportamiento (`usarAyudita()`, blocka.js:407):**
 
 1. Guardas: solo si `enJuego && !resuelto && !ayudaUsada`.
 2. Filtra las piezas **todavía rotadas** (`angulo % 360 !== 0`) y elige **una al azar**.
@@ -434,7 +484,7 @@ tamaño del icono y estados). El icono es un SVG inline de bombilla con `fill: c
 ### Resaltado de la pieza ayudada (dibujado en canvas)
 
 Para que el jugador sepa **cuál** sub-imagen se resolvió, `render()` dibuja un aro sobre la
-celda de cada pieza con `fija === true` (`dibujarResaltado()`, blocka.js:354):
+celda de cada pieza con `fija === true` (`dibujarResaltado()`, blocka.js:358):
 
 - **Trazo:** el path va **centrado en el borde de la celda** (`ctx.roundRect(x, y, w, h, 10)`
   con fallback a `ctx.rect()` si no existe `roundRect`), `lineWidth = 4` → el aro queda 2 px
@@ -483,7 +533,7 @@ crezca 5000 ms — ver §9.
 | Qué | Dónde | Efecto |
 |---|---|---|
 | Penalización de la Ayudita | `PENALIZACION_AYUDA_MS` | Segundos sumados por uso (en contrarreloj: margen extra). |
-| Tiempo máximo por nivel | `CONFIG_NIVELES` | `limiteMs` base por nivel (`null` = sin límite). Nivel 3: 60000, nivel 4: 45000. |
+| Tiempo máximo por nivel | `CONFIG_NIVELES` | `limiteMs` base por nivel (`null` = sin límite). Nivel 3: 60000, nivel 4: 45000, nivel 5: 30000. |
 | Bonificación por piezas | `FACTOR_PIEZAS` | Multiplica el límite base según 4/6/8 piezas (1 / 1.3 / 1.6). |
 | Umbrales del semáforo | `UMBRAL_ADVERTENCIA_MS` / `UMBRAL_ALERTA_MS` / `UMBRAL_PULSO_MS` | Restante en ámbar (30 s), rojo (10 s), rojo pulsante (5 s). |
 | Colores del semáforo y del overlay de derrota | variables `--advertencia` / `--alerta` en `global.css`; clases `.blocka-hud__tiempo--*`, `.blocka-fin--perdido` | Design tokens compartidos. |
@@ -611,7 +661,7 @@ No expone las coordenadas de cada celda; si las necesitás para tests de render,
   respetar esa escala (sorteo z-index 5).
 - `btnsDificultad` se deshabilita con `btn.disabled = enJuego`; cualquier control nuevo del HUD
   debería seguir la misma regla (deshabilitado durante la partida y antes de Comenzar).
-- Las cards de info ("Niveles y Filtros") listan 4 niveles a mano: si agregás un nivel, actualizar
+- Las cards de info ("Niveles y Filtros") listan los 5 niveles a mano: si agregás un nivel, actualizar
   ese `<ul>` del HTML.
 
 ---
@@ -639,7 +689,12 @@ No expone las coordenadas de cada celda; si las necesitás para tests de render,
          regresiva (el reloj cuenta hacia arriba como siempre).
    - [ ] **Nivel 3**: antes de "Comenzar" aparece el aviso "Nivel contrarreloj — 01:00" sobre
          el canvas; con 6 piezas el aviso/badge muestran 01:18 y con 8 piezas 01:36.
-   - [ ] **Nivel 4**: aviso/badge muestran 00:45 (4 piezas), 00:58 (6), 01:12 (8).
+    - [ ] **Nivel 4**: aviso/badge muestran 00:45 (4 piezas), 00:58 (6), 01:12 (8).
+    - [ ] **Nivel 5 (blur)**: el HUD dice "Nivel 5", las piezas se ven **dificultadas de ver**
+          (promedio de vecinos 5×5, no es un filtro por píxel); aviso/badge muestran 00:30
+          (4 piezas), 00:39 (6), 00:48 (8).
+    - [ ] **Nivel 5**: al terminarlo, el overlay dice "¡Juego completado!" y el botón es
+          "Volver a jugar" (vuelve al nivel 1, no hay nivel 6).
    - [ ] Al apretar "Comenzar" el aviso desaparece y el badge queda; el reloj cuenta **hacia
          atrás** desde el límite.
    - [ ] Semáforo: ≤30 s el reloj se pone ámbar, ≤10 s rojo, ≤5 s rojo pulsante.
@@ -712,6 +767,53 @@ Notas del entorno de test:
 - El archivo temporal se elimina después de cada corrida; conviene versionarlo como
   `specs/smoke-test.html` si se quiere automatizar en CI.
 
+### Smoke test del nivel 5 (blur) — última corrida
+
+Misma técnica (copia temporal de `blocka.html` + `__smoke.js`, Chrome headless con
+`--virtual-time-budget=120000`, servida por HTTP). Verifica el filtro de vecinos **con asserts
+sobre píxeles** (no sólo "que no crashee"): se crea un canvas 5×5 con valores conocidos
+(`10·(i+1)`), se aplica `Filtros.blur(cv, 2)` y se controla que el centro sea el promedio de los
+25 vecinos y la esquina el promedio de los 9 existentes:
+
+```
+SMOKE OK (31/31)
+PASS blur centro = promedio ventana 5x5 [130]
+PASS blur esquina divide por n=9 [70]
+PASS blur conserva alfa [255]
+PASS nivel 1 sin limite [null]
+PASS nivel 1 sin badge
+PASS nivel 1 sin aviso
+PASS nivel 1 reloj 00:00 [00:00]
+PASS nivel 3 limite 60s [60000]
+PASS nivel 4 limite 45s [45000]
+PASS nivel 4 reloj 00:45 [00:45]
+PASS nivel 5 aplica blur a las 4 piezas [4]
+PASS nivel 5 limite 30s [30000]
+PASS HUD Nivel 5 [Nivel 5]
+PASS nivel 5 reloj 00:30 [00:30]
+PASS badge 00:30 [00:30]
+PASS aviso previo 00:30 [00:30]
+PASS nivel 5 piezas barajadas [[270,90,90,180]]
+PASS comenzar inicia el reloj
+PASS aviso oculto al comenzar
+PASS badge persiste durante el nivel
+PASS nivel 5 con 6 piezas aplica blur a las 6 [6]
+PASS nivel 5 con 6 piezas = 39s [39000]
+PASS badge 00:39 [00:39]
+PASS perder() congela el nivel
+PASS overlay de derrota
+PASS boton Reintentar [Reintentar]
+PASS reintentar repite nivel 5 con 6 piezas [39000]
+PASS vuelve el aviso previo tras reintentar
+PASS resolver() gana el nivel 5
+PASS fin del juego [Volver a jugar]
+PASS vuelve al nivel 1 sin limite [1]
+```
+
+El conteo de llamadas a `Filtros.blur` se hizo **envolviendo la función** antes de
+`irANivel(5)` (`Filtros.blur = () => { n++; ... }`), comprobando que el `case 5` filtra exactamente
+una vez por pieza creada (4 con grilla 2×2, 6 con grilla 3×2).
+
 ---
 
 ## 15. Resumen para la defensa
@@ -719,16 +821,19 @@ Notas del entorno de test:
 1. **Un solo archivo de lógica** (`blocka.js`) con estado en closure y `filtros.js` desacoplado.
 2. **Setup async con token anti-carreras** (`idSetup`) y sorteo animado previo.
 3. **Piezas cuadradas** para que rotar 90° no rompa la grilla; recorte central proporcional.
-4. **Filtros por `ImageData`** aplicados una vez al crear cada pieza.
+4. **Filtros por `ImageData`** aplicados una vez al crear cada pieza: 4 "de píxel" (grises,
+   brillo, negativo) + 1 **de vecinos** (blur 5×5 con división por `n` en los bordes) en el
+   nivel 5; todos viven en `filtros.js` y se eligen con un `case` por nivel.
 5. **Reloj derivado de `inicioMs`**, lo que hace trivial pausarlo y penalizar +5 s.
 6. **Ayudita**: 1 uso por nivel, fija una pieza al azar (`fija = true`), +5 s, flash del botón y
    **aro de selección dibujado en canvas** sobre la celda (pulso 1.5 s con `requestAnimationFrame`
    y glow persistente en el color primario leído de `--primario`); no toca el flujo principal
    (solo agrega un guard en `rotar()`).
-7. **Niveles contrarreloj** (3 y 4) con config data-driven (`CONFIG_NIVELES` + `FACTOR_PIEZAS`),
+7. **Niveles contrarreloj** (3, 4 y 5) con config data-driven (`CONFIG_NIVELES` + `FACTOR_PIEZAS`),
    cuenta regresiva y **semáforo de urgencia gradual** (ámbar 30 s / rojo 10 s / pulso 5 s),
    avisos redundantes (aviso previo + badge persistente + a11y `aria-live`) y derrota con
-   reintentar sin avanzar de nivel. La Ayudita suma margen en lugar de penalizar.
+   reintentar sin avanzar de nivel. La Ayudita suma margen en lugar de penalizar. El nivel 5
+   (blur, 0:30) cierra la dificultad: filtro más costoso de entender + tiempo más corto.
 8. **Récords por nivel y piezas** en `localStorage` con migración de clave legada.
 9. Próximos pasos de escalabilidad: módulos, config en JSON, animación con `rAF`, Pointer
    Events y test suite con smoke test headless.
