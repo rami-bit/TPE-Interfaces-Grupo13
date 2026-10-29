@@ -39,6 +39,11 @@ body {
     overflow: hidden;
 }
 
+/* Peg Solitaire: card más ancha para aprovechar 1080 */
+.juego-card--peg {
+    width: min(950px, 100%);
+}
+
 .juego-video {
     position: relative;
     aspect-ratio: 1023.09 / 523.48;
@@ -628,4 +633,47 @@ body {
 
     font-size: 13px;
     line-height: 1.5;
+}
+
+/* ============================================================
+   PEG SOLITAIRE CANVAS STYLES
+   ============================================================ */
+
+.peg-solitaire-mock {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    background-color: var(--secundarioSombra1, #050E1F);
+    width: 100%;
+    overflow: hidden;
+}
+
+.peg-solitaire-tablero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin: 0;
+}
+
+.peg-solitaire-lienzo {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin: 0;
+}
+
+.peg-solitaire-canvas {
+    display: block;
+    width: min(100%, calc(85vh * 1100 / 1150));
+    height: auto;
+    border-radius: 0;
+    background-color: var(--textoBlack, #000);
+    touch-action: manipulation;
 }

@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="css/template.css">
     <link rel="stylesheet" href="css/game.css">
     <link rel="stylesheet" href="css/carrusel.css">
-    <title>Document</title>
+    <title>Peg Solitaire | Code Play</title>
 </head>
 
 <body>
@@ -137,20 +137,20 @@
     </nav>
 
     <main class="juego-main">
-        <p class="migas"><a href="home.html">Juegos</a>>>Puzzle>>Peg solitary boca edition</p>
-        <article class="juego-card">
-            <div class="juego-video">
-                <img src="assets/peg-solitary.png" alt="Peg Solitaire Edition Boca Juniors" class="juego-caratula">
-                <button type="button" class="juego-play" aria-label="Jugar">
-                    <span class="juego-play__circulo">
-                        <span class="juego-play__triangulo"></span>
-                    </span>
-                </button>
+        <p class="migas"><a href="home.html">Juegos</a>>>Puzzle>>Peg Solitaire Boca Juniors</p>
+        <article class="juego-card juego-card--peg">
+            <div class="peg-solitaire-mock">
+                <div class="peg-solitaire-tablero">
+                    <div class="peg-solitaire-lienzo">
+                        <canvas id="peg-solitaire-canvas" class="peg-solitaire-canvas"
+                            aria-label="Tablero de Peg Solitaire de Boca Juniors"></canvas>
+                    </div>
+                </div>
             </div>
             <div class="juego-barra">
                 <div class="juego-barra__nombre">
                     <img src="assets/logo.svg" alt="" class="juego-barra__icono">
-                    <span class="juego-barra__titulo">Peg Solitary</span>
+                    <span class="juego-barra__titulo">Peg Solitaire</span>
                 </div>
                 <div class="juego-barra__botones">
                     <button type="button" class="btn-juego btn-juego--compartir" aria-label="Compartir">
@@ -452,6 +452,11 @@
 
 
     <script src="js/header.js"></script>
+    <script src="js/imagenesTapitas.js"></script>
+    <script src="js/imagenesCamisetas.js"></script>
+    <script src="js/ElementoJuego.js"></script>
+    <script src="js/FichaTapita.js"></script>
+    <script src="js/FichaCamiseta.js"></script>
     <script src="js/juego.js"></script>
 
 </body>
