@@ -157,7 +157,20 @@ Al soltar el botón del mouse, se calcula el destino final:
 
 ---
 
-## 5. Pruebas y Comportamiento Esperado
+## 5. Pistas Visuales Animadas de Destino (Hints)
+
+Cumpliendo con la consigna obligatoria del trabajo práctico (*"Hints ANIMADOS indicando de dónde puedo largar la ficha, ej: flechas, hints, animaciones"*), el sistema implementa un ciclo de animación continuo mediante `requestAnimationFrame`:
+
+* **Activación eficiente**: El ciclo de animación (`iniciarAnimacionHints()`) se dispara únicamente cuando el usuario selecciona o arrastra una ficha con movimientos válidos. Al soltarla o deseleccionarla, se cancela inmediatamente (`cancelAnimationFrame(animHintsId)`), consumiendo 0% de procesamiento en reposo.
+* **Composición visual de cada destino**:
+  1. **Onda expansiva periódica**: Un anillo dorado exterior que brota desde el agujero y se disipa hacia afuera cada 1.0 segundo (`radioOnda` y `alphaOnda` graduales).
+  2. **Pulso senoidal de fondo**: El radio interno del agujero y la intensidad del resplandor dorado oscilan armónicamente mediante funciones trigonométricas basadas en `performance.now()`.
+  3. **Borde perimetral y diana central**: Anillo dorado sólido de 4px con punto indicador en las coordenadas exactas de caída.
+  4. **Flecha indicadora animada**: Una flecha dorada con sombra y borde oscuro (`dibujarFlechaIndicadora`) situada arriba del agujero que oscila verticalmente arriba y abajo apuntando al hueco receptor.
+
+---
+
+## 6. Pruebas y Comportamiento Esperado
 
 | Acción del Usuario | Resultado Esperado | Justificación Técnica |
 | :--- | :--- | :--- |
@@ -170,12 +183,12 @@ Al soltar el botón del mouse, se calcula el destino final:
 
 ---
 
-## 6. Puntos de Extensión Futura
+## 7. Puntos de Extensión Futura
 
 La arquitectura actual deja desacopladas las bases para las siguientes etapas:
 1. **Detección de Fin de Partida**:
    * **Victoria**: `figuras.length === 1`.
    * **Derrota por Bloqueo**: Iterar sobre `figuras` evaluando `obtenerMovimientosValidos(f).length > 0`. Si ninguna ficha puede moverse y `figuras.length > 1`, se declara bloqueo.
-2. **Sugerencias Visuales (Hints)**:
-   * Al hacer `onMouseDown`, dibujar indicadores circulares semitransparentes en las coordenadas retornadas por `obtenerMovimientosValidos(lastClickedFigure)`.
+2. **HUD / Temporizador y Reinicio**:
+   * Contador de piezas restantes y botón para reiniciar la partida sin recargar la página.
 

@@ -66,6 +66,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let isMouseDown = false;
     let lastClickedFigure = null;
     let lastClickedPos = null;
+    let destinosValidosActivos = [];
+    let animHintsId = null;
 
     /* ============================================================
        PRECARGA DE IMÁGENES
@@ -152,7 +154,107 @@ document.addEventListener('DOMContentLoaded', () => {
                 0, 0, CROP.w, CROP.h
             );
         }
+        drawHints();
         figuras.forEach(f => f.draw());
+    }
+
+    /* ============================================================
+       PISTAS VISUALES (HINTS) DE DESTINO VÁLIDO
+       ============================================================ */
+    function dibujarFlechaIndicadora(x, y, oscilacion) {
+        const topY = y - FICHA_RADIO - 28 + oscilacion;
+        ctx.save();
+        ctx.fillStyle = "#FFD700";
+        ctx.strokeStyle = "#050E1F";
+        ctx.lineWidth = 2;
+        ctx.shadowColor = "rgba(255, 215, 0, 0.85)";
+        ctx.shadowBlur = 8;
+
+        ctx.beginPath();
+        ctx.moveTo(x - 5, topY);
+        ctx.lineTo(x + 5, topY);
+        ctx.lineTo(x + 5, topY + 12);
+        ctx.lineTo(x + 12, topY + 12);
+        ctx.lineTo(x, topY + 24);
+        ctx.lineTo(x - 12, topY + 12);
+        ctx.lineTo(x - 5, topY + 12);
+        ctx.closePath();
+
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+    }
+
+    function iniciarAnimacionHints() {
+        if (animHintsId != null) return;
+
+        function loop() {
+            if (destinosValidosActivos && destinosValidosActivos.length > 0) {
+                drawFigures();
+                animHintsId = requestAnimationFrame(loop);
+            } else {
+                animHintsId = null;
+            }
+        }
+        animHintsId = requestAnimationFrame(loop);
+    }
+
+    function detenerAnimacionHints() {
+        if (animHintsId != null) {
+            cancelAnimationFrame(animHintsId);
+            animHintsId = null;
+        }
+    }
+
+    function drawHints() {
+        if (!destinosValidosActivos || destinosValidosActivos.length === 0) return;
+
+        const now = performance.now();
+        const t = now / 250;
+        const oscilacion = Math.sin(t) * 5;
+        const pulseRadio = (FICHA_RADIO - 6) + Math.sin(t) * 3;
+        const alphaFondo = 0.35 + Math.sin(t) * 0.15;
+
+        // Onda expansiva que se expande hacia afuera del agujero cada 1s
+        const ondaProgreso = (now % 1000) / 1000;
+        const radioOnda = (FICHA_RADIO - 6) + ondaProgreso * 24;
+        const alphaOnda = Math.max(0, (1 - ondaProgreso) * 0.65);
+
+        destinosValidosActivos.forEach(mov => {
+            const center = getCellCenter(mov.destino.row, mov.destino.col);
+            ctx.save();
+
+            // 1. Onda expansiva exterior
+            ctx.beginPath();
+            ctx.arc(center.x, center.y, radioOnda, 0, 2 * Math.PI);
+            ctx.strokeStyle = `rgba(255, 215, 0, ${alphaOnda})`;
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            // 2. Fondo dorado pulsante dentro del hueco
+            ctx.beginPath();
+            ctx.arc(center.x, center.y, pulseRadio, 0, 2 * Math.PI);
+            ctx.fillStyle = `rgba(255, 215, 0, ${alphaFondo})`;
+            ctx.shadowColor = "rgba(255, 215, 0, 0.8)";
+            ctx.shadowBlur = 12;
+            ctx.fill();
+
+            // 3. Borde circular dorado resaltado
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = "#FFD700";
+            ctx.stroke();
+
+            // 4. Diana central
+            ctx.beginPath();
+            ctx.arc(center.x, center.y, 6, 0, 2 * Math.PI);
+            ctx.fillStyle = "#FFD700";
+            ctx.fill();
+
+            ctx.restore();
+
+            // 5. Flecha indicadora superior animada
+            dibujarFlechaIndicadora(center.x, center.y, oscilacion);
+        });
     }
 
     /* ============================================================
@@ -247,6 +349,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (lastClickedFigure != null) {
             lastClickedFigure.setResaltado(false);
             lastClickedFigure = null;
+            destinosValidosActivos = [];
+            detenerAnimacionHints();
         }
 
         // Convertir coordenadas CSS a coordenadas internas del canvas
@@ -267,6 +371,16 @@ document.addEventListener('DOMContentLoaded', () => {
             clickFig.setResaltado(true);
             lastClickedFigure = clickFig;
             lastClickedPos = { x: clickFig.getPosx(), y: clickFig.getPosY() };
+            // Resaltar e iniciar animación de los huecos válidos a donde puede saltar
+            destinosValidosActivos = obtenerMovimientosValidos(clickFig);
+            if (destinosValidosActivos.length > 0) {
+                iniciarAnimacionHints();
+            } else {
+                detenerAnimacionHints();
+            }
+        } else {
+            destinosValidosActivos = [];
+            detenerAnimacionHints();
         }
 
         drawFigures();
@@ -301,9 +415,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!dentroCanvas) {
             // Soltó fuera del canvas → snap-back
             lastClickedFigure.setPos(lastClickedPos.x, lastClickedPos.y);
-    
             lastClickedFigure.setResaltado(false);
             lastClickedFigure = null;
+            destinosValidosActivos = [];
+            detenerAnimacionHints();
             drawFigures();
             return;
         }
@@ -384,6 +499,8 @@ document.addEventListener('DOMContentLoaded', () => {
             lastClickedFigure.setPos(lastClickedPos.x, lastClickedPos.y);
     
         }
+        destinosValidosActivos = [];
+        detenerAnimacionHints();
         lastClickedFigure.setResaltado(false);
         lastClickedFigure = null;
         drawFigures();
