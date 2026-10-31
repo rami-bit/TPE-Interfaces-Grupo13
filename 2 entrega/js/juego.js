@@ -40,18 +40,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /* ============================================================
        MATRIZ DEL TABLERO (inglés estándar 7×7)
-       true  → posición jugable
-       false → centro vacío al inicio
-       null  → fuera del tablero
+        1 → casilla con ficha al inicio
+        0 → hueco vacío al inicio (centro)
+       -1 → fuera del tablero (esquinas no jugables)
        ============================================================ */
     const TABLERO_BASE = [
-        [null, null, true,  true,  true,  null, null],
-        [null, null, true,  true,  true,  null, null],
-        [true, true,  true,  true,  true,  true,  true],
-        [true, true,  true,  false, true,  true,  true],
-        [true, true,  true,  true,  true,  true,  true],
-        [null, null, true,  true,  true,  null, null],
-        [null, null, true,  true,  true,  null, null]
+        [-1, -1,  1,  1,  1, -1, -1],
+        [-1, -1,  1,  1,  1, -1, -1],
+        [ 1,  1,  1,  1,  1,  1,  1],
+        [ 1,  1,  1,  0,  1,  1,  1],
+        [ 1,  1,  1,  1,  1,  1,  1],
+        [-1, -1,  1,  1,  1, -1, -1],
+        [-1, -1,  1,  1,  1, -1, -1]
     ];
 
     /* ============================================================
@@ -126,13 +126,13 @@ document.addEventListener('DOMContentLoaded', () => {
         for (let row = 0; row < 7; row++) {
             tablero[row] = [];
             for (let col = 0; col < 7; col++) {
-                if (TABLERO_BASE[row][col] === true) {
+                if (TABLERO_BASE[row][col] === 1) {
                     const center = getCellCenter(row, col);
                     const ficha = crearFichaAleatoria(center.x, center.y);
                     tablero[row][col] = ficha;
                     figuras.push(ficha);
                 } else {
-                    tablero[row][col] = null;
+                    tablero[row][col] = TABLERO_BASE[row][col] === 0 ? 0 : -1;
                 }
             }
         }
