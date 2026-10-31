@@ -294,7 +294,7 @@ ElementoJuego (FichaTapita | FichaCamiseta)
 
 > Esta sección lista lo que falta y **la mejor práctica para encararlo**, sin implementar la solución.
 
-### 5.1 Comer ficha / validar movimiento
+### 5.1 Comer ficha / validar movimiento (IMPLEMENTADO - Ver specs/logica_movimientos.md)
 
 **Falta:** en `onMouseUp`, decidir si el arrastre es un salto válido y aplicarlo.
 

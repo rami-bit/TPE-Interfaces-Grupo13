@@ -259,6 +259,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const clickFig = findClickedFigure(canvasX, canvasY);
 
         if (clickFig != null) {
+            const idx = figuras.indexOf(clickFig);
+            if (idx > -1) {
+                figuras.splice(idx, 1);
+                figuras.push(clickFig);
+            }
             clickFig.setResaltado(true);
             lastClickedFigure = clickFig;
             lastClickedPos = { x: clickFig.getPosx(), y: clickFig.getPosY() };
@@ -296,6 +301,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!dentroCanvas) {
             // Soltó fuera del canvas → snap-back
             lastClickedFigure.setPos(lastClickedPos.x, lastClickedPos.y);
+    
             lastClickedFigure.setResaltado(false);
             lastClickedFigure = null;
             drawFigures();
@@ -317,13 +323,67 @@ document.addEventListener('DOMContentLoaded', () => {
                 del tablero y de figuras[], y actualizar la matriz.
              4. Si NO es válido: snap-back a la posición original.
            ================================================================ */
-        // Verificar si la ficha puede realizar algún movimiento válido
-        const movimientos = obtenerMovimientosValidos(lastClickedFigure);
-        const puedeMover = movimientos.length > 0;
-        console.log(`Ficha en fila ${lastClickedFigure.row}, columna ${lastClickedFigure.col} -> ¿Tiene movimiento válido?: ${puedeMover}`, movimientos);
+        // Coordenadas internas del canvas en el momento de soltar
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        const canvasX = (e.clientX - rect.left) * scaleX;
+        const canvasY = (e.clientY - rect.top) * scaleY;
 
-        // Por ahora, tal como se solicitó, devuelve la ficha a su origen (snap-back):
-        lastClickedFigure.setPos(lastClickedPos.x, lastClickedPos.y);
+        // Movimientos válidos permitidos (hacia casillas con 0 a distancia 2 con ficha intermedia)
+        const movimientos = obtenerMovimientosValidos(lastClickedFigure);
+
+
+        let movElegido = null;
+        let menorDistancia = Infinity;
+
+        // Comprobar si el punto de soltado coincide con alguno de los huecos permitidos (0)
+        for (const mov of movimientos) {
+            const center = getCellCenter(mov.destino.row, mov.destino.col);
+            const dx = canvasX - center.x;
+            const dy = canvasY - center.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            // Tolerancia de soltado: dentro del radio del agujero
+            if (dist <= FICHA_RADIO && dist < menorDistancia) {
+                menorDistancia = dist;
+                movElegido = { mov, center };
+            }
+        }
+
+        if (movElegido != null) {
+            // --- MOVIMIENTO VÁLIDO ---
+            const { mov, center } = movElegido;
+            const origRow = lastClickedFigure.row;
+            const origCol = lastClickedFigure.col;
+            const destRow = mov.destino.row;
+            const destCol = mov.destino.col;
+            const medioRow = mov.intermedio.row;
+            const medioCol = mov.intermedio.col;
+
+            // 1. Centrar ficha en el agujero destino (snap-to-grid)
+            lastClickedFigure.setPos(center.x, center.y);
+            lastClickedFigure.row = destRow;
+            lastClickedFigure.col = destCol;
+
+            // 2. Actualizar casillas en la matriz del tablero
+            tablero[origRow][origCol] = 0;
+            tablero[destRow][destCol] = lastClickedFigure;
+
+            // 3. Comer la ficha intermedia (quitar de matriz y de figuras[])
+            const fichaComida = tablero[medioRow][medioCol];
+            tablero[medioRow][medioCol] = 0;
+            if (fichaComida) {
+                figuras = figuras.filter(f => f !== fichaComida);
+            }
+
+            console.log(`Movimiento completado: [${origRow}, ${origCol}] -> [${destRow}, ${destCol}], comida: [${medioRow}, ${medioCol}]`);
+            console.log(`Fichas restantes: ${figuras.length}`);
+        } else {
+            // --- MOVIMIENTO INVÁLIDO (intento a casilla con 1, -1, fuera de rango o salto incorrecto) ---
+            // Snap-back a la posición de origen
+            lastClickedFigure.setPos(lastClickedPos.x, lastClickedPos.y);
+    
+        }
         lastClickedFigure.setResaltado(false);
         lastClickedFigure = null;
         drawFigures();
