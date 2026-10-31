@@ -129,6 +129,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (TABLERO_BASE[row][col] === 1) {
                     const center = getCellCenter(row, col);
                     const ficha = crearFichaAleatoria(center.x, center.y);
+                    ficha.row = row;
+                    ficha.col = col;
                     tablero[row][col] = ficha;
                     figuras.push(ficha);
                 } else {
@@ -163,6 +165,77 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         return null;
+    }
+
+    /* ============================================================
+       VALIDACIÓN: ¿PUEDE MOVERSE ESTA FICHA?
+       Revisa las 4 direcciones (arriba, abajo, izquierda, derecha)
+       a 2 posiciones de distancia.
+       Para que pueda saltar:
+         - A 2 posiciones DEBE haber un 0 (hueco vacío jugable).
+           Si hay 1 o -1, no se puede mover hacia esa dirección.
+         - A 1 posición (intermedia) DEBE haber una ficha para comer.
+       ============================================================ */
+    function obtenerCoordenadasFicha(ficha) {
+        if (!ficha) return null;
+        if (ficha.row !== undefined && ficha.col !== undefined) {
+            return { row: ficha.row, col: ficha.col };
+        }
+        for (let r = 0; r < 7; r++) {
+            for (let c = 0; c < 7; c++) {
+                if (tablero[r][c] === ficha) {
+                    ficha.row = r;
+                    ficha.col = c;
+                    return { row: r, col: c };
+                }
+            }
+        }
+        return null;
+    }
+
+    function obtenerMovimientosValidos(ficha) {
+        const coords = obtenerCoordenadasFicha(ficha);
+        if (!coords) return [];
+
+        const { row, col } = coords;
+        const direcciones = [
+            { nombre: 'arriba',    dr: -1, dc:  0 },
+            { nombre: 'abajo',     dr:  1, dc:  0 },
+            { nombre: 'izquierda', dr:  0, dc: -1 },
+            { nombre: 'derecha',   dr:  0, dc:  1 }
+        ];
+
+        const movimientosValidos = [];
+
+        for (const dir of direcciones) {
+            const destR = row + dir.dr * 2;
+            const destC = col + dir.dc * 2;
+            const medioR = row + dir.dr;
+            const medioC = col + dir.dc;
+
+            // 1. Destino dentro de los límites del tablero (0 a 6)
+            if (destR < 0 || destR >= 7 || destC < 0 || destC >= 7) continue;
+
+            // 2. A 2 casillas DEBE haber un 0 sí o sí (hueco vacío jugable).
+            // Si es 1, -1 o no es 0, no se puede mover hacia esa dirección.
+            if (tablero[destR][destC] !== 0) continue;
+
+            // 3. En la casilla del medio (distancia 1) debe haber una ficha para saltar
+            const fichaMedio = tablero[medioR][medioC];
+            if (fichaMedio === 0 || fichaMedio === -1) continue;
+
+            movimientosValidos.push({
+                direccion: dir.nombre,
+                destino: { row: destR, col: destC },
+                intermedio: { row: medioR, col: medioC }
+            });
+        }
+
+        return movimientosValidos;
+    }
+
+    function puedeRealizarMovimiento(ficha) {
+        return obtenerMovimientosValidos(ficha).length > 0;
     }
 
     /* ============================================================
@@ -244,7 +317,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 del tablero y de figuras[], y actualizar la matriz.
              4. Si NO es válido: snap-back a la posición original.
            ================================================================ */
-        // Por ahora siempre snap-back:
+        // Verificar si la ficha puede realizar algún movimiento válido
+        const movimientos = obtenerMovimientosValidos(lastClickedFigure);
+        const puedeMover = movimientos.length > 0;
+        console.log(`Ficha en fila ${lastClickedFigure.row}, columna ${lastClickedFigure.col} -> ¿Tiene movimiento válido?: ${puedeMover}`, movimientos);
+
+        // Por ahora, tal como se solicitó, devuelve la ficha a su origen (snap-back):
         lastClickedFigure.setPos(lastClickedPos.x, lastClickedPos.y);
         lastClickedFigure.setResaltado(false);
         lastClickedFigure = null;
