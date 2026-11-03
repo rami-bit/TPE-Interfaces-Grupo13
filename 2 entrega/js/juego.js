@@ -487,9 +487,12 @@ document.addEventListener('DOMContentLoaded', () => {
             // 3. Comer la ficha intermedia (quitar de matriz y de figuras[])
             const fichaComida = tablero[medioRow][medioCol];
             tablero[medioRow][medioCol] = 0;
-            if (fichaComida) {
-                figuras = figuras.filter(f => f !== fichaComida);
+            fichaAEliminar = fichaComida;
+            if(fichaComida){
+                figuras = figuras.filter(f => f !== fichaAEliminar);
+                animacionEliminarFicha(); 
             }
+            
 
             console.log(`Movimiento completado: [${origRow}, ${origCol}] -> [${destRow}, ${destCol}], comida: [${medioRow}, ${medioCol}]`);
             console.log(`Fichas restantes: ${figuras.length}`);
@@ -504,6 +507,45 @@ document.addEventListener('DOMContentLoaded', () => {
         lastClickedFigure.setResaltado(false);
         lastClickedFigure = null;
         drawFigures();
+    }
+    let escala = 1.0;
+    let fichaAEliminar = null;
+    let fase = "creciendo";
+    function animacionEliminarFicha(){
+        if(fase==="creciendo"){
+            escala += 0.08;
+        }else if(fase==="encogiendo"){
+            escala *= 0.88;
+        }
+        if(escala>1.3){
+            fase="encogiendo";
+        }
+
+        // 1. Redibuja el tablero y las demás fichas
+        drawFigures();
+
+        // 2. Dibuja la ficha comida escalándose desde su propio centro
+        if (fichaAEliminar && escala > 0) {
+            const x = fichaAEliminar.getPosx();
+            const y = fichaAEliminar.getPosY();
+
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.scale(escala, escala);
+            ctx.translate(-x, -y);
+            fichaAEliminar.draw();
+            ctx.restore();
+        }
+        if(escala>0.03){
+            requestAnimationFrame(animacionEliminarFicha);
+        }else{
+            fichaAEliminar=null;
+            escala=1.0;
+            fase = "creciendo"
+            drawFigures();
+        }
+
+        
     }
 
     // mousedown en el canvas (necesita offsetX/offsetY)
