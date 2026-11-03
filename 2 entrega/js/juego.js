@@ -68,6 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let lastClickedPos = null;
     let destinosValidosActivos = [];
     let animHintsId = null;
+    let juegoTerminado = false;
 
     /* ============================================================
        PRECARGA DE IMÁGENES
@@ -344,6 +345,7 @@ document.addEventListener('DOMContentLoaded', () => {
        DRAG & DROP — eventos a nivel documento
        ============================================================ */
     function onMouseDown(e) {
+        if (juegoTerminado) return;
         isMouseDown = true;
 
         if (lastClickedFigure != null) {
@@ -507,6 +509,11 @@ document.addEventListener('DOMContentLoaded', () => {
         lastClickedFigure.setResaltado(false);
         lastClickedFigure = null;
         drawFigures();
+
+        // Si se realizó un movimiento válido, verificar si concluyó la partida
+        if (movElegido != null) {
+            verificarFinDelJuego();
+        }
     }
     let escala = 1.0;
     let fichaAEliminar = null;
@@ -553,6 +560,159 @@ document.addEventListener('DOMContentLoaded', () => {
     // mousemove y mouseup a nivel documento para catch fuera del canvas
     document.addEventListener('mousemove', onMouseMove, false);
     document.addEventListener('mouseup', onMouseUp, false);
+
+    /* ============================================================
+       CONTROL DE FIN DE PARTIDA Y REINICIO
+       ============================================================ */
+    function hayMovimientosPosiblesEnTablero() {
+        if (figuras.length <= 1) return false;
+
+        let i = 0;
+        let hayMovimiento = false;
+
+        // Bucle while que recorre las fichas y corta apenas encuentra una con movimientos válidos
+        while (i < figuras.length && !hayMovimiento) {
+            const ficha = figuras[i];
+            const movs = obtenerMovimientosValidos(ficha);
+            if (movs.length > 0) {
+                hayMovimiento = true; // Corta el while apenas una ficha puede moverse
+            }
+            i++;
+        }
+
+        // Si llegó al final del while sin encontrar movimientos válidos, devuelve false
+        return hayMovimiento;
+    }
+
+    function verificarFinDelJuego() {
+        // 1. Caso VICTORIA: Queda exactamente 1 sola ficha
+        if (figuras.length === 1) {
+            juegoTerminado = true;
+            destinosValidosActivos = [];
+            detenerAnimacionHints();
+            mostrarFinDeJuego(true, "¡Mística pura! Dejaste exactamente una sola ficha en el tablero.");
+            return true;
+        }
+
+        // 2. Caso DERROTA: Verificamos con el while si quedan movimientos posibles
+        const hayMovimientos = hayMovimientosPosiblesEnTablero();
+
+        if (!hayMovimientos) {
+            juegoTerminado = true;
+            destinosValidosActivos = [];
+            detenerAnimacionHints();
+            mostrarFinDeJuego(false, `Fin de la partida: perdiste, no quedan movimientos válidos. Fichas restantes: ${figuras.length}.`);
+            return true;
+        }
+
+        return false;
+    }
+
+    function mostrarFinDeJuego(victoria, mensaje) {
+        const overlay = document.getElementById('peg-overlay');
+        const tituloEl = document.getElementById('peg-overlay-titulo');
+        const mensajeEl = document.getElementById('peg-overlay-mensaje');
+
+        if (overlay && tituloEl && mensajeEl) {
+            tituloEl.textContent = victoria ? "¡VICTORIA BOSTERA!" : "¡SIN MOVIMIENTOS!";
+            tituloEl.style.color = victoria ? "#FFD700" : "#FF6B6B";
+            mensajeEl.textContent = mensaje;
+            overlay.classList.remove('peg-overlay--oculto');
+        } else {
+            alert(mensaje);
+        }
+    }
+
+    function ocultarFinDeJuego() {
+        const overlay = document.getElementById('peg-overlay');
+        if (overlay) {
+            overlay.classList.add('peg-overlay--oculto');
+        }
+    }
+
+    function reiniciarJuego() {
+        ocultarFinDeJuego();
+        juegoTerminado = false;
+        isMouseDown = false;
+        lastClickedFigure = null;
+        lastClickedPos = null;
+        destinosValidosActivos = [];
+        detenerAnimacionHints();
+
+        initTablero();
+        drawFigures();
+        console.log("Juego reiniciado. Fichas en el tablero:", figuras.length);
+    }
+
+    const btnReiniciarModal = document.getElementById('peg-btn-reiniciar-modal');
+    if (btnReiniciarModal) {
+        btnReiniciarModal.addEventListener('click', reiniciarJuego);
+    }
+
+    /* ============================================================
+       FUNCIONES DE PRUEBA (DEBUG TESTING EN CONSOLA)
+       ============================================================ */
+    window.debugCasiGanar = function () {
+        ocultarFinDeJuego();
+        juegoTerminado = false;
+        figuras = [];
+
+        for (let r = 0; r < 7; r++) {
+            for (let c = 0; c < 7; c++) {
+                tablero[r][c] = TABLERO_BASE[r][c] === -1 ? -1 : 0;
+            }
+        }
+
+        const c1 = getCellCenter(3, 1);
+        const f1 = crearFichaAleatoria(c1.x, c1.y);
+        f1.row = 3;
+        f1.col = 1;
+        tablero[3][1] = f1;
+        figuras.push(f1);
+
+        const c2 = getCellCenter(3, 2);
+        const f2 = crearFichaAleatoria(c2.x, c2.y);
+        f2.row = 3;
+        f2.col = 2;
+        tablero[3][2] = f2;
+        figuras.push(f2);
+
+        drawFigures();
+        console.log("TEST CASI GANAR CARGADO: Saltá la ficha de [3, 1] al centro [3, 3] para ganar!");
+    };
+
+    window.debugDerrota = function () {
+        ocultarFinDeJuego();
+        juegoTerminado = false;
+        figuras = [];
+
+        for (let r = 0; r < 7; r++) {
+            for (let c = 0; c < 7; c++) {
+                tablero[r][c] = TABLERO_BASE[r][c] === -1 ? -1 : 0;
+            }
+        }
+
+        const isolated = [
+            { r: 0, c: 2 },
+            { r: 6, c: 4 },
+            { r: 2, c: 0 }
+        ];
+
+        isolated.forEach(pos => {
+            const center = getCellCenter(pos.r, pos.c);
+            const f = crearFichaAleatoria(center.x, center.y);
+            f.row = pos.r;
+            f.col = pos.c;
+            tablero[pos.r][pos.c] = f;
+            figuras.push(f);
+        });
+
+        drawFigures();
+        verificarFinDelJuego();
+        console.log("TEST DERROTA CARGADO: 3 fichas aisladas sin movimientos posibles.");
+    };
+
+    window.reiniciarJuego = reiniciarJuego;
 
     /* ============================================================
        ARRANQUE

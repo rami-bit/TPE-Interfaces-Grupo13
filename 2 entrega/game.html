@@ -144,6 +144,16 @@
                     <div class="peg-solitaire-lienzo">
                         <canvas id="peg-solitaire-canvas" class="peg-solitaire-canvas"
                             aria-label="Tablero de Peg Solitaire de Boca Juniors"></canvas>
+                        <!-- Modal Overlay Fin de Juego (Victoria / Derrota) -->
+                        <div id="peg-overlay" class="peg-overlay peg-overlay--oculto" aria-live="assertive" role="dialog" aria-modal="true">
+                            <div class="peg-modal">
+                                <h2 id="peg-overlay-titulo" class="peg-modal__titulo">¡SIN MOVIMIENTOS!</h2>
+                                <p id="peg-overlay-mensaje" class="peg-modal__mensaje">Perdiste: no quedan movimientos válidos.</p>
+                                <button type="button" id="peg-btn-reiniciar-modal" class="peg-btn-reiniciar">
+                                    <span class="peg-btn-reiniciar__icono">🔄</span> Jugar de nuevo
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
