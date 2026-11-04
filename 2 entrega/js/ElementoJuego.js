@@ -1,4 +1,15 @@
+/**
+ * Clase base abstracta que representa cualquier elemento visual e interactivo del juego
+ * dibujado sobre un contexto 2D de Canvas.
+ */
 class ElementoJuego {
+    /**
+     * @param {number} posX - Coordenada X inicial del centro del elemento.
+     * @param {number} posY - Coordenada Y inicial del centro del elemento.
+     * @param {HTMLImageElement|string} fill - Imagen o color de relleno del elemento.
+     * @param {boolean} resaltado - Indica si la figura tiene un borde de selección activo.
+     * @param {CanvasRenderingContext2D} context - Contexto 2D del Canvas donde se renderiza.
+     */
     constructor(posX, posY, fill, resaltado, context) {
         this.posX = posX;
         this.posY = posY;
@@ -8,14 +19,26 @@ class ElementoJuego {
         this.context = context;
     }
 
+    /**
+     * Obtiene la posición horizontal (eje X) del elemento.
+     * @returns {number} Coordenada X.
+     */
     getPosx() {
         return this.posX;
     }
 
+    /**
+     * Obtiene la posición vertical (eje Y) del elemento.
+     * @returns {number} Coordenada Y.
+     */
     getPosY() {
         return this.posY;
     }
 
+    /**
+     * Obtiene las coordenadas actuales (X, Y) del elemento como objeto.
+     * @returns {{x: number, y: number}} Objeto con coordenadas x e y.
+     */
     getPos() {
         return {
             x: this.posX,
@@ -23,30 +46,51 @@ class ElementoJuego {
         };
     }
 
+    /**
+     * Obtiene la imagen o estilo de relleno asociado a la figura.
+     * @returns {HTMLImageElement|string}
+     */
     getFill() {
         return this.fill;
     }
 
+    /**
+     * Consulta si el elemento está actualmente resaltado (seleccionado).
+     * @returns {boolean}
+     */
     getResaltado() {
         return this.resaltado;
     }
 
+    /**
+     * Activa o desactiva el resaltado visual de selección en el elemento.
+     * @param {boolean} resaltado
+     */
     setResaltado(resaltado) {
         this.resaltado = resaltado;
     }
 
+    /**
+     * Actualiza las coordenadas espaciales del elemento en el canvas.
+     * @param {number} x - Nueva coordenada X.
+     * @param {number} y - Nueva coordenada Y.
+     */
     setPos(x, y) {
         this.posX = x;
         this.posY = y;
     }
 
+    /**
+     * Modifica la imagen o estilo de relleno del elemento.
+     * @param {HTMLImageElement|string} fill
+     */
     setFill(fill) {
         this.fill = fill;
     }
 
     /**
      * Define la forma del recorte (clip).
-     * Cada subclabe DEBE sobreescribir este método.
+     * Cada subclase DEBE sobreescribir este método.
      * Se llama desde dibujarImagenEnClip().
      */
     definirPath() {

@@ -1,17 +1,33 @@
+/**
+ * Representa una ficha con formato circular de "tapita", temática Boca Juniors.
+ * Hereda de ElementoJuego y recorta su imagen dentro de un path circular.
+ */
 class FichaTapita extends ElementoJuego {
-
+    /**
+     * @param {number} posX - Centro en eje X.
+     * @param {number} posY - Centro en eje Y.
+     * @param {HTMLImageElement} fill - Imagen de la tapita cargada.
+     * @param {boolean} resaltado - Estado inicial de resaltado.
+     * @param {CanvasRenderingContext2D} context - Contexto del Canvas.
+     * @param {number} radius - Radio en píxeles del círculo de la ficha.
+     */
     constructor(posX, posY, fill, resaltado, context, radius) {
         super(posX, posY, fill, resaltado, context);
         this.radius = radius;
     }
 
     /**
-     * Forma del clip: círculo centrado en (posX, posY) con radio `radius`.
+     * Define el path circular para el recorte (clip) centrado en (posX, posY).
      */
     definirPath() {
         this.context.arc(this.posX, this.posY, this.radius, 0, 2 * Math.PI);
     }
 
+    /**
+     * Dibuja la ficha en el Canvas:
+     * 1. Aplica un clip circular para que la imagen quede recortada a la forma de la tapita.
+     * 2. Si la ficha está seleccionada, dibuja un anillo exterior resaltado en amarillo.
+     */
     draw() {
         const ctx = this.context;
 
@@ -43,6 +59,13 @@ class FichaTapita extends ElementoJuego {
         }
     }
 
+    /**
+     * Determina si una coordenada (x, y) del mouse cae dentro del área circular de la ficha
+     * utilizando el cálculo de distancia euclidiana pitagórica.
+     * @param {number} x - Coordenada X del click.
+     * @param {number} y - Coordenada Y del click.
+     * @returns {boolean} True si la distancia al centro es menor o igual al radio.
+     */
     isPointInside(x, y) {
         let dx = this.posX - x;
         let dy = this.posY - y;

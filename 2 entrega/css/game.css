@@ -764,3 +764,63 @@ body {
         opacity: 1;
     }
 }
+
+/* ============================================================
+   HUD TEMPORIZADOR Y BOTÓN REINICIAR EN LA BARRA
+   ============================================================ */
+.peg-timer {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(5, 14, 31, 0.7);
+    border: 1px solid rgba(255, 215, 0, 0.4);
+    border-radius: 20px;
+    padding: 6px 14px;
+    color: #FFD700;
+    font-weight: 700;
+    font-size: 1.1rem;
+    font-family: inherit;
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.5);
+    user-select: none;
+}
+
+.peg-timer__icono {
+    font-size: 1.1rem;
+}
+
+.peg-timer--peligro {
+    color: #FF4D4D !important;
+    border-color: #FF4D4D !important;
+    animation: pegPulsePeligro 1s infinite alternate;
+}
+
+@keyframes pegPulsePeligro {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.08); }
+}
+
+.btn-juego--reiniciar {
+    cursor: pointer;
+    font-size: 1.4rem;
+    font-weight: 900;
+    color: #FFD700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease, color 0.2s ease;
+    background: transparent;
+    border: none;
+}
+
+.peg-btn-reiniciar__simbolo {
+    display: inline-block;
+    font-size: 1.6rem;
+    line-height: 1;
+    color: #FFD700;
+    transition: transform 0.25s ease;
+}
+
+.btn-juego--reiniciar:hover .peg-btn-reiniciar__simbolo {
+    transform: rotate(180deg) scale(1.15);
+    color: #FFFFFF;
+}

@@ -70,9 +70,19 @@ document.addEventListener('DOMContentLoaded', () => {
     let animHintsId = null;
     let juegoTerminado = false;
 
+    // Configuración del Temporizador (5 minutos de límite de juego)
+    const TIEMPO_LIMITE_SEGUNDOS = 300;
+    let tiempoRestante = TIEMPO_LIMITE_SEGUNDOS;
+    let timerIntervalId = null;
+
     /* ============================================================
        PRECARGA DE IMÁGENES
        ============================================================ */
+    /**
+     * Carga una imagen de forma asíncrona devolviendo una Promesa.
+     * @param {string} src - Ruta relativa de la imagen.
+     * @returns {Promise<HTMLImageElement>} Promesa que resuelve la imagen cargada.
+     */
     function cargarImagen(src) {
         return new Promise((resolve, reject) => {
             const img = new Image();
@@ -82,6 +92,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    /**
+     * Precarga todas las imágenes del juego (tablero, tapitas y camisetas)
+     * y ajusta las dimensiones lógicas internas del Canvas.
+     * @returns {Promise<void>}
+     */
     async function precargarTodo() {
         imgTablero = await cargarImagen('img/tablero.jpeg');
         canvas.width = CROP.w;
@@ -94,6 +109,13 @@ document.addEventListener('DOMContentLoaded', () => {
     /* ============================================================
        UTILIDADES DE GRILLA
        ============================================================ */
+    /**
+     * Convierte una posición lógica de la matriz (fila, columna) a coordenadas
+     * en píxeles (X, Y) dentro del área visible recortada del Canvas.
+     * @param {number} row - Fila en la matriz (0 a 6).
+     * @param {number} col - Columna en la matriz (0 a 6).
+     * @returns {{x: number, y: number}} Coordenadas en píxeles del centro del agujero.
+     */
     function getCellCenter(row, col) {
         return { x: COL_X[col] - CROP.x, y: ROW_Y[row] - CROP.y };
     }
@@ -101,6 +123,12 @@ document.addEventListener('DOMContentLoaded', () => {
     /* ============================================================
        CREACIÓN DE FICHAS ALEATORIAS
        ============================================================ */
+    /**
+     * Crea aleatoriamente una ficha tipo tapita o camiseta con 50% de probabilidad.
+     * @param {number} x - Posición X inicial.
+     * @param {number} y - Posición Y inicial.
+     * @returns {FichaTapita|FichaCamiseta} Instancia de la ficha creada.
+     */
     function crearFichaAleatoria(x, y) {
         if (Math.random() < 0.5) {
             return crearTapita(x, y);
@@ -109,11 +137,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    /**
+     * Crea una ficha circular de tapita eligiendo aleatoriamente una textura de Boca.
+     * @param {number} x - Coordenada X del centro.
+     * @param {number} y - Coordenada Y del centro.
+     * @returns {FichaTapita}
+     */
     function crearTapita(x, y) {
         const img = imgTapitas[Math.floor(Math.random() * imgTapitas.length)];
         return new FichaTapita(x, y, img, false, ctx, FICHA_RADIO);
     }
 
+    /**
+     * Crea una ficha rectangular de camiseta eligiendo aleatoriamente un diseño de Boca.
+     * @param {number} x - Coordenada X del centro.
+     * @param {number} y - Coordenada Y del centro.
+     * @returns {FichaCamiseta}
+     */
     function crearCamiseta(x, y) {
         const img = imgCamisetas[Math.floor(Math.random() * imgCamisetas.length)];
         return new FichaCamiseta(x, y, img, false, ctx, FICHA_ANCHO, FICHA_ALTO);
@@ -122,6 +162,10 @@ document.addEventListener('DOMContentLoaded', () => {
     /* ============================================================
        INICIALIZACIÓN DEL TABLERO
        ============================================================ */
+    /**
+     * Inicializa la matriz 7x7 del tablero y el arreglo de figuras activas
+     * según la configuración clásica inglesa de TABLERO_BASE.
+     */
     function initTablero() {
         tablero = [];
         figuras = [];
@@ -146,6 +190,13 @@ document.addEventListener('DOMContentLoaded', () => {
     /* ============================================================
        RENDER
        ============================================================ */
+    /**
+     * Redibuja la escena completa en el Canvas:
+     * 1. Limpia el lienzo.
+     * 2. Pinta el fondo del tablero recortado.
+     * 3. Dibuja las pistas visuales animadas (si hay una ficha seleccionada).
+     * 4. Dibuja todas las fichas activas.
+     */
     function drawFigures() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         if (imgTablero) {
@@ -162,6 +213,12 @@ document.addEventListener('DOMContentLoaded', () => {
     /* ============================================================
        PISTAS VISUALES (HINTS) DE DESTINO VÁLIDO
        ============================================================ */
+    /**
+     * Dibuja una flecha dorada vertical orientada hacia abajo, con efecto de oscilación flotante.
+     * @param {number} x - Coordenada X del centro del agujero destino.
+     * @param {number} y - Coordenada Y del centro del agujero destino.
+     * @param {number} oscilacion - Desplazamiento vertical calculado por función seno.
+     */
     function dibujarFlechaIndicadora(x, y, oscilacion) {
         const topY = y - FICHA_RADIO - 28 + oscilacion;
         ctx.save();
@@ -186,6 +243,10 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.restore();
     }
 
+    /**
+     * Inicia el bucle de animación a 60 FPS para renderizar las pistas (hints)
+     * pulsantes y flechas indicadoras mientras el usuario sostiene una ficha.
+     */
     function iniciarAnimacionHints() {
         if (animHintsId != null) return;
 
@@ -200,6 +261,9 @@ document.addEventListener('DOMContentLoaded', () => {
         animHintsId = requestAnimationFrame(loop);
     }
 
+    /**
+     * Detiene el bucle de animación de pistas visuales y libera el requestAnimationFrame.
+     */
     function detenerAnimacionHints() {
         if (animHintsId != null) {
             cancelAnimationFrame(animHintsId);
@@ -207,6 +271,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    /**
+     * Renderiza las ayudas visuales sobre cada uno de los huecos válidos a donde puede saltar
+     * la ficha actualmente seleccionada: onda expansiva, pulso dorado y flecha indicadora.
+     */
     function drawHints() {
         if (!destinosValidosActivos || destinosValidosActivos.length === 0) return;
 
@@ -261,6 +329,13 @@ document.addEventListener('DOMContentLoaded', () => {
     /* ============================================================
        BÚSQUEDA DE FICHA CLICKEADA
        ============================================================ */
+    /**
+     * Busca qué ficha contiene el punto (x, y) del mouse, recorriendo de adelante hacia atrás
+     * para respetar el orden visual de apilamiento (Z-index).
+     * @param {number} x - Coordenada X en píxeles del Canvas.
+     * @param {number} y - Coordenada Y en píxeles del Canvas.
+     * @returns {ElementoJuego|null} Ficha clickeada o null si no se tocó ninguna.
+     */
     function findClickedFigure(x, y) {
         for (let i = figuras.length - 1; i >= 0; i--) {
             if (figuras[i].isPointInside(x, y)) {
@@ -279,6 +354,11 @@ document.addEventListener('DOMContentLoaded', () => {
            Si hay 1 o -1, no se puede mover hacia esa dirección.
          - A 1 posición (intermedia) DEBE haber una ficha para comer.
        ============================================================ */
+    /**
+     * Obtiene la posición en fila y columna (matriz) de una ficha en el tablero.
+     * @param {ElementoJuego} ficha - Ficha a consultar.
+     * @returns {{row: number, col: number}|null} Objeto con fila y columna o null.
+     */
     function obtenerCoordenadasFicha(ficha) {
         if (!ficha) return null;
         if (ficha.row !== undefined && ficha.col !== undefined) {
@@ -296,6 +376,12 @@ document.addEventListener('DOMContentLoaded', () => {
         return null;
     }
 
+    /**
+     * Evalúa las 4 direcciones ortogonales (arriba, abajo, izquierda, derecha) para determinar
+     * si la ficha puede saltar: debe haber un casillero vacío (0) a distancia 2 y una ficha intermedia a distancia 1.
+     * @param {ElementoJuego} ficha - Ficha a evaluar.
+     * @returns {Array<{direccion: string, destino: {row: number, col: number}, intermedio: {row: number, col: number}}>}
+     */
     function obtenerMovimientosValidos(ficha) {
         const coords = obtenerCoordenadasFicha(ficha);
         if (!coords) return [];
@@ -337,6 +423,11 @@ document.addEventListener('DOMContentLoaded', () => {
         return movimientosValidos;
     }
 
+    /**
+     * Comprueba de forma rápida si una ficha posee al menos un movimiento válido posible.
+     * @param {ElementoJuego} ficha
+     * @returns {boolean} True si tiene movimientos válidos.
+     */
     function puedeRealizarMovimiento(ficha) {
         return obtenerMovimientosValidos(ficha).length > 0;
     }
@@ -344,6 +435,11 @@ document.addEventListener('DOMContentLoaded', () => {
     /* ============================================================
        DRAG & DROP — eventos a nivel documento
        ============================================================ */
+    /**
+     * Manejador del evento mousedown sobre el Canvas:
+     * Detecta si se clickeó una ficha, la trae al frente visual y calcula/activa sus pistas animadas.
+     * @param {MouseEvent} e
+     */
     function onMouseDown(e) {
         if (juegoTerminado) return;
         isMouseDown = true;
@@ -388,6 +484,11 @@ document.addEventListener('DOMContentLoaded', () => {
         drawFigures();
     }
 
+    /**
+     * Manejador del evento mousemove a nivel de documento:
+     * Si se está arrastrando una ficha, actualiza su posición con el cursor y redibuja la escena.
+     * @param {MouseEvent} e
+     */
     function onMouseMove(e) {
         if (!isMouseDown || lastClickedFigure == null) return;
 
@@ -402,6 +503,13 @@ document.addEventListener('DOMContentLoaded', () => {
         drawFigures();
     }
 
+    /**
+     * Manejador del evento mouseup a nivel de documento:
+     * Evalúa si la ficha se soltó sobre un hueco permitido:
+     * - Si es válido: alinea con snap-to-grid, come la ficha intermedia, inicia la animación de rebote y evalúa fin de juego.
+     * - Si es inválido: realiza snap-back devolviendo la ficha a su posición de origen.
+     * @param {MouseEvent} e
+     */
     function onMouseUp(e) {
         if (!isMouseDown) return;
         isMouseDown = false;
@@ -518,6 +626,12 @@ document.addEventListener('DOMContentLoaded', () => {
     let escala = 1.0;
     let fichaAEliminar = null;
     let fase = "creciendo";
+
+    /**
+     * Animación basada en requestAnimationFrame que genera un efecto elástico de rebote (pop):
+     * - Fase 1 (creciendo): infla la ficha hasta escala 1.32.
+     * - Fase 2 (encogiendo): contrae la ficha con decaimiento ease-out multiplicativo hasta 0.
+     */
     function animacionEliminarFicha(){
         if(fase==="creciendo"){
             escala += 0.08;
@@ -562,8 +676,95 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('mouseup', onMouseUp, false);
 
     /* ============================================================
+       TEMPORIZADOR REGRESIVO (LÍMITE DE TIEMPO DE JUEGO)
+       ============================================================ */
+    /**
+     * Formatea una cantidad de segundos a formato visual "MM:SS".
+     * @param {number} totalSegundos - Segundos a convertir.
+     * @returns {string} Tiempo formateado con dos dígitos por campo (ej. "04:59").
+     */
+    function formatearTiempo(totalSegundos) {
+        const minutos = Math.floor(totalSegundos / 60);
+        const segundos = totalSegundos % 60;
+        const minStr = minutos < 10 ? '0' + minutos : minutos;
+        const segStr = segundos < 10 ? '0' + segundos : segundos;
+        return `${minStr}:${segStr}`;
+    }
+
+    /**
+     * Actualiza el texto en el display del temporizador y añade advertencia
+     * visual pulsante en rojo si quedan 30 segundos o menos.
+     */
+    function actualizarDisplayTimer() {
+        const display = document.getElementById('peg-timer-display');
+        const container = document.getElementById('peg-timer');
+        if (display) {
+            display.textContent = formatearTiempo(tiempoRestante);
+        }
+        if (container) {
+            if (tiempoRestante <= 30 && tiempoRestante > 0) {
+                container.classList.add('peg-timer--peligro');
+            } else {
+                container.classList.remove('peg-timer--peligro');
+            }
+        }
+    }
+
+    /**
+     * Inicia la cuenta regresiva del temporizador segundo a segundo.
+     * Si el tiempo llega a 0, detiene el juego y muestra el modal de tiempo agotado.
+     */
+    function iniciarTimer() {
+        if (timerIntervalId != null) return;
+
+        actualizarDisplayTimer();
+        timerIntervalId = setInterval(() => {
+            if (juegoTerminado) {
+                detenerTimer();
+                return;
+            }
+
+            tiempoRestante--;
+            actualizarDisplayTimer();
+
+            if (tiempoRestante <= 0) {
+                detenerTimer();
+                juegoTerminado = true;
+                destinosValidosActivos = [];
+                detenerAnimacionHints();
+                mostrarFinDeJuego(false, "¡Tiempo agotado! No lograste completar el tablero antes de que termine el reloj.");
+            }
+        }, 1000);
+    }
+
+    /**
+     * Detiene el intervalo del temporizador si está corriendo.
+     */
+    function detenerTimer() {
+        if (timerIntervalId != null) {
+            clearInterval(timerIntervalId);
+            timerIntervalId = null;
+        }
+    }
+
+    /**
+     * Resetea el tiempo restante al límite inicial (5 minutos) y reinicia el reloj.
+     */
+    function resetearTimer() {
+        detenerTimer();
+        tiempoRestante = TIEMPO_LIMITE_SEGUNDOS;
+        actualizarDisplayTimer();
+        iniciarTimer();
+    }
+
+    /* ============================================================
        CONTROL DE FIN DE PARTIDA Y REINICIO
        ============================================================ */
+    /**
+     * Recorre las fichas del tablero con un bucle while que corta inmediatamente
+     * apenas encuentra una ficha con saltos válidos disponibles.
+     * @returns {boolean} True si todavía hay al menos un movimiento posible en la partida.
+     */
     function hayMovimientosPosiblesEnTablero() {
         if (figuras.length <= 1) return false;
 
@@ -584,9 +785,16 @@ document.addEventListener('DOMContentLoaded', () => {
         return hayMovimiento;
     }
 
+    /**
+     * Verifica si la partida llegó a su término:
+     * - Victoria: cuando queda exactamente 1 sola ficha.
+     * - Derrota: cuando ninguna ficha restante puede realizar saltos.
+     * @returns {boolean} True si el juego terminó.
+     */
     function verificarFinDelJuego() {
         // 1. Caso VICTORIA: Queda exactamente 1 sola ficha
         if (figuras.length === 1) {
+            detenerTimer();
             juegoTerminado = true;
             destinosValidosActivos = [];
             detenerAnimacionHints();
@@ -598,6 +806,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const hayMovimientos = hayMovimientosPosiblesEnTablero();
 
         if (!hayMovimientos) {
+            detenerTimer();
             juegoTerminado = true;
             destinosValidosActivos = [];
             detenerAnimacionHints();
@@ -608,6 +817,11 @@ document.addEventListener('DOMContentLoaded', () => {
         return false;
     }
 
+    /**
+     * Muestra el modal superpuesto de fin de juego con el título y mensaje correspondientes.
+     * @param {boolean} victoria - True para victoria, false para derrota.
+     * @param {string} mensaje - Texto explicativo del desenlace de la partida.
+     */
     function mostrarFinDeJuego(victoria, mensaje) {
         const overlay = document.getElementById('peg-overlay');
         const tituloEl = document.getElementById('peg-overlay-titulo');
@@ -623,6 +837,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    /**
+     * Oculta el modal superpuesto de fin de juego.
+     */
     function ocultarFinDeJuego() {
         const overlay = document.getElementById('peg-overlay');
         if (overlay) {
@@ -630,6 +847,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    /**
+     * Reinicia por completo el juego a su estado inicial:
+     * Restablece el tablero base, limpia selecciones y vuelve a dibujar las figuras.
+     */
     function reiniciarJuego() {
         ocultarFinDeJuego();
         juegoTerminado = false;
@@ -639,6 +860,8 @@ document.addEventListener('DOMContentLoaded', () => {
         destinosValidosActivos = [];
         detenerAnimacionHints();
 
+        resetearTimer();
+
         initTablero();
         drawFigures();
         console.log("Juego reiniciado. Fichas en el tablero:", figuras.length);
@@ -647,6 +870,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnReiniciarModal = document.getElementById('peg-btn-reiniciar-modal');
     if (btnReiniciarModal) {
         btnReiniciarModal.addEventListener('click', reiniciarJuego);
+    }
+
+    const btnReiniciarBarra = document.getElementById('peg-btn-reiniciar-barra');
+    if (btnReiniciarBarra) {
+        btnReiniciarBarra.addEventListener('click', reiniciarJuego);
     }
 
     /* ============================================================
@@ -720,6 +948,7 @@ document.addEventListener('DOMContentLoaded', () => {
     precargarTodo().then(() => {
         initTablero();
         drawFigures();
+        iniciarTimer();
     }).catch(err => {
         console.error(err);
     });
