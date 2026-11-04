@@ -683,7 +683,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 juegoTerminado = true;
                 destinosValidosActivos = [];
                 detenerAnimacionHints();
-                mostrarFinDeJuego(false, "¡Tiempo agotado! No lograste completar el tablero antes de que termine el reloj.");
+                mostrarFinDeJuego(null, "¡Tiempo agotado! No lograste completar el tablero antes de que termine el reloj.");
             }
         }, 1000);
     }
@@ -774,7 +774,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const mensajeEl = document.getElementById('peg-overlay-mensaje');
 
         if (overlay && tituloEl && mensajeEl) {
-            tituloEl.textContent = victoria ? "¡VICTORIA BOSTERA!" : "¡SIN MOVIMIENTOS!";
+            if(victoria!=null){
+                tituloEl.textContent = victoria ? "¡VICTORIA BOSTERA!" : "¡SIN MOVIMIENTOS!";
+            }else{
+                tituloEl.textContent = "¡TIEMPO TERMINADO!"
+            }
+            
             tituloEl.style.color = victoria ? "#FFD700" : "#FF6B6B";
             mensajeEl.textContent = mensaje;
             overlay.classList.remove('peg-overlay--oculto');
