@@ -54,6 +54,15 @@ document.addEventListener('DOMContentLoaded', () => {
         [-1, -1,  1,  1,  1, -1, -1]
     ];
 
+    const TAM_TABLERO = TABLERO_BASE.length;
+
+    const DIRECCIONES = [
+        { nombre: 'arriba',    dr: -1, dc:  0 },
+        { nombre: 'abajo',     dr:  1, dc:  0 },
+        { nombre: 'izquierda', dr:  0, dc: -1 },
+        { nombre: 'derecha',   dr:  0, dc:  1 }
+    ];
+
     /* ============================================================
        ESTADO DEL JUEGO
        ============================================================ */
@@ -69,6 +78,11 @@ document.addEventListener('DOMContentLoaded', () => {
     let destinosValidosActivos = [];
     let animHintsId = null;
     let juegoTerminado = false;
+
+    // Estado de la animación de eliminación de ficha comida
+    let escala = 1.0;
+    let fichaAEliminar = null;
+    let fase = "creciendo";
 
     // Configuración del Temporizador (5 minutos de límite de juego)
     const TIEMPO_LIMITE_SEGUNDOS = 300;
@@ -107,17 +121,33 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /* ============================================================
-       UTILIDADES DE GRILLA
+       UTILIDADES DE GRILLA Y COORDENADAS
        ============================================================ */
     /**
      * Convierte una posición lógica de la matriz (fila, columna) a coordenadas
      * en píxeles (X, Y) dentro del área visible recortada del Canvas.
-     * @param {number} row - Fila en la matriz (0 a 6).
-     * @param {number} col - Columna en la matriz (0 a 6).
+     * @param {number} row - Fila en la matriz (0 a TAM_TABLERO - 1).
+     * @param {number} col - Columna en la matriz (0 a TAM_TABLERO - 1).
      * @returns {{x: number, y: number}} Coordenadas en píxeles del centro del agujero.
      */
     function getCellCenter(row, col) {
         return { x: COL_X[col] - CROP.x, y: ROW_Y[row] - CROP.y };
+    }
+
+    /**
+     * Convierte las coordenadas de un evento de mouse en el viewport (CSS)
+     * al espacio de coordenadas internas del bitmap del Canvas.
+     * @param {MouseEvent} e - Evento del mouse.
+     * @returns {{x: number, y: number}} Coordenadas internas (x, y) en el Canvas.
+     */
+    function obtenerPosicionMouse(e) {
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        return {
+            x: (e.clientX - rect.left) * scaleX,
+            y: (e.clientY - rect.top) * scaleY
+        };
     }
 
     /* ============================================================
@@ -130,11 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
      * @returns {FichaTapita|FichaCamiseta} Instancia de la ficha creada.
      */
     function crearFichaAleatoria(x, y) {
-        if (Math.random() < 0.5) {
-            return crearTapita(x, y);
-        } else {
-            return crearCamiseta(x, y);
-        }
+        return Math.random() < 0.5 ? crearTapita(x, y) : crearCamiseta(x, y);
     }
 
     /**
@@ -159,29 +185,57 @@ document.addEventListener('DOMContentLoaded', () => {
         return new FichaCamiseta(x, y, img, false, ctx, FICHA_ANCHO, FICHA_ALTO);
     }
 
+    /**
+     * Instancia una ficha aleatoria, le asigna sus coordenadas lógicas (row, col)
+     * y la registra tanto en la matriz del tablero como en el arreglo de renderizado.
+     * @param {number} row - Fila de destino.
+     * @param {number} col - Columna de destino.
+     * @returns {ElementoJuego} La ficha creada y posicionada.
+     */
+    function colocarFichaEnCelda(row, col) {
+        const center = getCellCenter(row, col);
+        const ficha = crearFichaAleatoria(center.x, center.y);
+        ficha.row = row;
+        ficha.col = col;
+        tablero[row][col] = ficha;
+        figuras.push(ficha);
+        return ficha;
+    }
+
     /* ============================================================
        INICIALIZACIÓN DEL TABLERO
        ============================================================ */
     /**
-     * Inicializa la matriz 7x7 del tablero y el arreglo de figuras activas
+     * Deja el tablero completamente vacío (solo con 0 en huecos jugables y -1 en esquinas)
+     * y vacía la lista de figuras activas. Útil para escenarios de prueba o reinicio limpio.
+     */
+    function limpiarTableroVacio() {
+        tablero = [];
+        figuras = [];
+
+        for (let row = 0; row < TAM_TABLERO; row++) {
+            tablero[row] = [];
+            for (let col = 0; col < TAM_TABLERO; col++) {
+                tablero[row][col] = TABLERO_BASE[row][col] === -1 ? -1 : 0;
+            }
+        }
+    }
+
+    /**
+     * Inicializa la matriz del tablero y el arreglo de figuras activas
      * según la configuración clásica inglesa de TABLERO_BASE.
      */
     function initTablero() {
         tablero = [];
         figuras = [];
 
-        for (let row = 0; row < 7; row++) {
+        for (let row = 0; row < TAM_TABLERO; row++) {
             tablero[row] = [];
-            for (let col = 0; col < 7; col++) {
+            for (let col = 0; col < TAM_TABLERO; col++) {
                 if (TABLERO_BASE[row][col] === 1) {
-                    const center = getCellCenter(row, col);
-                    const ficha = crearFichaAleatoria(center.x, center.y);
-                    ficha.row = row;
-                    ficha.col = col;
-                    tablero[row][col] = ficha;
-                    figuras.push(ficha);
+                    colocarFichaEnCelda(row, col);
                 } else {
-                    tablero[row][col] = TABLERO_BASE[row][col] === 0 ? 0 : -1;
+                    tablero[row][col] = TABLERO_BASE[row][col];
                 }
             }
         }
@@ -347,66 +401,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /* ============================================================
        VALIDACIÓN: ¿PUEDE MOVERSE ESTA FICHA?
-       Revisa las 4 direcciones (arriba, abajo, izquierda, derecha)
-       a 2 posiciones de distancia.
-       Para que pueda saltar:
-         - A 2 posiciones DEBE haber un 0 (hueco vacío jugable).
-           Si hay 1 o -1, no se puede mover hacia esa dirección.
-         - A 1 posición (intermedia) DEBE haber una ficha para comer.
        ============================================================ */
-    /**
-     * Obtiene la posición en fila y columna (matriz) de una ficha en el tablero.
-     * @param {ElementoJuego} ficha - Ficha a consultar.
-     * @returns {{row: number, col: number}|null} Objeto con fila y columna o null.
-     */
-    function obtenerCoordenadasFicha(ficha) {
-        if (!ficha) return null;
-        if (ficha.row !== undefined && ficha.col !== undefined) {
-            return { row: ficha.row, col: ficha.col };
-        }
-        for (let r = 0; r < 7; r++) {
-            for (let c = 0; c < 7; c++) {
-                if (tablero[r][c] === ficha) {
-                    ficha.row = r;
-                    ficha.col = c;
-                    return { row: r, col: c };
-                }
-            }
-        }
-        return null;
-    }
-
     /**
      * Evalúa las 4 direcciones ortogonales (arriba, abajo, izquierda, derecha) para determinar
      * si la ficha puede saltar: debe haber un casillero vacío (0) a distancia 2 y una ficha intermedia a distancia 1.
-     * @param {ElementoJuego} ficha - Ficha a evaluar.
+     * @param {ElementoJuego} ficha - Ficha a evaluar (contiene ficha.row y ficha.col).
      * @returns {Array<{direccion: string, destino: {row: number, col: number}, intermedio: {row: number, col: number}}>}
      */
     function obtenerMovimientosValidos(ficha) {
-        const coords = obtenerCoordenadasFicha(ficha);
-        if (!coords) return [];
+        if (!ficha || ficha.row === undefined || ficha.col === undefined) return [];
 
-        const { row, col } = coords;
-        const direcciones = [
-            { nombre: 'arriba',    dr: -1, dc:  0 },
-            { nombre: 'abajo',     dr:  1, dc:  0 },
-            { nombre: 'izquierda', dr:  0, dc: -1 },
-            { nombre: 'derecha',   dr:  0, dc:  1 }
-        ];
-
+        const { row, col } = ficha;
         const movimientosValidos = [];
 
-        for (const dir of direcciones) {
+        for (const dir of DIRECCIONES) {
             const destR = row + dir.dr * 2;
             const destC = col + dir.dc * 2;
             const medioR = row + dir.dr;
             const medioC = col + dir.dc;
 
-            // 1. Destino dentro de los límites del tablero (0 a 6)
-            if (destR < 0 || destR >= 7 || destC < 0 || destC >= 7) continue;
+            // 1. Destino dentro de los límites del tablero
+            if (destR < 0 || destR >= TAM_TABLERO || destC < 0 || destC >= TAM_TABLERO) continue;
 
-            // 2. A 2 casillas DEBE haber un 0 sí o sí (hueco vacío jugable).
-            // Si es 1, -1 o no es 0, no se puede mover hacia esa dirección.
+            // 2. A 2 casillas DEBE haber un 0 (hueco vacío jugable)
             if (tablero[destR][destC] !== 0) continue;
 
             // 3. En la casilla del medio (distancia 1) debe haber una ficha para saltar
@@ -424,9 +441,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
-     * Comprueba de forma rápida si una ficha posee al menos un movimiento válido posible.
-     * @param {ElementoJuego} ficha
-     * @returns {boolean} True si tiene movimientos válidos.
+     * Comprueba si una ficha posee al menos un movimiento válido posible.
+     * @param {ElementoJuego} ficha - Ficha a consultar.
+     * @returns {boolean} True si tiene al menos un salto disponible.
      */
     function puedeRealizarMovimiento(ficha) {
         return obtenerMovimientosValidos(ficha).length > 0;
@@ -451,16 +468,11 @@ document.addEventListener('DOMContentLoaded', () => {
             detenerAnimacionHints();
         }
 
-        // Convertir coordenadas CSS a coordenadas internas del canvas
-        const rect = canvas.getBoundingClientRect();
-        const scaleX = canvas.width / rect.width;
-        const scaleY = canvas.height / rect.height;
-        const canvasX = e.offsetX * scaleX;
-        const canvasY = e.offsetY * scaleY;
-
+        const { x: canvasX, y: canvasY } = obtenerPosicionMouse(e);
         const clickFig = findClickedFigure(canvasX, canvasY);
 
         if (clickFig != null) {
+            // Traer la ficha seleccionada al tope de dibujado (Z-index superior)
             const idx = figuras.indexOf(clickFig);
             if (idx > -1) {
                 figuras.splice(idx, 1);
@@ -469,16 +481,14 @@ document.addEventListener('DOMContentLoaded', () => {
             clickFig.setResaltado(true);
             lastClickedFigure = clickFig;
             lastClickedPos = { x: clickFig.getPosx(), y: clickFig.getPosY() };
-            // Resaltar e iniciar animación de los huecos válidos a donde puede saltar
+
+            // Calcular una sola vez los destinos válidos para hints y para validar al soltar
             destinosValidosActivos = obtenerMovimientosValidos(clickFig);
             if (destinosValidosActivos.length > 0) {
                 iniciarAnimacionHints();
             } else {
                 detenerAnimacionHints();
             }
-        } else {
-            destinosValidosActivos = [];
-            detenerAnimacionHints();
         }
 
         drawFigures();
@@ -492,22 +502,16 @@ document.addEventListener('DOMContentLoaded', () => {
     function onMouseMove(e) {
         if (!isMouseDown || lastClickedFigure == null) return;
 
-        // Convertir coordenadas del documento a coordenadas del canvas
-        const rect = canvas.getBoundingClientRect();
-        const scaleX = canvas.width / rect.width;
-        const scaleY = canvas.height / rect.height;
-        const canvasX = (e.clientX - rect.left) * scaleX;
-        const canvasY = (e.clientY - rect.top) * scaleY;
-
+        const { x: canvasX, y: canvasY } = obtenerPosicionMouse(e);
         lastClickedFigure.setPos(canvasX, canvasY);
         drawFigures();
     }
 
     /**
      * Manejador del evento mouseup a nivel de documento:
-     * Evalúa si la ficha se soltó sobre un hueco permitido:
+     * Evalúa si la ficha se soltó sobre un hueco permitido (usando destinosValidosActivos):
      * - Si es válido: alinea con snap-to-grid, come la ficha intermedia, inicia la animación de rebote y evalúa fin de juego.
-     * - Si es inválido: realiza snap-back devolviendo la ficha a su posición de origen.
+     * - Si es inválido (o fuera del canvas): realiza snap-back devolviendo la ficha a su posición de origen.
      * @param {MouseEvent} e
      */
     function onMouseUp(e) {
@@ -516,59 +520,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (lastClickedFigure == null) return;
 
-        // Verificar si el punto de soltado está dentro del canvas
-        const rect = canvas.getBoundingClientRect();
-        const dentroCanvas =
-            e.clientX >= rect.left && e.clientX <= rect.right &&
-            e.clientY >= rect.top  && e.clientY <= rect.bottom;
-
-        if (!dentroCanvas) {
-            // Soltó fuera del canvas → snap-back
-            lastClickedFigure.setPos(lastClickedPos.x, lastClickedPos.y);
-            lastClickedFigure.setResaltado(false);
-            lastClickedFigure = null;
-            destinosValidosActivos = [];
-            detenerAnimacionHints();
-            drawFigures();
-            return;
-        }
-
-        /* ================================================================
-           TODO: LÓGICA DE COMER / VALIDAR MOVIMIENTO
-           Acá hay que verificar si la posición del mouse coincide con un
-           agujero de destino válido:
-             1. Encontrar el agujero más cercano al punto de soltado
-                (distancia euclidiana contra getCellCenter para cada
-                posición válida del tablero).
-             2. Verificar que el movimiento sea un salto válido
-                (dos posiciones en línea recta, con ficha intermedia
-                y destino vacío).
-             3. Si es válido: alinear la ficha al centro del agujero
-                destino (snap-to-grid), eliminar la ficha saltada
-                del tablero y de figuras[], y actualizar la matriz.
-             4. Si NO es válido: snap-back a la posición original.
-           ================================================================ */
-        // Coordenadas internas del canvas en el momento de soltar
-        const scaleX = canvas.width / rect.width;
-        const scaleY = canvas.height / rect.height;
-        const canvasX = (e.clientX - rect.left) * scaleX;
-        const canvasY = (e.clientY - rect.top) * scaleY;
-
-        // Movimientos válidos permitidos (hacia casillas con 0 a distancia 2 con ficha intermedia)
-        const movimientos = obtenerMovimientosValidos(lastClickedFigure);
-
+        const { x: canvasX, y: canvasY } = obtenerPosicionMouse(e);
 
         let movElegido = null;
         let menorDistancia = Infinity;
 
-        // Comprobar si el punto de soltado coincide con alguno de los huecos permitidos (0)
-        for (const mov of movimientos) {
+        // Reutiliza destinosValidosActivos calculados al seleccionar la ficha
+        for (const mov of destinosValidosActivos) {
             const center = getCellCenter(mov.destino.row, mov.destino.col);
             const dx = canvasX - center.x;
             const dy = canvasY - center.y;
             const dist = Math.sqrt(dx * dx + dy * dy);
 
-            // Tolerancia de soltado: dentro del radio del agujero
             if (dist <= FICHA_RADIO && dist < menorDistancia) {
                 menorDistancia = dist;
                 movElegido = { mov, center };
@@ -598,48 +561,43 @@ document.addEventListener('DOMContentLoaded', () => {
             const fichaComida = tablero[medioRow][medioCol];
             tablero[medioRow][medioCol] = 0;
             fichaAEliminar = fichaComida;
-            if(fichaComida){
+            if (fichaComida) {
                 figuras = figuras.filter(f => f !== fichaAEliminar);
-                animacionEliminarFicha(); 
+                animacionEliminarFicha();
             }
-            
 
             console.log(`Movimiento completado: [${origRow}, ${origCol}] -> [${destRow}, ${destCol}], comida: [${medioRow}, ${medioCol}]`);
             console.log(`Fichas restantes: ${figuras.length}`);
         } else {
-            // --- MOVIMIENTO INVÁLIDO (intento a casilla con 1, -1, fuera de rango o salto incorrecto) ---
-            // Snap-back a la posición de origen
+            // --- MOVIMIENTO INVÁLIDO O FUERA DEL CANVAS → Snap-back ---
             lastClickedFigure.setPos(lastClickedPos.x, lastClickedPos.y);
-    
         }
+
+        // Limpieza unificada del ciclo de arrastre
         destinosValidosActivos = [];
         detenerAnimacionHints();
         lastClickedFigure.setResaltado(false);
         lastClickedFigure = null;
         drawFigures();
 
-        // Si se realizó un movimiento válido, verificar si concluyó la partida
         if (movElegido != null) {
             verificarFinDelJuego();
         }
     }
-    let escala = 1.0;
-    let fichaAEliminar = null;
-    let fase = "creciendo";
 
     /**
      * Animación basada en requestAnimationFrame que genera un efecto elástico de rebote (pop):
      * - Fase 1 (creciendo): infla la ficha hasta escala 1.32.
      * - Fase 2 (encogiendo): contrae la ficha con decaimiento ease-out multiplicativo hasta 0.
      */
-    function animacionEliminarFicha(){
-        if(fase==="creciendo"){
+    function animacionEliminarFicha() {
+        if (fase === "creciendo") {
             escala += 0.08;
-        }else if(fase==="encogiendo"){
+        } else if (fase === "encogiendo") {
             escala *= 0.88;
         }
-        if(escala>1.3){
-            fase="encogiendo";
+        if (escala > 1.3) {
+            fase = "encogiendo";
         }
 
         // 1. Redibuja el tablero y las demás fichas
@@ -657,21 +615,18 @@ document.addEventListener('DOMContentLoaded', () => {
             fichaAEliminar.draw();
             ctx.restore();
         }
-        if(escala>0.03){
+
+        if (escala > 0.03) {
             requestAnimationFrame(animacionEliminarFicha);
-        }else{
-            fichaAEliminar=null;
-            escala=1.0;
-            fase = "creciendo"
+        } else {
+            fichaAEliminar = null;
+            escala = 1.0;
+            fase = "creciendo";
             drawFigures();
         }
-
-        
     }
 
-    // mousedown en el canvas (necesita offsetX/offsetY)
     canvas.addEventListener('mousedown', onMouseDown, false);
-    // mousemove y mouseup a nivel documento para catch fuera del canvas
     document.addEventListener('mousemove', onMouseMove, false);
     document.addEventListener('mouseup', onMouseUp, false);
 
@@ -702,11 +657,7 @@ document.addEventListener('DOMContentLoaded', () => {
             display.textContent = formatearTiempo(tiempoRestante);
         }
         if (container) {
-            if (tiempoRestante <= 30 && tiempoRestante > 0) {
-                container.classList.add('peg-timer--peligro');
-            } else {
-                container.classList.remove('peg-timer--peligro');
-            }
+            container.classList.toggle('peg-timer--peligro', tiempoRestante <= 30 && tiempoRestante > 0);
         }
     }
 
@@ -773,15 +724,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Bucle while que recorre las fichas y corta apenas encuentra una con movimientos válidos
         while (i < figuras.length && !hayMovimiento) {
-            const ficha = figuras[i];
-            const movs = obtenerMovimientosValidos(ficha);
-            if (movs.length > 0) {
-                hayMovimiento = true; // Corta el while apenas una ficha puede moverse
+            if (puedeRealizarMovimiento(figuras[i])) {
+                hayMovimiento = true;
             }
             i++;
         }
 
-        // Si llegó al final del while sin encontrar movimientos válidos, devuelve false
         return hayMovimiento;
     }
 
@@ -803,9 +751,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // 2. Caso DERROTA: Verificamos con el while si quedan movimientos posibles
-        const hayMovimientos = hayMovimientosPosiblesEnTablero();
-
-        if (!hayMovimientos) {
+        if (!hayMovimientosPosiblesEnTablero()) {
             detenerTimer();
             juegoTerminado = true;
             destinosValidosActivos = [];
@@ -849,7 +795,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /**
      * Reinicia por completo el juego a su estado inicial:
-     * Restablece el tablero base, limpia selecciones y vuelve a dibujar las figuras.
+     * Restablece el tablero base, limpia selecciones, reinicia el reloj y vuelve a dibujar las figuras.
      */
     function reiniciarJuego() {
         ocultarFinDeJuego();
@@ -883,57 +829,26 @@ document.addEventListener('DOMContentLoaded', () => {
     window.debugCasiGanar = function () {
         ocultarFinDeJuego();
         juegoTerminado = false;
-        figuras = [];
+        limpiarTableroVacio();
 
-        for (let r = 0; r < 7; r++) {
-            for (let c = 0; c < 7; c++) {
-                tablero[r][c] = TABLERO_BASE[r][c] === -1 ? -1 : 0;
-            }
-        }
-
-        const c1 = getCellCenter(3, 1);
-        const f1 = crearFichaAleatoria(c1.x, c1.y);
-        f1.row = 3;
-        f1.col = 1;
-        tablero[3][1] = f1;
-        figuras.push(f1);
-
-        const c2 = getCellCenter(3, 2);
-        const f2 = crearFichaAleatoria(c2.x, c2.y);
-        f2.row = 3;
-        f2.col = 2;
-        tablero[3][2] = f2;
-        figuras.push(f2);
+        colocarFichaEnCelda(3, 1);
+        colocarFichaEnCelda(3, 2);
 
         drawFigures();
+        iniciarTimer();
         console.log("TEST CASI GANAR CARGADO: Saltá la ficha de [3, 1] al centro [3, 3] para ganar!");
     };
 
     window.debugDerrota = function () {
         ocultarFinDeJuego();
         juegoTerminado = false;
-        figuras = [];
+        limpiarTableroVacio();
 
-        for (let r = 0; r < 7; r++) {
-            for (let c = 0; c < 7; c++) {
-                tablero[r][c] = TABLERO_BASE[r][c] === -1 ? -1 : 0;
-            }
-        }
-
-        const isolated = [
+        [
             { r: 0, c: 2 },
             { r: 6, c: 4 },
             { r: 2, c: 0 }
-        ];
-
-        isolated.forEach(pos => {
-            const center = getCellCenter(pos.r, pos.c);
-            const f = crearFichaAleatoria(center.x, center.y);
-            f.row = pos.r;
-            f.col = pos.c;
-            tablero[pos.r][pos.c] = f;
-            figuras.push(f);
-        });
+        ].forEach(pos => colocarFichaEnCelda(pos.r, pos.c));
 
         drawFigures();
         verificarFinDelJuego();

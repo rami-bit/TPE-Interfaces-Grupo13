@@ -1,6 +1,8 @@
 /**
  * Clase base abstracta que representa cualquier elemento visual e interactivo del juego
  * dibujado sobre un contexto 2D de Canvas.
+ * Implementa el patrón Template Method en dibujarImagenEnClip(ancho, alto), delegando
+ * la geometría específica a definirPath() en cada subclase.
  */
 class ElementoJuego {
     /**
@@ -14,7 +16,7 @@ class ElementoJuego {
         this.posX = posX;
         this.posY = posY;
         this.fill = fill;
-        this.resaltado = false;
+        this.resaltado = resaltado;
         this.resaltadoStyle = "yellow";
         this.context = context;
     }
@@ -89,35 +91,49 @@ class ElementoJuego {
     }
 
     /**
-     * Define la forma del recorte (clip).
+     * Define la forma geométrica del recorte (clip) y del contorno.
      * Cada subclase DEBE sobreescribir este método.
-     * Se llama desde dibujarImagenEnClip().
+     * Se invoca automáticamente desde dibujarImagenEnClip().
      */
     definirPath() {
-        // vacío a propósito
+        // Método abstracto: implementado por las subclases (FichaTapita, FichaCamiseta)
     }
 
     /**
-     * Dibuja this.fill (una HTMLImageElement) recortada a la forma
-     * definida por definirPath().
+     * Dibuja this.fill (HTMLImageElement) centrada en (posX, posY) y recortada a la forma
+     * definida por definirPath(), aplicando además el contorno si está resaltada.
      *
-     * Flujo:
-     *   save()       → guarda el estado actual del canvas
-     *   beginPath()  → inicia un nuevo path
-     *   definirPath()→ cada hijo describe su forma (círculo, camiseta…)
-     *   clip()       → recorta todo lo que se dibuje después a esa forma
-     *   drawImage()  → dibuja la imagen completa dentro del recorte
-     *   restore()    → quita el clip y restaura el estado anterior
+     * @param {number} ancho - Ancho en píxeles con el que se escala la imagen.
+     * @param {number} alto - Alto en píxeles con el que se escala la imagen.
      */
-    dibujarImagenEnClip() {
-        if (!this.fill || !(this.fill instanceof HTMLImageElement)) return;
-
+    dibujarImagenEnClip(ancho, alto) {
         const ctx = this.context;
-        ctx.save();
-        ctx.beginPath();
-        this.definirPath();
-        ctx.clip();
-        ctx.drawImage(this.fill, this.posX, this.posY);
-        ctx.restore();
+
+        // 1. Imagen recortada a la silueta definida por la subclase
+        if (this.fill && this.fill instanceof HTMLImageElement) {
+            ctx.save();
+            ctx.beginPath();
+            this.definirPath();
+            ctx.clip();
+
+            ctx.drawImage(
+                this.fill,
+                this.posX - ancho / 2,
+                this.posY - alto / 2,
+                ancho,
+                alto
+            );
+
+            ctx.restore();
+        }
+
+        // 2. Contorno de selección (fuera del clip para verse completo)
+        if (this.resaltado) {
+            ctx.beginPath();
+            this.definirPath();
+            ctx.strokeStyle = this.resaltadoStyle;
+            ctx.lineWidth = 3;
+            ctx.stroke();
+        }
     }
 }

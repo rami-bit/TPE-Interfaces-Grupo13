@@ -1,6 +1,6 @@
 /**
  * Representa una ficha con formato rectangular de camiseta de fútbol, temática Boca Juniors.
- * Hereda de ElementoJuego y recorta su imagen dentro de un path rectangular centrado.
+ * Hereda de ElementoJuego y define su geometría rectangular centrada para el clip y detección de impacto.
  */
 class FichaCamiseta extends ElementoJuego {
     /**
@@ -19,7 +19,7 @@ class FichaCamiseta extends ElementoJuego {
     }
 
     /**
-     * Define la forma del clip: rectángulo centrado en (posX, posY).
+     * Define la forma del clip y borde: rectángulo centrado en (posX, posY).
      */
     definirPath() {
         this.context.rect(
@@ -31,36 +31,10 @@ class FichaCamiseta extends ElementoJuego {
     }
 
     /**
-     * Dibuja la ficha en el Canvas:
-     * 1. Aplica un clip rectangular para recortar la imagen al tamaño de la camiseta.
-     * 2. Si la ficha está seleccionada, dibuja un contorno rectangular amarillo resaltado.
+     * Dibuja la ficha en el Canvas delegando el clip y resaltado a la clase padre.
      */
     draw() {
-        const ctx = this.context;
-
-        // --- Imagen recortada al rectángulo ---
-        if (this.fill && this.fill instanceof HTMLImageElement) {
-            ctx.save();
-            ctx.beginPath();
-            this.definirPath();
-            ctx.clip();
-
-            ctx.drawImage(this.fill,
-                this.posX - this.ancho / 2,
-                this.posY - this.alto / 2,
-                this.ancho, this.alto);
-
-            ctx.restore();
-        }
-
-        // --- Borde resaltado (fuera del clip) ---
-        if (this.resaltado) {
-            ctx.beginPath();
-            this.definirPath();
-            ctx.strokeStyle = this.resaltadoStyle;
-            ctx.lineWidth = 3;
-            ctx.stroke();
-        }
+        this.dibujarImagenEnClip(this.ancho, this.alto);
     }
 
     /**

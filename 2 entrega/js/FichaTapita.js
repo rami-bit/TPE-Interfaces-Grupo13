@@ -1,6 +1,6 @@
 /**
  * Representa una ficha con formato circular de "tapita", temática Boca Juniors.
- * Hereda de ElementoJuego y recorta su imagen dentro de un path circular.
+ * Hereda de ElementoJuego y define su geometría circular para el clip y detección de impacto.
  */
 class FichaTapita extends ElementoJuego {
     /**
@@ -17,46 +17,18 @@ class FichaTapita extends ElementoJuego {
     }
 
     /**
-     * Define el path circular para el recorte (clip) centrado en (posX, posY).
+     * Define el path circular para el recorte (clip) y borde centrado en (posX, posY).
      */
     definirPath() {
         this.context.arc(this.posX, this.posY, this.radius, 0, 2 * Math.PI);
     }
 
     /**
-     * Dibuja la ficha en el Canvas:
-     * 1. Aplica un clip circular para que la imagen quede recortada a la forma de la tapita.
-     * 2. Si la ficha está seleccionada, dibuja un anillo exterior resaltado en amarillo.
+     * Dibuja la ficha en el Canvas delegando el clip y resaltado a la clase padre.
      */
     draw() {
-        const ctx = this.context;
-
-        // --- Imagen recortada al círculo ---
-        if (this.fill && this.fill instanceof HTMLImageElement) {
-            const lado = this.radius * 2;
-
-            ctx.save();
-            ctx.beginPath();
-            this.definirPath();
-            ctx.clip();
-
-            // La imagen se dibuja centrada en (posX, posY) escalada al diámetro
-            ctx.drawImage(this.fill,
-                this.posX - this.radius,
-                this.posY - this.radius,
-                lado, lado);
-
-            ctx.restore();
-        }
-
-        // --- Borde resaltado (fuera del clip, se ve completo) ---
-        if (this.resaltado) {
-            ctx.beginPath();
-            ctx.arc(this.posX, this.posY, this.radius, 0, 2 * Math.PI);
-            ctx.strokeStyle = this.resaltadoStyle;
-            ctx.lineWidth = 3;
-            ctx.stroke();
-        }
+        const diametro = this.radius * 2;
+        this.dibujarImagenEnClip(diametro, diametro);
     }
 
     /**
@@ -67,8 +39,8 @@ class FichaTapita extends ElementoJuego {
      * @returns {boolean} True si la distancia al centro es menor o igual al radio.
      */
     isPointInside(x, y) {
-        let dx = this.posX - x;
-        let dy = this.posY - y;
+        const dx = this.posX - x;
+        const dy = this.posY - y;
         return Math.sqrt(dx * dx + dy * dy) <= this.radius;
     }
 }
