@@ -120,3 +120,16 @@ Las 4 instrucciones de cierre de partida (`detenerTimer()`, `juegoTerminado = tr
 
 ### Solución implementada
 Se trasladaron esas 4 líneas al inicio de `mostrarFinDeJuego(victoria, mensaje)`, asegurando que cualquier condición de fin de partida detenga el reloj y limpie las animaciones en un único lugar.
+
+---
+
+## 6. Migración del Temporizador al Canvas (HUD)
+
+### Problema
+El temporizador estaba maquetado como un elemento HTML (`#peg-timer`) dentro de la barra de acciones superior. Esto generaba dependencia de elementos DOM externos y duplicidad visual fuera del lienzo del juego.
+
+### Solución implementada
+1. Se implementó la función `dibujarTimerCanvas()` que pinta una cápsula / pastilla HUD en la esquina superior izquierda del Canvas (`x: 60, y: 45, w: 260, h: 72`), un espacio despejado del fondo del estadio sin interferencia con los agujeros del tablero.
+2. Posee estilo boquense con fondo azul noche semitransparente (`rgba(5, 14, 31, 0.88)`), borde dorado de 3.5px y texto `⏱ MM:SS` en tipografía bold 36px `#FFD700`.
+3. Al alcanzar los últimos 30 segundos (`tiempoRestante <= 30`), el borde y el texto pasan a rojo advertencia `#FF4D4D` con efecto de resplandor (`shadowBlur: 14`).
+4. Se retiró `#peg-timer` del DOM de `game.html` y se sincronizó `actualizarDisplayTimer()` para redibujar la escena en cada segundo (`drawFigures()`), asegurando que el reloj descuente en tiempo real de forma continua aun si el usuario todavía no realizó ningún movimiento con el mouse.

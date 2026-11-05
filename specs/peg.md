@@ -167,9 +167,10 @@ function colocarFichaEnCelda(row, col) {
   - **Victoria**: Queda exactamente `1` ficha (`figuras.length === 1`).
   - **Derrota**: `hayMovimientosPosiblesEnTablero()` recorre `figuras[]` con un bucle `while` que corta apenas `puedeRealizarMovimiento(figuras[i])` devuelve `true`. Si termina el `while` sin hallar saltos, declara derrota.
   - **`mostrarFinDeJuego(victoria, mensaje)`** centraliza la detención del reloj, la limpieza de pistas activas y el bloqueo del tablero (`juegoTerminado = true`).
-* **Temporizador Regresivo (`iniciarTimer`, `resetearTimer`, `detenerTimer`)**:
-  - Cuenta regresiva de 5 minutos (`300` segundos) en `#peg-timer-display`.
-  - Cuando quedan 30 segundos o menos, activa la clase `.peg-timer--peligro` (alerta roja pulsante).
+* **Temporizador Regresivo HUD en Canvas (`dibujarTimerCanvas`, `iniciarTimer`, `resetearTimer`, `detenerTimer`)**:
+  - Cuenta regresiva de 5 minutos (`300` segundos) renderizada directamente sobre el Canvas en la esquina superior izquierda (`x: 60, y: 45, w: 260, h: 72`) como pastilla HUD semitransparente (`rgba(5, 14, 31, 0.88)`).
+  - Estilo dorado boquense habitual con texto `⏱ MM:SS` en tipografía Plus Jakarta Sans bold 36px.
+  - Cuando quedan 30 segundos o menos (`tiempoRestante <= 30`), cambia a alerta visual roja (`#FF4D4D`) con brillo exterior (`shadowBlur: 14`).
   - Si llega a `0`, invoca `mostrarFinDeJuego(null, ...)` con el título `"¡TIEMPO TERMINADO!"`.
 * **Reinicio y Cambio de Ficha (`reiniciarJuego` y `abrirMenuFichas`)**:
   - `reiniciarJuego()` es invocable desde el botón `↻` de la barra (`#peg-btn-reiniciar-barra`), desde **Reintentar** en el modal (`#peg-btn-reiniciar-modal`), desde `iniciarPartida()` o por consola (`window.reiniciarJuego()`).

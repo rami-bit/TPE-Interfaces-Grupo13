@@ -318,11 +318,70 @@ document.addEventListener('DOMContentLoaded', () => {
        RENDER
        ============================================================ */
     /**
+     * Dibuja el temporizador HUD directamente sobre el Canvas en la esquina superior izquierda.
+     */
+    function dibujarTimerCanvas() {
+        const x = 60;
+        const y = 45;
+        const w = 260;
+        const h = 72;
+        const radio = 36;
+
+        ctx.save();
+
+        const esPeligro = tiempoRestante <= 30 && tiempoRestante > 0;
+        const colorBorde = esPeligro ? "#FF4D4D" : "rgba(255, 215, 0, 0.75)";
+        const colorTexto = esPeligro ? "#FF4D4D" : "#FFD700";
+
+        // Fondo semitransparente estilo pastilla
+        ctx.beginPath();
+        if (typeof ctx.roundRect === 'function') {
+            ctx.roundRect(x, y, w, h, radio);
+        } else {
+            ctx.moveTo(x + radio, y);
+            ctx.lineTo(x + w - radio, y);
+            ctx.quadraticCurveTo(x + w, y, x + w, y + radio);
+            ctx.lineTo(x + w, y + h - radio);
+            ctx.quadraticCurveTo(x + w, y + h, x + w - radio, y + h);
+            ctx.lineTo(x + radio, y + h);
+            ctx.quadraticCurveTo(x, y + h, x, y + h - radio);
+            ctx.lineTo(x, y + radio);
+            ctx.quadraticCurveTo(x, y, x + radio, y);
+            ctx.closePath();
+        }
+        ctx.fillStyle = "rgba(5, 14, 31, 0.88)";
+        ctx.fill();
+
+        // Borde dorado o rojo de alerta
+        ctx.lineWidth = 3.5;
+        ctx.strokeStyle = colorBorde;
+        if (esPeligro) {
+            ctx.shadowColor = "rgba(255, 77, 77, 0.9)";
+            ctx.shadowBlur = 14;
+        } else {
+            ctx.shadowColor = "rgba(0, 0, 0, 0.4)";
+            ctx.shadowBlur = 8;
+        }
+        ctx.stroke();
+
+        // Texto e ícono del reloj
+        ctx.shadowBlur = 0;
+        ctx.font = "bold 34px 'Plus Jakarta Sans', 'Segoe UI Emoji', sans-serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillStyle = colorTexto;
+        ctx.fillText(`⏱ ${formatearTiempo(tiempoRestante)}`, x + w / 2, y + h / 2 + 1);
+
+        ctx.restore();
+    }
+
+    /**
      * Redibuja la escena completa en el Canvas:
      * 1. Limpia el lienzo.
      * 2. Pinta el fondo del tablero recortado.
      * 3. Dibuja las pistas visuales animadas (si hay una ficha seleccionada).
      * 4. Dibuja todas las fichas activas.
+     * 5. Dibuja el temporizador HUD en el canvas.
      */
     function drawFigures() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -335,6 +394,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         drawHints();
         figuras.forEach(f => f.draw());
+        dibujarTimerCanvas();
     }
 
     /* ============================================================
@@ -720,8 +780,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
-     * Actualiza el texto en el display del temporizador y añade advertencia
-     * visual pulsante en rojo si quedan 30 segundos o menos.
+     * Actualiza el temporizador redibujando el Canvas (HUD) y sincronizando
+     * el elemento HTML en caso de que exista.
      */
     function actualizarDisplayTimer() {
         const display = document.getElementById('peg-timer-display');
@@ -731,6 +791,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (container) {
             container.classList.toggle('peg-timer--peligro', tiempoRestante <= 30 && tiempoRestante > 0);
+        }
+        if (imgTablero) {
+            drawFigures();
         }
     }
 
