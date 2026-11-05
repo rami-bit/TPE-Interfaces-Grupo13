@@ -72,7 +72,7 @@ Se extrajo la función `obtenerPosicionMouse(e)` que retorna `{ x, y }` ya escal
 ## 6. Centralización de Instanciación en el Tablero (`colocarFichaEnCelda` y `limpiarTableroVacio`)
 
 ### Problema previo
-Los 6 pasos para dar de alta una ficha en una celda (calcular centro en píxeles, crear ficha aleatoria, asignar `.row` y `.col`, guardarla en `tablero[r][c]` y agregarla a `figuras[]`) estaban triplicados entre `initTablero()`, `debugCasiGanar()` y `debugDerrota()`.
+Los 6 pasos para dar de alta una ficha en una celda (calcular centro en píxeles, crear ficha, asignar `.row` y `.col`, guardarla en `tablero[r][c]` y agregarla a `figuras[]`) estaban triplicados entre `initTablero()`, `debugCasiGanar()` y `debugDerrota()`.
 
 ### Solución implementada
 * Se creó `colocarFichaEnCelda(row, col)` que encapsula esos 6 pasos en un único punto.
@@ -90,3 +90,33 @@ El literal numérico `7` aparecía hardcodeado en múltiples bucles y validacion
 * Se definió `const TAM_TABLERO = TABLERO_BASE.length;` para todos los recorridos y chequeos de límites.
 * Se declaró `const DIRECCIONES` una única vez a nivel de módulo. Si se quisiera cambiar las dimensiones del tablero o agregar nuevas direcciones de salto, se modifica únicamente la configuración superior sin tocar la lógica algorítmica.
 
+---
+
+## 8. Fuente Única de Verdad para la Ficha Elegida (`indiceFichaElegida`)
+
+### Problema previo
+Al incorporar el menú de selección de tapita se habían declarado dos variables globales (`indiceFichaElegida` e `imgFichaElegida`) y una función intermedia `seleccionarFicha()`, lo que obligaba a realizar chequeos cruzados (`imgFichaElegida || imgTapitas[indiceFichaElegida] || imgTapitas[0]` e `indexOf`) al iniciar partida y al instanciar cada ficha.
+
+### Solución implementada
+Se eliminaron `imgFichaElegida` y `seleccionarFicha()`. Se conserva únicamente `indiceFichaElegida = 0`, actualizado directamente en el evento `change` del radio button y leído en `crearFicha(x, y)` mediante `imgTapitas[indiceFichaElegida]`.
+
+---
+
+## 9. Unificación de `iniciarPartida()` y `reiniciarJuego()`
+
+### Problema previo
+`iniciarPartida()` y `reiniciarJuego()` repetían los mismos pasos de inicialización (ocultar modal, limpiar banderas, reiniciar reloj, llamar a `initTablero()` y `drawFigures()`). Además, una variable global `precargaPromesa` postergaba el dibujado del fondo hasta hacer click en *"Jugar"*, dejando el canvas negro detrás del menú inicial.
+
+### Solución implementada
+* Al cargar el documento, `precargarTodo().then(() => drawFigures())` pinta inmediatamente el tablero de fondo detrás del menú.
+* `iniciarPartida()` se redujo a 3 líneas que marcan `partidaIniciada = true`, ocultan el menú y delegan todo el arranque en `reiniciarJuego()`.
+
+---
+
+## 10. Limpieza de Estado Centralizada en `mostrarFinDeJuego()`
+
+### Problema previo
+Las 4 instrucciones de cierre de partida (`detenerTimer()`, `juegoTerminado = true`, `destinosValidosActivos = []` y `detenerAnimacionHints()`) estaban copiadas tanto en el caso de victoria como en el de derrota de `verificarFinDelJuego()` y en el timeout de `iniciarTimer()`.
+
+### Solución implementada
+Se trasladaron esas 4 líneas al inicio de `mostrarFinDeJuego(victoria, mensaje)`, asegurando que cualquier condición de fin de partida detenga el reloj y limpie las animaciones en un único lugar.

@@ -69,9 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let figuras = [];
     let imgTablero = null;
     let imgTapitas = [];
-    let imgFichaElegida = null;
     let indiceFichaElegida = 0;
-    let precargaPromesa = null;
     let partidaIniciada = false;
 
     let isMouseDown = false;
@@ -119,7 +117,6 @@ document.addEventListener('DOMContentLoaded', () => {
         canvas.height = CROP.h;
 
         imgTapitas = await Promise.all(IMG_TAPITAS.map(cargarImagen));
-        imgFichaElegida = imgTapitas[indiceFichaElegida];
     }
 
     /* ============================================================
@@ -162,8 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
      * @returns {FichaTapita}
      */
     function crearFicha(x, y) {
-        const img = imgFichaElegida || imgTapitas[indiceFichaElegida] || imgTapitas[0];
-        return new FichaTapita(x, y, img, false, ctx, FICHA_RADIO);
+        return new FichaTapita(x, y, imgTapitas[indiceFichaElegida], false, ctx, FICHA_RADIO);
     }
 
     /**
@@ -257,7 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
             radio.className = 'peg-menu__radio';
             radio.checked = i === indiceFichaElegida;
             radio.addEventListener('change', () => {
-                if (radio.checked) seleccionarFicha(i);
+                if (radio.checked) indiceFichaElegida = i;
             });
 
             const label = document.createElement('label');
@@ -281,27 +277,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
-     * Registra la ficha elegida en el menú previo.
-     * @param {number} indice - Índice dentro de IMG_TAPITAS.
-     */
-    function seleccionarFicha(indice) {
-        indiceFichaElegida = indice;
-        if (imgTapitas[indice]) {
-            imgFichaElegida = imgTapitas[indice];
-        }
-    }
-
-    /**
-     * Muestra el menú previo de selección de fichas y sincroniza el radio seleccionado.
+     * Muestra el menú previo de selección de fichas.
      */
     function mostrarMenu() {
         const menu = document.getElementById('peg-menu');
         if (menu) {
             menu.classList.remove('peg-overlay--oculto');
-        }
-        const radio = document.getElementById(`peg-ficha-${indiceFichaElegida}`);
-        if (radio) {
-            radio.checked = true;
         }
     }
 
@@ -316,44 +297,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
-     * Detiene la partida actual, limpia estados y vuelve a abrir el menú de selección de fichas.
+     * Detiene el reloj actual, oculta el modal de fin de juego y vuelve a abrir el menú de fichas.
      */
     function abrirMenuFichas() {
         detenerTimer();
         ocultarFinDeJuego();
-        juegoTerminado = false;
-        isMouseDown = false;
-        lastClickedFigure = null;
-        lastClickedPos = null;
-        destinosValidosActivos = [];
-        detenerAnimacionHints();
         mostrarMenu();
     }
 
     /**
-     * Inicia la partida con la ficha elegida: oculta el menú, reinicia el reloj,
-     * inicializa el tablero y dibuja las figuras.
+     * Inicia la partida con la ficha elegida ocultando el menú y delegando el arranque a reiniciarJuego().
      */
     function iniciarPartida() {
-        const arrancar = () => {
-            imgFichaElegida = imgTapitas[indiceFichaElegida] || imgTapitas[0];
-            if (imgFichaElegida) {
-                indiceFichaElegida = imgTapitas.indexOf(imgFichaElegida);
-            }
-            partidaIniciada = true;
-            juegoTerminado = false;
-            ocultarMenu();
-            ocultarFinDeJuego();
-            resetearTimer();
-            initTablero();
-            drawFigures();
-        };
-
-        if (precargaPromesa) {
-            precargaPromesa.then(arrancar).catch(err => console.error(err));
-        } else {
-            arrancar();
-        }
+        partidaIniciada = true;
+        ocultarMenu();
+        reiniciarJuego();
     }
 
     /* ============================================================
@@ -794,10 +752,6 @@ document.addEventListener('DOMContentLoaded', () => {
             actualizarDisplayTimer();
 
             if (tiempoRestante <= 0) {
-                detenerTimer();
-                juegoTerminado = true;
-                destinosValidosActivos = [];
-                detenerAnimacionHints();
                 mostrarFinDeJuego(null, "¡Tiempo agotado! No lograste completar el tablero antes de que termine el reloj.");
             }
         }, 1000);
@@ -857,20 +811,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function verificarFinDelJuego() {
         // 1. Caso VICTORIA: Queda exactamente 1 sola ficha
         if (figuras.length === 1) {
-            detenerTimer();
-            juegoTerminado = true;
-            destinosValidosActivos = [];
-            detenerAnimacionHints();
             mostrarFinDeJuego(true, "¡Mística pura! Dejaste exactamente una sola ficha en el tablero.");
             return true;
         }
 
         // 2. Caso DERROTA: Verificamos con el while si quedan movimientos posibles
         if (!hayMovimientosPosiblesEnTablero()) {
-            detenerTimer();
-            juegoTerminado = true;
-            destinosValidosActivos = [];
-            detenerAnimacionHints();
             mostrarFinDeJuego(false, `Fin de la partida: perdiste, no quedan movimientos válidos. Fichas restantes: ${figuras.length}.`);
             return true;
         }
@@ -879,22 +825,28 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
-     * Muestra el modal superpuesto de fin de juego con el título y mensaje correspondientes.
-     * @param {boolean} victoria - True para victoria, false para derrota.
+     * Detiene la partida activa y muestra el modal superpuesto de fin de juego
+     * con el título y mensaje correspondientes.
+     * @param {boolean|null} victoria - True para victoria, false para bloqueo, null para tiempo agotado.
      * @param {string} mensaje - Texto explicativo del desenlace de la partida.
      */
     function mostrarFinDeJuego(victoria, mensaje) {
+        detenerTimer();
+        juegoTerminado = true;
+        destinosValidosActivos = [];
+        detenerAnimacionHints();
+
         const overlay = document.getElementById('peg-overlay');
         const tituloEl = document.getElementById('peg-overlay-titulo');
         const mensajeEl = document.getElementById('peg-overlay-mensaje');
 
         if (overlay && tituloEl && mensajeEl) {
-            if(victoria!=null){
+            if (victoria != null) {
                 tituloEl.textContent = victoria ? "¡VICTORIA BOSTERA!" : "¡SIN MOVIMIENTOS!";
-            }else{
-                tituloEl.textContent = "¡TIEMPO TERMINADO!"
+            } else {
+                tituloEl.textContent = "¡TIEMPO TERMINADO!";
             }
-            
+
             tituloEl.style.color = victoria ? "#FFD700" : "#FF6B6B";
             mensajeEl.textContent = mensaje;
             overlay.classList.remove('peg-overlay--oculto');
@@ -999,8 +951,9 @@ document.addEventListener('DOMContentLoaded', () => {
        ============================================================ */
     construirMenuFichas();
     actualizarDisplayTimer();
-    precargaPromesa = precargarTodo();
-    precargaPromesa.catch(err => {
+    precargarTodo().then(() => {
+        drawFigures();
+    }).catch(err => {
         console.error(err);
     });
 });

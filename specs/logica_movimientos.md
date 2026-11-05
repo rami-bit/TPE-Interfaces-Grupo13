@@ -123,10 +123,11 @@ y calcular hints   y redibujar       └── NO ──► Snap-back unificado 
 
 * **Búsqueda de Movimientos con Corte Temprano (`hayMovimientosPosiblesEnTablero`)**:
   Recorre `figuras[]` con un bucle `while (i < figuras.length && !hayMovimiento)` que invoca `puedeRealizarMovimiento(figuras[i])`. En cuanto una sola ficha tiene al menos un salto disponible, corta la iteración devolviendo `true`.
-* **Verificación Posterior a Cada Salto (`verificarFinDelJuego`)**:
-  1. **Victoria**: `figuras.length === 1` → detiene el reloj y muestra el modal de victoria.
-  2. **Derrota por Bloqueo**: `!hayMovimientosPosiblesEnTablero()` → detiene el reloj y muestra el modal indicando cuántas fichas quedaron sin movimientos.
+* **Verificación Posterior a Cada Salto (`verificarFinDelJuego` y `mostrarFinDeJuego`)**:
+  1. **Victoria**: `figuras.length === 1` → invoca `mostrarFinDeJuego(true, ...)`.
+  2. **Derrota por Bloqueo**: `!hayMovimientosPosiblesEnTablero()` → invoca `mostrarFinDeJuego(false, ...)`.
+  3. **`mostrarFinDeJuego(victoria, mensaje)`** centraliza la parada del reloj (`detenerTimer()`), la limpieza de `destinosValidosActivos`, la cancelación de `animHintsId` y la activación del modal.
 * **Temporizador Regresivo (`300s` / `05:00`)**:
-  Actualiza `#peg-timer-display` cada segundo, activa `.peg-timer--peligro` en los últimos 30 segundos y finaliza la partida por tiempo agotado al llegar a `0`.
-* **Reinicio (`reiniciarJuego`)**:
-  Restablece el tablero, limpia selecciones y reinicia el cronómetro desde los botones del HUD/modal o mediante `window.reiniciarJuego()`.
+  Actualiza `#peg-timer-display` cada segundo, activa `.peg-timer--peligro` en los últimos 30 segundos y finaliza la partida con `mostrarFinDeJuego(null, ...)` al llegar a `0`.
+* **Reinicio y Cambio de Tapita (`reiniciarJuego` y `abrirMenuFichas`)**:
+  `reiniciarJuego()` restablece el tablero, limpia selecciones y reinicia el cronómetro (también invocado desde `iniciarPartida()`), mientras que `abrirMenuFichas()` permite volver al selector de tapitas al terminar una partida.

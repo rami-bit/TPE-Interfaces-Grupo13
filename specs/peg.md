@@ -32,20 +32,23 @@ La clase debe definirse antes de `juego.js` porque `initTablero()` instancia `Fi
    ```
 3. Precarga en paralelo con `Promise.all` la cantera de tapitas (`IMG_TAPITAS`).
 
-La promesa de precarga se guarda en `precargaPromesa` y **no** inicializa el tablero: el arranque ocurre recién cuando el jugador elige una ficha en el menú previo y presiona **Jugar** (`iniciarPartida()`):
+Al cargar la página, se construye el menú de fichas, se dibuja el tablero vacío de fondo detrás del menú y recién cuando el jugador elige una tapita y presiona **Jugar** se ejecuta `iniciarPartida()` (que delega en `reiniciarJuego()`):
 
 ```js
-precargaPromesa.then(() => {
-    ocultarMenu();
-    resetearTimer();
-    initTablero();
+construirMenuFichas();
+actualizarDisplayTimer();
+precargarTodo().then(() => {
     drawFigures();
 }).catch(err => console.error(err));
 ```
 
 ### Menú previo de selección de ficha
 
-Antes de cargar el tablero se muestra el overlay `#peg-menu` (estética Boca: azul/oro, reutilizando `.peg-overlay` y `.peg-modal`). `construirMenuFichas()` genera desde `IMG_TAPITAS` un par `input[type=radio]` + `label` circular por tapita, de modo que la selección y la navegación por teclado son nativas. La ficha elegida se guarda en `imgFichaElegida` y **todas** las fichas de la partida usan esa única imagen (no hay elección aleatoria). El botón ↻ de la barra y "Jugar de nuevo" del modal reinician con la misma ficha.
+Antes de arrancar la partida se muestra el overlay `#peg-menu` (estética Boca: azul/oro, reutilizando `.peg-overlay` y `.peg-modal`). `construirMenuFichas()` genera desde `IMG_TAPITAS` un par `input[type=radio]` + `label` circular por tapita, de modo que la selección y la navegación por teclado son nativas. El índice seleccionado se guarda como única fuente de verdad en `indiceFichaElegida` y **todas** las fichas de la partida usan `imgTapitas[indiceFichaElegida]`.
+
+Al terminar la partida, el modal ofrece dos acciones:
+- **Reintentar** (`#peg-btn-reiniciar-modal`): Reinicia inmediatamente con la misma tapita (`reiniciarJuego()`).
+- **Elegir otra tapita** (`#peg-btn-cambiar-ficha-modal`): Abre nuevamente el menú (`abrirMenuFichas()`) para cambiar de diseño.
 
 ### Recorte visible (`CROP`) y Regla de Coordenadas
 
@@ -160,15 +163,17 @@ function colocarFichaEnCelda(row, col) {
 
 ## 5. Temporizador, Fin de Partida y Reinicio
 
-* **Detección de Fin de Juego (`verificarFinDelJuego`)**:
+* **Detección de Fin de Juego (`verificarFinDelJuego` y `mostrarFinDeJuego`)**:
   - **Victoria**: Queda exactamente `1` ficha (`figuras.length === 1`).
   - **Derrota**: `hayMovimientosPosiblesEnTablero()` recorre `figuras[]` con un bucle `while` que corta apenas `puedeRealizarMovimiento(figuras[i])` devuelve `true`. Si termina el `while` sin hallar saltos, declara derrota.
+  - **`mostrarFinDeJuego(victoria, mensaje)`** centraliza la detención del reloj, la limpieza de pistas activas y el bloqueo del tablero (`juegoTerminado = true`).
 * **Temporizador Regresivo (`iniciarTimer`, `resetearTimer`, `detenerTimer`)**:
   - Cuenta regresiva de 5 minutos (`300` segundos) en `#peg-timer-display`.
   - Cuando quedan 30 segundos o menos, activa la clase `.peg-timer--peligro` (alerta roja pulsante).
-  - Si llega a `0`, detiene la partida y abre el modal de derrota por tiempo.
-* **Reinicio (`reiniciarJuego`)**:
-  - Invocable en cualquier momento desde el botón `↻` de la barra (`#peg-btn-reiniciar-barra`), desde el botón del modal (`#peg-btn-reiniciar-modal`) o por consola (`window.reiniciarJuego()`).
+  - Si llega a `0`, invoca `mostrarFinDeJuego(null, ...)` con el título `"¡TIEMPO TERMINADO!"`.
+* **Reinicio y Cambio de Ficha (`reiniciarJuego` y `abrirMenuFichas`)**:
+  - `reiniciarJuego()` es invocable desde el botón `↻` de la barra (`#peg-btn-reiniciar-barra`), desde **Reintentar** en el modal (`#peg-btn-reiniciar-modal`), desde `iniciarPartida()` o por consola (`window.reiniciarJuego()`).
+  - `abrirMenuFichas()` se invoca desde **Elegir otra tapita** (`#peg-btn-cambiar-ficha-modal`) o por consola (`window.abrirMenuFichas()`).
 * **Funciones de prueba rápida en consola**:
   - `window.debugCasiGanar()`: Deja 2 fichas listas para ganar en un solo salto al centro.
   - `window.debugDerrota()`: Deja 3 fichas aisladas y dispara el cartel de derrota.
