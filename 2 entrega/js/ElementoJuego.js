@@ -96,7 +96,7 @@ class ElementoJuego {
      * Se invoca automáticamente desde dibujarImagenEnClip().
      */
     definirPath() {
-        // Método abstracto: implementado por las subclases (FichaTapita, FichaCamiseta)
+        // Método abstracto: implementado por las subclases (FichaTapita)
     }
 
     /**

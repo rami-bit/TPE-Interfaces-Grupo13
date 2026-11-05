@@ -1,6 +1,6 @@
 # Peg Solitaire — Documentación Técnica
 
-Juego de Peg Solitaire con temática Boca Juniors. El tablero y las fichas se dibujan sobre un `<canvas>` HTML5 usando imágenes reales. Este documento describe la arquitectura e implementación **completa** del juego: carga del canvas, generación automática de fichas, herencia POO con Template Method, drag & drop, pistas animadas, captura con rebote, temporizador regresivo y detección de fin de partida.
+Juego de Peg Solitaire con temática Boca Juniors. El tablero y las fichas se dibujan sobre un `<canvas>` HTML5 usando imágenes reales. Este documento describe la arquitectura e implementación **completa** del juego: carga del canvas, menú previo de selección de ficha, generación de fichas con la imagen elegida, herencia POO con Template Method, drag & drop, pistas animadas, captura con rebote, temporizador regresivo y detección de fin de partida.
 
 ---
 
@@ -13,14 +13,12 @@ En `2 entrega/game.html` los scripts se cargan al final del `<body>`, en este or
 ```html
 <script src="js/header.js"></script>
 <script src="js/imagenesTapitas.js"></script>      <!-- IMG_TAPITAS[] -->
-<script src="js/imagenesCamisetas.js"></script>    <!-- IMG_CAMISETAS[] -->
 <script src="js/ElementoJuego.js"></script>        <!-- clase base (Template Method) -->
 <script src="js/FichaTapita.js"></script>          <!-- subclase circular -->
-<script src="js/FichaCamiseta.js"></script>        <!-- subclase rectangular -->
 <script src="js/juego.js"></script>                <!-- lógica principal -->
 ```
 
-Las clases deben definirse antes de `juego.js` porque `initTablero()` instancia `FichaTapita` y `FichaCamiseta`.
+La clase debe definirse antes de `juego.js` porque `initTablero()` instancia `FichaTapita`.
 
 ### Inicialización y Precarga
 
@@ -29,26 +27,31 @@ Las clases deben definirse antes de `juego.js` porque `initTablero()` instancia 
 1. Carga `img/tablero.jpeg` con una `Promise` (`new Image()` + `onload`/`onerror`).
 2. Fija la **resolución interna** del canvas al recorte visible:
    ```js
-   canvas.width  = CROP.w;   // 1100
+   canvas.width  = CROP.w;   // 1600
    canvas.height = CROP.h;   // 1150
    ```
-3. Precarga en paralelo con `Promise.all` las tapitas (`IMG_TAPITAS`) y camisetas (`IMG_CAMISETAS`).
+3. Precarga en paralelo con `Promise.all` la cantera de tapitas (`IMG_TAPITAS`).
 
-Recién cuando todo resolvió se ejecuta `initTablero()`, `drawFigures()` e `iniciarTimer()`:
+La promesa de precarga se guarda en `precargaPromesa` y **no** inicializa el tablero: el arranque ocurre recién cuando el jugador elige una ficha en el menú previo y presiona **Jugar** (`iniciarPartida()`):
 
 ```js
-precargarTodo().then(() => {
+precargaPromesa.then(() => {
+    ocultarMenu();
+    resetearTimer();
     initTablero();
     drawFigures();
-    iniciarTimer();
 }).catch(err => console.error(err));
 ```
 
+### Menú previo de selección de ficha
+
+Antes de cargar el tablero se muestra el overlay `#peg-menu` (estética Boca: azul/oro, reutilizando `.peg-overlay` y `.peg-modal`). `construirMenuFichas()` genera desde `IMG_TAPITAS` un par `input[type=radio]` + `label` circular por tapita, de modo que la selección y la navegación por teclado son nativas. La ficha elegida se guarda en `imgFichaElegida` y **todas** las fichas de la partida usan esa única imagen (no hay elección aleatoria). El botón ↻ de la barra y "Jugar de nuevo" del modal reinician con la misma ficha.
+
 ### Recorte visible (`CROP`) y Regla de Coordenadas
 
-La imagen original mide **2400×1792**, por lo que se recorta la zona útil del tablero (`CROP = { x: 650, y: 290, w: 1100, h: 1150 }`).
+La imagen original mide **2400×1792**, por lo que se recorta la zona útil del tablero con un encuadre apaisado que incluye estadio a los costados (`CROP = { x: 403, y: 280, w: 1600, h: 1150 }`). Ese encuadre hace que, al ocupar el 100% del ancho de su contenedor, el canvas tenga menor altura y el juego entre sin scroll.
 
-Todo el juego trabaja en **píxeles internos del canvas** (espacio 1100×1150). Los eventos del mouse llegan en píxeles CSS del viewport y se convierten mediante una única función centralizada `obtenerPosicionMouse(e)`:
+Todo el juego trabaja en **píxeles internos del canvas** (espacio 1600×1150). Los eventos del mouse llegan en píxeles CSS del viewport y se convierten mediante una única función centralizada `obtenerPosicionMouse(e)`:
 
 ```js
 function obtenerPosicionMouse(e) {
@@ -94,7 +97,7 @@ Para evitar duplicar código entre `initTablero()` y las funciones de prueba, el
 ```js
 function colocarFichaEnCelda(row, col) {
     const center = getCellCenter(row, col);
-    const ficha = crearFichaAleatoria(center.x, center.y);
+    const ficha = crearFicha(center.x, center.y);
     ficha.row = row;
     ficha.col = col;
     tablero[row][col] = ficha;
@@ -124,22 +127,19 @@ function colocarFichaEnCelda(row, col) {
                        │ + dibujarImagenEnClip(ancho, alto) │
                        └─────────────────┬──────────────────┘
                                          │ hereda
-                  ┌──────────────────────┴──────────────────────┐
-                  │                                             │
-        ┌─────────▼──────────┐                        ┌─────────▼──────────┐
-        │    FichaTapita     │                        │   FichaCamiseta    │
-        ├────────────────────┤                        ├────────────────────┤
-        │ - radius: number   │                        │ - ancho: number    │
-        ├────────────────────┤                        │ - alto: number     │
-        │ + definirPath()    │  arc (círculo)         ├────────────────────┤
-        │ + draw()           │  usa dibujarImagenEnClip│ + definirPath()    │ rect (centrado)
-        │ + isPointInside()  │  distancia ≤ radio     │ + draw()           │ usa dibujarImagenEnClip
-        └────────────────────┘                        │ + isPointInside()  │ bounding box AABB
-                                                      └────────────────────┘
+                               ┌─────────▼──────────┐
+                               │    FichaTapita     │
+                               ├────────────────────┤
+                               │ - radius: number   │
+                               ├────────────────────┤
+                               │ + definirPath()    │  arc (círculo)
+                               │ + draw()           │  usa dibujarImagenEnClip
+                               │ + isPointInside()  │  distancia ≤ radio
+                               └────────────────────┘
 ```
 
 * **`ElementoJuego.dibujarImagenEnClip(ancho, alto)`** centraliza el ciclo `save()` → `beginPath()` → `this.definirPath()` → `clip()` → `drawImage(...)` → `restore()` y el dibujado del contorno de selección cuando `this.resaltado === true`.
-* Las subclases solo definen su geometría en `definirPath()` y su colisión en `isPointInside(x, y)`, haciendo trivial agregar nuevas formas de fichas sin duplicar código de Canvas.
+* La subclase solo define su geometría en `definirPath()` y su colisión en `isPointInside(x, y)`, haciendo trivial agregar nuevas formas de fichas sin duplicar código de Canvas.
 
 ---
 

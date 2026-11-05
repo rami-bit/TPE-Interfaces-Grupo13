@@ -1,13 +1,13 @@
 # Peg Solitaire — Documentación de Refactorización y Escalabilidad
 
-Este documento detalla las mejoras de arquitectura, limpieza y escalabilidad aplicadas sobre el código de **Peg Solitaire** (`ElementoJuego.js`, `FichaTapita.js`, `FichaCamiseta.js` y `juego.js`), manteniendo intacto el comportamiento funcional del juego pero reduciendo la duplicación y facilitando futuras extensiones.
+Este documento detalla las mejoras de arquitectura, limpieza y escalabilidad aplicadas sobre el código de **Peg Solitaire** (`ElementoJuego.js`, `FichaTapita.js` y `juego.js`), manteniendo intacto el comportamiento funcional del juego pero reduciendo la duplicación y facilitando futuras extensiones.
 
 ---
 
 ## 1. Aplicación del Patrón *Template Method* en la Jerarquía POO
 
 ### Problema previo
-En `ElementoJuego.js` existía el método `dibujarImagenEnClip()`, pero ni `FichaTapita` ni `FichaCamiseta` lo invocaban. Ambas subclases repetían manualmente toda la secuencia de contexto 2D (`ctx.save()`, `ctx.beginPath()`, `this.definirPath()`, `ctx.clip()`, `ctx.drawImage(...)`, `ctx.restore()`) y el bloque condicional `if (this.resaltado)` para trazar el borde de selección.
+En `ElementoJuego.js` existía el método `dibujarImagenEnClip()`, pero `FichaTapita` no lo invocaba. La subclase repetía manualmente toda la secuencia de contexto 2D (`ctx.save()`, `ctx.beginPath()`, `this.definirPath()`, `ctx.clip()`, `ctx.drawImage(...)`, `ctx.restore()`) y el bloque condicional `if (this.resaltado)` para trazar el borde de selección.
 
 ### Solución implementada
 Se parametrizó `dibujarImagenEnClip(ancho, alto)` en la clase base `ElementoJuego` para que centralice:
@@ -20,11 +20,6 @@ Se parametrizó `dibujarImagenEnClip(ancho, alto)` en la clase base `ElementoJue
 draw() {
     const diametro = this.radius * 2;
     this.dibujarImagenEnClip(diametro, diametro);
-}
-
-// En FichaCamiseta.js
-draw() {
-    this.dibujarImagenEnClip(this.ancho, this.alto);
 }
 ```
 
@@ -70,7 +65,7 @@ Se eliminó `obtenerCoordenadasFicha` y `obtenerMovimientosValidos(ficha)` lee d
 La fórmula de escalado entre píxeles CSS del viewport (`getBoundingClientRect()`) y píxeles internos del canvas (`canvas.width / rect.width`) estaba escrita tres veces (`onMouseDown`, `onMouseMove` y `onMouseUp`).
 
 ### Solución implementada
-Se extrajo la función `obtenerPosicionMouse(e)` que retorna `{ x, y }` ya escalados a la resolución interna `1100×1150`, invocándola en una sola línea dentro de los tres eventos de mouse.
+Se extrajo la función `obtenerPosicionMouse(e)` que retorna `{ x, y }` ya escalados a la resolución interna `1600×1150`, invocándola en una sola línea dentro de los tres eventos de mouse.
 
 ---
 

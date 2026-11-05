@@ -15,8 +15,6 @@ document.addEventListener('DOMContentLoaded', () => {
        TAMAÑO DE FICHAS (al 100% del hueco ~91.5px diámetro)
        ============================================================ */
     const FICHA_RADIO = 45;
-    const FICHA_ANCHO = 90;
-    const FICHA_ALTO  = 90;
 
     /* ============================================================
        POSICIONES EXACTAS DEL TABLERO
@@ -31,12 +29,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /* ============================================================
        RECORTE VISIBLE DEL TABLERO
-       La imagen (2400×1792) tiene mucho fondo decorativo: el tablero
-       ocupa solo ~41% del ancho y ~58% del alto. Este recorte se usa
-       como resolución interna del canvas para que las fichas se vean
-       más grandes sin tocar el archivo tablero.jpeg.
+       La imagen (2400×1792) tiene mucho fondo decorativo a los costados.
+       El tablero ocupa ~56% del ancho y ~86% del alto de esta zona, así
+       que se recorta un encuadre más apaisado (1600×1150) que incluye
+       estadio lateral: al ocupar el 100% del ancho de su contenedor, el
+       canvas queda más bajo y entra sin scroll. No se toca tablero.jpeg.
        ============================================================ */
-    const CROP = { x: 650, y: 290, w: 1100, h: 1150 };
+    const CROP = { x: 403, y: 280, w: 1600, h: 1150 };
 
     /* ============================================================
        MATRIZ DEL TABLERO (inglés estándar 7×7)
@@ -70,7 +69,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let figuras = [];
     let imgTablero = null;
     let imgTapitas = [];
-    let imgCamisetas = [];
+    let imgFichaElegida = null;
+    let indiceFichaElegida = 0;
+    let precargaPromesa = null;
+    let partidaIniciada = false;
 
     let isMouseDown = false;
     let lastClickedFigure = null;
@@ -107,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
-     * Precarga todas las imágenes del juego (tablero, tapitas y camisetas)
+     * Precarga todas las imágenes del juego (tablero y cantera de tapitas)
      * y ajusta las dimensiones lógicas internas del Canvas.
      * @returns {Promise<void>}
      */
@@ -117,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
         canvas.height = CROP.h;
 
         imgTapitas = await Promise.all(IMG_TAPITAS.map(cargarImagen));
-        imgCamisetas = await Promise.all(IMG_CAMISETAS.map(cargarImagen));
+        imgFichaElegida = imgTapitas[indiceFichaElegida];
     }
 
     /* ============================================================
@@ -151,42 +153,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /* ============================================================
-       CREACIÓN DE FICHAS ALEATORIAS
+       CREACIÓN DE FICHAS (un solo tipo por partida)
        ============================================================ */
     /**
-     * Crea aleatoriamente una ficha tipo tapita o camiseta con 50% de probabilidad.
-     * @param {number} x - Posición X inicial.
-     * @param {number} y - Posición Y inicial.
-     * @returns {FichaTapita|FichaCamiseta} Instancia de la ficha creada.
-     */
-    function crearFichaAleatoria(x, y) {
-        return Math.random() < 0.5 ? crearTapita(x, y) : crearCamiseta(x, y);
-    }
-
-    /**
-     * Crea una ficha circular de tapita eligiendo aleatoriamente una textura de Boca.
+     * Crea una ficha circular de tapita con la imagen elegida en el menú previo.
      * @param {number} x - Coordenada X del centro.
      * @param {number} y - Coordenada Y del centro.
      * @returns {FichaTapita}
      */
-    function crearTapita(x, y) {
-        const img = imgTapitas[Math.floor(Math.random() * imgTapitas.length)];
+    function crearFicha(x, y) {
+        const img = imgFichaElegida || imgTapitas[indiceFichaElegida] || imgTapitas[0];
         return new FichaTapita(x, y, img, false, ctx, FICHA_RADIO);
     }
 
     /**
-     * Crea una ficha rectangular de camiseta eligiendo aleatoriamente un diseño de Boca.
-     * @param {number} x - Coordenada X del centro.
-     * @param {number} y - Coordenada Y del centro.
-     * @returns {FichaCamiseta}
-     */
-    function crearCamiseta(x, y) {
-        const img = imgCamisetas[Math.floor(Math.random() * imgCamisetas.length)];
-        return new FichaCamiseta(x, y, img, false, ctx, FICHA_ANCHO, FICHA_ALTO);
-    }
-
-    /**
-     * Instancia una ficha aleatoria, le asigna sus coordenadas lógicas (row, col)
+     * Instancia una ficha con la imagen elegida, le asigna sus coordenadas lógicas (row, col)
      * y la registra tanto en la matriz del tablero como en el arreglo de renderizado.
      * @param {number} row - Fila de destino.
      * @param {number} col - Columna de destino.
@@ -194,7 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     function colocarFichaEnCelda(row, col) {
         const center = getCellCenter(row, col);
-        const ficha = crearFichaAleatoria(center.x, center.y);
+        const ficha = crearFicha(center.x, center.y);
         ficha.row = row;
         ficha.col = col;
         tablero[row][col] = ficha;
@@ -238,6 +219,111 @@ document.addEventListener('DOMContentLoaded', () => {
                     tablero[row][col] = TABLERO_BASE[row][col];
                 }
             }
+        }
+    }
+
+    /* ============================================================
+       MENÚ PREVIO: ELECCIÓN DEL TIPO DE FICHA
+       ============================================================ */
+    /**
+     * Deriva un nombre legible a partir de la ruta de una tapita
+     * (ej. "img/peg/tapitas/tapitaRiquelme.png" → "Riquelme").
+     * @param {string} ruta - Ruta de la imagen.
+     * @param {number} indice - Índice de respaldo si no se puede derivar.
+     * @returns {string} Nombre legible de la ficha.
+     */
+    function nombreFicha(ruta, indice) {
+        const base = ruta.split('/').pop().replace(/\.[^.]+$/, '').replace(/^tapita/i, '');
+        return base || `Ficha ${indice + 1}`;
+    }
+
+    /**
+     * Construye la grilla de selección de fichas desde IMG_TAPITAS.
+     * Cada tapita se expone como un radio nativo (accesible por teclado)
+     * asociado a una miniatura circular.
+     */
+    function construirMenuFichas() {
+        const grilla = document.getElementById('peg-menu-grilla');
+        if (!grilla) return;
+        grilla.innerHTML = '';
+
+        IMG_TAPITAS.forEach((src, i) => {
+            const id = `peg-ficha-${i}`;
+            const radio = document.createElement('input');
+            radio.type = 'radio';
+            radio.name = 'peg-ficha';
+            radio.id = id;
+            radio.value = String(i);
+            radio.className = 'peg-menu__radio';
+            radio.checked = i === indiceFichaElegida;
+            radio.addEventListener('change', () => {
+                if (radio.checked) seleccionarFicha(i);
+            });
+
+            const label = document.createElement('label');
+            label.className = 'peg-menu__opcion';
+            label.htmlFor = id;
+
+            const img = document.createElement('img');
+            img.src = src;
+            img.alt = `Tapita ${nombreFicha(src, i)}`;
+            img.className = 'peg-menu__opcion-img';
+
+            const nombre = document.createElement('span');
+            nombre.className = 'peg-menu__nombre';
+            nombre.textContent = nombreFicha(src, i);
+
+            label.appendChild(img);
+            label.appendChild(nombre);
+            grilla.appendChild(radio);
+            grilla.appendChild(label);
+        });
+    }
+
+    /**
+     * Registra la ficha elegida en el menú previo.
+     * @param {number} indice - Índice dentro de IMG_TAPITAS.
+     */
+    function seleccionarFicha(indice) {
+        indiceFichaElegida = indice;
+        if (imgTapitas[indice]) {
+            imgFichaElegida = imgTapitas[indice];
+        }
+    }
+
+    /**
+     * Oculta el menú previo una vez que la partida arrancó.
+     */
+    function ocultarMenu() {
+        const menu = document.getElementById('peg-menu');
+        if (menu) {
+            menu.classList.add('peg-overlay--oculto');
+        }
+    }
+
+    /**
+     * Inicia la partida con la ficha elegida: oculta el menú, reinicia el reloj,
+     * inicializa el tablero y dibuja las figuras.
+     */
+    function iniciarPartida() {
+        if (partidaIniciada) return;
+
+        const arrancar = () => {
+            imgFichaElegida = imgTapitas[indiceFichaElegida] || imgTapitas[0];
+            if (imgFichaElegida) {
+                indiceFichaElegida = imgTapitas.indexOf(imgFichaElegida);
+            }
+            partidaIniciada = true;
+            ocultarMenu();
+            resetearTimer();
+            initTablero();
+            drawFigures();
+        };
+
+        if (precargaPromesa) {
+            precargaPromesa.then(arrancar).catch(err => console.error(err));
+        } else {
+            arrancar();
         }
     }
 
@@ -803,6 +889,8 @@ document.addEventListener('DOMContentLoaded', () => {
      * Restablece el tablero base, limpia selecciones, reinicia el reloj y vuelve a dibujar las figuras.
      */
     function reiniciarJuego() {
+        if (!partidaIniciada) return;
+
         ocultarFinDeJuego();
         juegoTerminado = false;
         isMouseDown = false;
@@ -828,10 +916,17 @@ document.addEventListener('DOMContentLoaded', () => {
         btnReiniciarBarra.addEventListener('click', reiniciarJuego);
     }
 
+    const btnJugar = document.getElementById('peg-menu-jugar');
+    if (btnJugar) {
+        btnJugar.addEventListener('click', iniciarPartida);
+    }
+
     /* ============================================================
        FUNCIONES DE PRUEBA (DEBUG TESTING EN CONSOLA)
        ============================================================ */
     window.debugCasiGanar = function () {
+        partidaIniciada = true;
+        ocultarMenu();
         ocultarFinDeJuego();
         juegoTerminado = false;
         limpiarTableroVacio();
@@ -845,6 +940,8 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     window.debugDerrota = function () {
+        partidaIniciada = true;
+        ocultarMenu();
         ocultarFinDeJuego();
         juegoTerminado = false;
         limpiarTableroVacio();
@@ -865,11 +962,10 @@ document.addEventListener('DOMContentLoaded', () => {
     /* ============================================================
        ARRANQUE
        ============================================================ */
-    precargarTodo().then(() => {
-        initTablero();
-        drawFigures();
-        iniciarTimer();
-    }).catch(err => {
+    construirMenuFichas();
+    actualizarDisplayTimer();
+    precargaPromesa = precargarTodo();
+    precargaPromesa.catch(err => {
         console.error(err);
     });
 });

@@ -142,8 +142,21 @@
             <div class="peg-solitaire-mock">
                 <div class="peg-solitaire-tablero">
                     <div class="peg-solitaire-lienzo">
-                        <canvas id="peg-solitaire-canvas" class="peg-solitaire-canvas"
-                            aria-label="Tablero de Peg Solitaire de Boca Juniors"></canvas>
+                        <canvas id="peg-solitaire-canvas" class="peg-solitaire-canvas" width="1600"
+                            height="1150" aria-label="Tablero de Peg Solitaire de Boca Juniors"></canvas>
+                        <!-- Menu previo: elegir tipo de ficha y arrancar -->
+                        <div id="peg-menu" class="peg-overlay peg-menu" role="dialog" aria-modal="true"
+                            aria-labelledby="peg-menu-titulo">
+                            <div class="peg-modal peg-menu__panel">
+                                <h2 id="peg-menu-titulo" class="peg-modal__titulo">Elegí tu tapita</h2>
+                                <p class="peg-modal__mensaje">Elegí con qué ficha querés jugar y salí a la cancha.</p>
+                                <div id="peg-menu-grilla" class="peg-menu__grilla" role="radiogroup"
+                                    aria-label="Tipo de ficha"></div>
+                                <button type="button" id="peg-menu-jugar" class="peg-btn-reiniciar peg-menu__jugar">
+                                    Jugar
+                                </button>
+                            </div>
+                        </div>
                         <!-- Modal Overlay Fin de Juego (Victoria / Derrota) -->
                         <div id="peg-overlay" class="peg-overlay peg-overlay--oculto" aria-live="assertive" role="dialog" aria-modal="true">
                             <div class="peg-modal">
@@ -472,10 +485,8 @@
 
     <script src="js/header.js"></script>
     <script src="js/imagenesTapitas.js"></script>
-    <script src="js/imagenesCamisetas.js"></script>
     <script src="js/ElementoJuego.js"></script>
     <script src="js/FichaTapita.js"></script>
-    <script src="js/FichaCamiseta.js"></script>
     <script src="js/juego.js"></script>
 
 </body>

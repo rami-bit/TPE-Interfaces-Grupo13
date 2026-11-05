@@ -39,9 +39,11 @@ body {
     overflow: hidden;
 }
 
-/* Peg Solitaire: card más ancha para aprovechar 1080 */
+/* Peg Solitaire: card más ancha para aprovechar 1080.
+   El tercer término la angosta en pantallas bajas para que el juego
+   entre sin scroll (relación del recorte 1600/1150). */
 .juego-card--peg {
-    width: min(950px, 100%);
+    width: min(950px, 100%, calc((100vh - 170px) * 1600 / 1150));
 }
 
 .juego-video {
@@ -671,11 +673,122 @@ body {
 
 .peg-solitaire-canvas {
     display: block;
-    width: min(100%, calc(85vh * 1100 / 1150));
+    width: 100%;
     height: auto;
     border-radius: 0;
     background-color: var(--textoBlack, #000);
     touch-action: manipulation;
+}
+
+/* ============================================================
+   MENÚ PREVIO: ELECCIÓN DEL TIPO DE FICHA (ESTÉTICA BOCA)
+   ============================================================ */
+
+.peg-menu {
+    padding: 16px;
+    overflow-y: auto;
+}
+
+.peg-menu__panel {
+    width: min(100%, 520px);
+    max-width: 520px;
+    min-width: 0;
+    max-height: 100%;
+    overflow-y: auto;
+    padding: 32px;
+}
+
+.peg-menu__panel .peg-modal__titulo {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+    color: #FFD700;
+}
+
+.peg-menu__grilla {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    margin: 0 0 28px;
+}
+
+.peg-menu__radio {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.peg-menu__opcion {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 4px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform 0.15s ease, background-color 0.2s ease;
+}
+
+.peg-menu__opcion:hover {
+    transform: translateY(-2px);
+    background-color: rgba(255, 215, 0, 0.08);
+}
+
+.peg-menu__opcion-img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid rgba(255, 215, 0, 0.35);
+    background-color: #020b18;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+}
+
+.peg-menu__radio:checked + .peg-menu__opcion .peg-menu__opcion-img {
+    border-color: #FFD700;
+    box-shadow: 0 0 16px rgba(255, 215, 0, 0.75);
+    transform: scale(1.06);
+}
+
+.peg-menu__radio:focus-visible + .peg-menu__opcion {
+    outline: 3px solid #FFD700;
+    outline-offset: 2px;
+}
+
+.peg-menu__nombre {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #e0e8f5;
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+
+.peg-menu__radio:checked + .peg-menu__opcion .peg-menu__nombre {
+    color: #FFD700;
+}
+
+.peg-menu__jugar {
+    min-width: 180px;
+}
+
+@media (max-width: 480px) {
+    .peg-menu__panel {
+        padding: 24px 18px;
+    }
+
+    .peg-menu__panel .peg-modal__titulo {
+        font-size: 1.5rem;
+    }
+
+    .peg-menu__grilla {
+        gap: 10px;
+        margin-bottom: 22px;
+    }
+
+    .peg-menu__nombre {
+        font-size: 0.72rem;
+    }
 }
 
 /* ============================================================

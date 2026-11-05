@@ -35,7 +35,7 @@ const TABLERO_BASE = [
 Durante la ejecución, la matriz dinámica `tablero[row][col]` adopta una representación de acceso directo ($O(1)$) inicializada a través de `colocarFichaEnCelda(row, col)`:
 * Las casillas inválidas conservan el valor numérico **`-1`**.
 * Los huecos vacíos conservan el valor numérico **`0`**.
-* Las casillas ocupadas almacenan **la referencia directa al objeto de la ficha** (`FichaTapita` o `FichaCamiseta`), que hereda de `ElementoJuego`.
+* Las casillas ocupadas almacenan **la referencia directa al objeto de la ficha** (`FichaTapita`), que hereda de `ElementoJuego`.
 * Cada instancia almacena sus coordenadas lógicas (`ficha.row` y `ficha.col`), permitiendo consultar su posición en $O(1)$ sin recorrer la grilla.
 
 ---
@@ -47,7 +47,7 @@ El fondo del juego proviene de una fotografía real (`tablero.jpeg`, resolución
 ```javascript
 const COL_X = [796, 931, 1058, 1202, 1346, 1475, 1610];
 const ROW_Y = [405, 554, 707, 854, 1002, 1151, 1305];
-const CROP  = { x: 650, y: 290, w: 1100, h: 1150 };
+const CROP  = { x: 403, y: 280, w: 1600, h: 1150 };
 ```
 
 ### Cálculo del Centro de un Agujero (`getCellCenter`)
