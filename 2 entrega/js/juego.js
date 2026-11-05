@@ -292,6 +292,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
+     * Muestra el menú previo de selección de fichas y sincroniza el radio seleccionado.
+     */
+    function mostrarMenu() {
+        const menu = document.getElementById('peg-menu');
+        if (menu) {
+            menu.classList.remove('peg-overlay--oculto');
+        }
+        const radio = document.getElementById(`peg-ficha-${indiceFichaElegida}`);
+        if (radio) {
+            radio.checked = true;
+        }
+    }
+
+    /**
      * Oculta el menú previo una vez que la partida arrancó.
      */
     function ocultarMenu() {
@@ -302,19 +316,34 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
+     * Detiene la partida actual, limpia estados y vuelve a abrir el menú de selección de fichas.
+     */
+    function abrirMenuFichas() {
+        detenerTimer();
+        ocultarFinDeJuego();
+        juegoTerminado = false;
+        isMouseDown = false;
+        lastClickedFigure = null;
+        lastClickedPos = null;
+        destinosValidosActivos = [];
+        detenerAnimacionHints();
+        mostrarMenu();
+    }
+
+    /**
      * Inicia la partida con la ficha elegida: oculta el menú, reinicia el reloj,
      * inicializa el tablero y dibuja las figuras.
      */
     function iniciarPartida() {
-        if (partidaIniciada) return;
-
         const arrancar = () => {
             imgFichaElegida = imgTapitas[indiceFichaElegida] || imgTapitas[0];
             if (imgFichaElegida) {
                 indiceFichaElegida = imgTapitas.indexOf(imgFichaElegida);
             }
             partidaIniciada = true;
+            juegoTerminado = false;
             ocultarMenu();
+            ocultarFinDeJuego();
             resetearTimer();
             initTablero();
             drawFigures();
@@ -921,6 +950,11 @@ document.addEventListener('DOMContentLoaded', () => {
         btnJugar.addEventListener('click', iniciarPartida);
     }
 
+    const btnCambiarFichaModal = document.getElementById('peg-btn-cambiar-ficha-modal');
+    if (btnCambiarFichaModal) {
+        btnCambiarFichaModal.addEventListener('click', abrirMenuFichas);
+    }
+
     /* ============================================================
        FUNCIONES DE PRUEBA (DEBUG TESTING EN CONSOLA)
        ============================================================ */
@@ -958,6 +992,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     window.reiniciarJuego = reiniciarJuego;
+    window.abrirMenuFichas = abrirMenuFichas;
 
     /* ============================================================
        ARRANQUE
