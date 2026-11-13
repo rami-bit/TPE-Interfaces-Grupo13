@@ -89,6 +89,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let tiempoRestante = TIEMPO_LIMITE_SEGUNDOS;
     let timerIntervalId = null;
 
+    // Métricas de la partida
+    let fichasComidas = 0;
+
     /* ============================================================
        PRECARGA DE IMÁGENES
        ============================================================ */
@@ -318,6 +321,20 @@ document.addEventListener('DOMContentLoaded', () => {
        RENDER
        ============================================================ */
     /**
+     * Dibuja la caja redondeada de fondo para el HUD del Canvas.
+     */
+    function dibujarPanelHUD(x, y, w, h, radio, colorBorde = "rgba(255, 215, 0, 0.75)") {
+        ctx.beginPath();
+        ctx.roundRect(x, y, w, h, radio);
+        ctx.fillStyle = "rgba(5, 14, 31, 0.88)";
+        ctx.fill();
+
+        ctx.lineWidth = 3.5;
+        ctx.strokeStyle = colorBorde;
+        ctx.stroke();
+    }
+
+    /**
      * Dibuja el temporizador HUD directamente sobre el Canvas en la esquina superior izquierda.
      */
     function dibujarTimerCanvas() {
@@ -333,39 +350,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const colorBorde = esPeligro ? "#FF4D4D" : "rgba(255, 215, 0, 0.75)";
         const colorTexto = esPeligro ? "#FF4D4D" : "#FFD700";
 
-        // Fondo semitransparente estilo pastilla
-        ctx.beginPath();
-        if (typeof ctx.roundRect === 'function') {
-            ctx.roundRect(x, y, w, h, radio);
-        } else {
-            ctx.moveTo(x + radio, y);
-            ctx.lineTo(x + w - radio, y);
-            ctx.quadraticCurveTo(x + w, y, x + w, y + radio);
-            ctx.lineTo(x + w, y + h - radio);
-            ctx.quadraticCurveTo(x + w, y + h, x + w - radio, y + h);
-            ctx.lineTo(x + radio, y + h);
-            ctx.quadraticCurveTo(x, y + h, x, y + h - radio);
-            ctx.lineTo(x, y + radio);
-            ctx.quadraticCurveTo(x, y, x + radio, y);
-            ctx.closePath();
-        }
-        ctx.fillStyle = "rgba(5, 14, 31, 0.88)";
-        ctx.fill();
+        dibujarPanelHUD(x, y, w, h, radio, colorBorde);
 
-        // Borde dorado o rojo de alerta
-        ctx.lineWidth = 3.5;
-        ctx.strokeStyle = colorBorde;
-        if (esPeligro) {
-            ctx.shadowColor = "rgba(255, 77, 77, 0.9)";
-            ctx.shadowBlur = 14;
-        } else {
-            ctx.shadowColor = "rgba(0, 0, 0, 0.4)";
-            ctx.shadowBlur = 8;
-        }
-        ctx.stroke();
-
-        // Texto e ícono del reloj
-        ctx.shadowBlur = 0;
         ctx.font = "bold 34px 'Plus Jakarta Sans', 'Segoe UI Emoji', sans-serif";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
@@ -376,12 +362,36 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
+     * Dibuja las métricas (fichas restantes y comidas) en la esquina superior derecha del Canvas.
+     */
+    function dibujarMetricasCanvas() {
+        const x = 1265;
+        const y = 45;
+        const w = 260;
+        const h = 115;
+        const radio = 24;
+
+        ctx.save();
+        dibujarPanelHUD(x, y, w, h, radio);
+
+        ctx.font = "bold 24px 'Plus Jakarta Sans', sans-serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillStyle = "#FFD700";
+
+        ctx.fillText(`Restantes: ${figuras.length}`, x + w / 2, y + 38);
+        ctx.fillText(`Comidas: ${fichasComidas}`, x + w / 2, y + 78);
+
+        ctx.restore();
+    }
+
+    /**
      * Redibuja la escena completa en el Canvas:
      * 1. Limpia el lienzo.
      * 2. Pinta el fondo del tablero recortado.
      * 3. Dibuja las pistas visuales animadas (si hay una ficha seleccionada).
      * 4. Dibuja todas las fichas activas.
-     * 5. Dibuja el temporizador HUD en el canvas.
+     * 5. Dibuja el temporizador y las métricas HUD en el canvas.
      */
     function drawFigures() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -395,6 +405,7 @@ document.addEventListener('DOMContentLoaded', () => {
         drawHints();
         figuras.forEach(f => f.draw());
         dibujarTimerCanvas();
+        dibujarMetricasCanvas();
     }
 
     /* ============================================================
@@ -695,6 +706,7 @@ document.addEventListener('DOMContentLoaded', () => {
             tablero[medioRow][medioCol] = 0;
             fichaAEliminar = fichaComida;
             if (fichaComida) {
+                fichasComidas++;
                 figuras = figuras.filter(f => f !== fichaAEliminar);
                 animacionEliminarFicha();
             }
@@ -942,6 +954,7 @@ document.addEventListener('DOMContentLoaded', () => {
         lastClickedPos = null;
         destinosValidosActivos = [];
         detenerAnimacionHints();
+        fichasComidas = 0;
 
         resetearTimer();
 
