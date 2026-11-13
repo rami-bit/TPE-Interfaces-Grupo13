@@ -55,12 +55,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const TAM_TABLERO = TABLERO_BASE.length;
 
-    const DIRECCIONES = [
-        { nombre: 'arriba',    dr: -1, dc:  0 },
-        { nombre: 'abajo',     dr:  1, dc:  0 },
-        { nombre: 'izquierda', dr:  0, dc: -1 },
-        { nombre: 'derecha',   dr:  0, dc:  1 }
-    ];
+    // Las direcciones y la lógica de salto viven en ReglasPeg (js/ReglasPeg.js),
+    // que se carga antes que este script en game.html.
 
     /* ============================================================
        ESTADO DEL JUEGO
@@ -79,9 +75,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let animHintsId = null;
     let juegoTerminado = false;
 
-    // Estado de la animación de eliminación de ficha comida
+    // Estado de la animación de eliminación de fichas comidas
     let escala = 1.0;
-    let fichaAEliminar = null;
+    let fichasAEliminar = [];
     let fase = "creciendo";
 
     // Configuración del Temporizador (5 minutos de límite de juego)
@@ -91,6 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Métricas de la partida
     let fichasComidas = 0;
+    const modoJuego = "damaDoble";                         
 
     /* ============================================================
        PRECARGA DE IMÁGENES
@@ -521,6 +518,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // 5. Flecha indicadora superior animada
             dibujarFlechaIndicadora(center.x, center.y, oscilacion);
+
+            // 6. En capturas encadenadas ('damaDoble'), marcar las fichas que se comerán
+            if (mov.esDoble && mov.intermedios) {
+                mov.intermedios.forEach(inter => {
+                    const c = getCellCenter(inter.row, inter.col);
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.arc(c.x, c.y, FICHA_RADIO - 2, 0, 2 * Math.PI);
+                    ctx.strokeStyle = `rgba(255, 215, 0, ${0.45 + Math.sin(t) * 0.2})`;
+                    ctx.lineWidth = 3;
+                    ctx.setLineDash([8, 6]);
+                    ctx.stroke();
+                    ctx.restore();
+                });
+            }
         });
     }
 
@@ -547,41 +559,17 @@ document.addEventListener('DOMContentLoaded', () => {
        VALIDACIÓN: ¿PUEDE MOVERSE ESTA FICHA?
        ============================================================ */
     /**
-     * Evalúa las 4 direcciones ortogonales (arriba, abajo, izquierda, derecha) para determinar
-     * si la ficha puede saltar: debe haber un casillero vacío (0) a distancia 2 y una ficha intermedia a distancia 1.
+     * Delega la validación de saltos en el módulo ReglasPeg.
+     * El modo activo de la partida decide la variante de captura:
+     * - 'clasico'   → un salto ortogonal por movimiento.
+     * - 'damaDoble' → cadenas de capturas atómicas (come varias fichas de una vez).
      * @param {ElementoJuego} ficha - Ficha a evaluar (contiene ficha.row y ficha.col).
-     * @returns {Array<{direccion: string, destino: {row: number, col: number}, intermedio: {row: number, col: number}}>}
+     * @returns {Array<{direccion: string, destino: {row: number, col: number}, intermedio: {row: number, col: number}, intermedios: Array<{row: number, col: number}>, camino?: Array, totalComidas?: number, esDoble?: boolean}>}
      */
     function obtenerMovimientosValidos(ficha) {
         if (!ficha || ficha.row === undefined || ficha.col === undefined) return [];
 
-        const { row, col } = ficha;
-        const movimientosValidos = [];
-
-        for (const dir of DIRECCIONES) {
-            const destR = row + dir.dr * 2;
-            const destC = col + dir.dc * 2;
-            const medioR = row + dir.dr;
-            const medioC = col + dir.dc;
-
-            // 1. Destino dentro de los límites del tablero
-            if (destR < 0 || destR >= TAM_TABLERO || destC < 0 || destC >= TAM_TABLERO) continue;
-
-            // 2. A 2 casillas DEBE haber un 0 (hueco vacío jugable)
-            if (tablero[destR][destC] !== 0) continue;
-
-            // 3. En la casilla del medio (distancia 1) debe haber una ficha para saltar
-            const fichaMedio = tablero[medioR][medioC];
-            if (fichaMedio === 0 || fichaMedio === -1) continue;
-
-            movimientosValidos.push({
-                direccion: dir.nombre,
-                destino: { row: destR, col: destC },
-                intermedio: { row: medioR, col: medioC }
-            });
-        }
-
-        return movimientosValidos;
+        return ReglasPeg.obtenerMovimientosValidos(ficha, tablero, TAM_TABLERO, { modo: modoJuego });
     }
 
     /**
@@ -689,8 +677,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const origCol = lastClickedFigure.col;
             const destRow = mov.destino.row;
             const destCol = mov.destino.col;
-            const medioRow = mov.intermedio.row;
-            const medioCol = mov.intermedio.col;
 
             // 1. Centrar ficha en el agujero destino (snap-to-grid)
             lastClickedFigure.setPos(center.x, center.y);
@@ -701,17 +687,14 @@ document.addEventListener('DOMContentLoaded', () => {
             tablero[origRow][origCol] = 0;
             tablero[destRow][destCol] = lastClickedFigure;
 
-            // 3. Comer la ficha intermedia (quitar de matriz y de figuras[])
-            const fichaComida = tablero[medioRow][medioCol];
-            tablero[medioRow][medioCol] = 0;
-            fichaAEliminar = fichaComida;
-            if (fichaComida) {
-                fichasComidas++;
-                figuras = figuras.filter(f => f !== fichaAEliminar);
-                animacionEliminarFicha();
+            // 3. Comer todas las fichas de la cadena (ReglasPeg resuelve cuántas son)
+            const comidas = ReglasPeg.aplicarComida(tablero, figuras, mov);
+            fichasComidas += comidas.length;
+            if (comidas.length > 0) {
+                animacionEliminarFicha(comidas);
             }
 
-            console.log(`Movimiento completado: [${origRow}, ${origCol}] -> [${destRow}, ${destCol}], comida: [${medioRow}, ${medioCol}]`);
+            console.log(`Movimiento completado: [${origRow}, ${origCol}] -> [${destRow}, ${destCol}] (${mov.direccion}), comidas: ${comidas.length}`);
             console.log(`Fichas restantes: ${figuras.length}`);
         } else {
             // --- MOVIMIENTO INVÁLIDO O FUERA DEL CANVAS → Snap-back ---
@@ -731,11 +714,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
-     * Animación basada en requestAnimationFrame que genera un efecto elástico de rebote (pop):
-     * - Fase 1 (creciendo): infla la ficha hasta escala 1.32.
-     * - Fase 2 (encogiendo): contrae la ficha con decaimiento ease-out multiplicativo hasta 0.
+     * Animación basada en requestAnimationFrame que genera un efecto elástico de rebote (pop)
+     * sobre todas las fichas comidas en el movimiento (una o varias, según la regla activa):
+     * - Fase 1 (creciendo): infla las fichas hasta escala 1.32.
+     * - Fase 2 (encogiendo): contrae las fichas con decaimiento ease-out multiplicativo hasta 0.
+     * @param {Array<ElementoJuego>} [comidas] - Fichas a animar. Si se omite, continúa la animación en curso.
      */
-    function animacionEliminarFicha() {
+    function animacionEliminarFicha(comidas) {
+        if (Array.isArray(comidas)) {
+            fichasAEliminar = comidas;
+            escala = 1.0;
+            fase = "creciendo";
+        }
+
         if (fase === "creciendo") {
             escala += 0.08;
         } else if (fase === "encogiendo") {
@@ -748,23 +739,25 @@ document.addEventListener('DOMContentLoaded', () => {
         // 1. Redibuja el tablero y las demás fichas
         drawFigures();
 
-        // 2. Dibuja la ficha comida escalándose desde su propio centro
-        if (fichaAEliminar && escala > 0) {
-            const x = fichaAEliminar.getPosx();
-            const y = fichaAEliminar.getPosY();
+        // 2. Dibuja cada ficha comida escalándose desde su propio centro
+        if (escala > 0) {
+            fichasAEliminar.forEach(ficha => {
+                const x = ficha.getPosx();
+                const y = ficha.getPosY();
 
-            ctx.save();
-            ctx.translate(x, y);
-            ctx.scale(escala, escala);
-            ctx.translate(-x, -y);
-            fichaAEliminar.draw();
-            ctx.restore();
+                ctx.save();
+                ctx.translate(x, y);
+                ctx.scale(escala, escala);
+                ctx.translate(-x, -y);
+                ficha.draw();
+                ctx.restore();
+            });
         }
 
         if (escala > 0.03) {
             requestAnimationFrame(animacionEliminarFicha);
         } else {
-            fichaAEliminar = null;
+            fichasAEliminar = [];
             escala = 1.0;
             fase = "creciendo";
             drawFigures();
