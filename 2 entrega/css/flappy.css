@@ -1,0 +1,591 @@
+/* ============================================================
+   FLAPPY BIRD - SECCIÓN DE JUEGO
+   Escenario lógico de 1024x576 escalado al ancho de la card.
+   ============================================================ */
+
+.juego-card--flappy {
+    width: min(1023px, 100%, calc((100vh - 210px) * 16 / 9));
+    --flappy-acento: #7CE04C;
+    --flappy-acento-oscuro: #3E9E2C;
+    --flappy-fondo: #0B2422;
+    --flappy-fondo-oscuro: #061311;
+}
+
+.flappy-mock {
+    width: 100%;
+    overflow: hidden;
+    background-color: var(--flappy-fondo-oscuro, #061311);
+}
+
+.flappy-marco {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background-color: var(--flappy-fondo, #0B2422);
+    cursor: pointer;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.flappy-lienzo {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 1024px;
+    height: 576px;
+    overflow: hidden;
+    transform: translate(-50%, -50%) scale(var(--flappy-escala, 1));
+    transform-origin: center center;
+    visibility: hidden;
+}
+
+.flappy-marco:fullscreen {
+    width: 100vw;
+    height: 100vh;
+    aspect-ratio: auto;
+    background-color: #000000;
+}
+
+.flappy-marco--listo .flappy-lienzo {
+    visibility: visible;
+}
+
+/* ============================================================
+   CAPAS DEL PARALLAX
+   Siete imágenes transparentes de 576x324 (misma proporción 16:9
+   que el lienzo) apiladas de atrás hacia adelante. Cada una
+   repite en X y recorre exactamente un tile de 1024px, que es el
+   ancho renderizado dentro del lienzo lógico.
+   La duración la calcula flappy.js según VEL_MUNDO y el factor de
+   cada capa; los valores de acá son el fallback.
+   ============================================================ */
+
+.flappy-capa {
+    position: absolute;
+    inset: 0;
+    background-repeat: repeat-x;
+    background-position: 0 0;
+    background-size: 1024px 576px;
+    image-rendering: pixelated;
+    pointer-events: none;
+    will-change: background-position-x;
+    animation-name: flappy-scroll;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+
+.flappy-capa--fondo {
+    z-index: 1;
+    background-image: url("../img/flappyBird/elementosParallax/1.png");
+    animation-duration: 136.53s;
+}
+
+.flappy-capa--copas-lejanas {
+    z-index: 2;
+    background-image: url("../img/flappyBird/elementosParallax/2.png");
+    animation-duration: 56.89s;
+}
+
+.flappy-capa--copas-medias {
+    z-index: 3;
+    background-image: url("../img/flappyBird/elementosParallax/3.png");
+    animation-duration: 34.13s;
+}
+
+.flappy-capa--arboles-medios {
+    z-index: 4;
+    background-image: url("../img/flappyBird/elementosParallax/4.png");
+    animation-duration: 21.33s;
+}
+
+.flappy-capa--arboles-cercanos {
+    z-index: 5;
+    background-image: url("../img/flappyBird/elementosParallax/5.png");
+    animation-duration: 13.65s;
+}
+
+.flappy-capa--tronco {
+    z-index: 6;
+    background-image: url("../img/flappyBird/elementosParallax/6.png");
+    animation-duration: 9.1s;
+}
+
+.flappy-capa--cartel {
+    z-index: 7;
+    background-image: url("../img/flappyBird/elementosParallax/7.png");
+    animation-duration: 6.83s;
+}
+
+.flappy-lienzo--pausado .flappy-capa {
+    animation-play-state: paused;
+}
+
+@keyframes flappy-scroll {
+    from {
+        background-position-x: 0;
+    }
+
+    to {
+        background-position-x: -1024px;
+    }
+}
+
+/* ============================================================
+   PÁJARO
+   El padre lo posiciona/rota la física. El sprite cambia de
+   frame con animaciones keyframe.
+   ============================================================ */
+
+.flappy-tuberias {
+    position: absolute;
+    inset: 0;
+    z-index: 8;
+    pointer-events: none;
+}
+
+/* ============================================================
+   PÁJARO
+   El sprite nuevo es una tira de 4 frames de 16x16. Se muestra a
+   96x96 (escala 6x) y se recorre con background-position. El
+   padre lo posiciona/rota; el sprite cambia de frame con
+   animaciones keyframe.
+   ============================================================ */
+
+.flappy-pajaro {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 9;
+    width: 96px;
+    height: 96px;
+    pointer-events: none;
+    transform-origin: 54% 53%;
+    will-change: transform;
+}
+
+.flappy-pajaro__sprite {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background-image: url("../img/flappyBird/sprites/Bird1-6.png");
+    background-repeat: no-repeat;
+    background-size: 400% 100%;
+    background-position: 0 0;
+    image-rendering: pixelated;
+}
+
+/* Estado inicial: aleteo lento + flotación suave. */
+.flappy-pajaro__sprite--inicio {
+    animation:
+        flappy-sprite-inicio 1.2s step-end infinite,
+        flappy-inicio-flotar 1.8s ease-in-out infinite;
+}
+
+/* Impulso: los 4 frames de la tira. */
+.flappy-pajaro__sprite--aleteo {
+    animation: flappy-sprite-aleteo 0.28s step-end infinite;
+}
+
+/* Sin impulso / cayendo: frame con el ala extendida. */
+.flappy-pajaro__sprite--planeo {
+    background-position: -96px 0;
+    animation: flappy-planeo-flotar 1.4s ease-in-out infinite;
+}
+
+/* Colisión: ciclo rápido de frames + sacudida + destello.
+   El sprite no trae frames de mareo, así que se simula con los
+   mismos 4 frames y los efectos de abajo. */
+.flappy-pajaro__sprite--impacto {
+    animation:
+        flappy-sprite-impacto 0.55s step-end forwards,
+        flappy-impacto-sacudida 0.55s ease-out;
+}
+
+.flappy-pajaro__sprite::after {
+    content: "";
+    position: absolute;
+    top: 53%;
+    left: 54%;
+    width: 18px;
+    height: 18px;
+    margin: -9px 0 0 -9px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #FFD27A 0%, #FF8A00 45%, rgba(255, 138, 0, 0) 72%);
+    opacity: 0;
+    transform: scale(0.2);
+    pointer-events: none;
+}
+
+.flappy-pajaro__sprite--impacto::after {
+    animation: flappy-impacto-destello 0.55s ease-out forwards;
+}
+
+@keyframes flappy-sprite-inicio {
+    0%,
+    24.9% {
+        background-position: 0 0;
+    }
+
+    25%,
+    49.9% {
+        background-position: -96px 0;
+    }
+
+    50%,
+    74.9% {
+        background-position: -192px 0;
+    }
+
+    75%,
+    100% {
+        background-position: -288px 0;
+    }
+}
+
+@keyframes flappy-inicio-flotar {
+    0%,
+    100% {
+        transform: translateY(-3px);
+    }
+
+    50% {
+        transform: translateY(3px);
+    }
+}
+
+@keyframes flappy-sprite-aleteo {
+    0%,
+    24.9% {
+        background-position: 0 0;
+    }
+
+    25%,
+    49.9% {
+        background-position: -96px 0;
+    }
+
+    50%,
+    74.9% {
+        background-position: -192px 0;
+    }
+
+    75%,
+    100% {
+        background-position: -288px 0;
+    }
+}
+
+@keyframes flappy-planeo-flotar {
+    0%,
+    100% {
+        transform: translateY(-2px);
+    }
+
+    50% {
+        transform: translateY(2px);
+    }
+}
+
+@keyframes flappy-sprite-impacto {
+    0%,
+    24.9% {
+        background-position: 0 0;
+    }
+
+    25%,
+    49.9% {
+        background-position: -96px 0;
+    }
+
+    50%,
+    74.9% {
+        background-position: -192px 0;
+    }
+
+    75%,
+    100% {
+        background-position: -288px 0;
+    }
+}
+
+@keyframes flappy-impacto-sacudida {
+    0% {
+        transform: translate(0, 0) rotate(0deg);
+    }
+
+    20% {
+        transform: translate(-4px, 2px) rotate(-6deg);
+    }
+
+    40% {
+        transform: translate(4px, -2px) rotate(6deg);
+    }
+
+    60% {
+        transform: translate(-3px, 1px) rotate(-4deg);
+    }
+
+    100% {
+        transform: translate(0, 0) rotate(0deg);
+    }
+}
+
+@keyframes flappy-impacto-destello {
+    0% {
+        opacity: 1;
+        transform: scale(0.2);
+    }
+
+    55% {
+        opacity: 1;
+        transform: scale(2.4);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(3);
+    }
+}
+
+/* ============================================================
+   HUD Y OVERLAY
+   ============================================================ */
+
+.flappy-hud {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.flappy-hud__chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border: 1px solid rgba(124, 224, 76, 0.45);
+    border-radius: 999px;
+    background: rgba(6, 19, 17, 0.72);
+    color: var(--flappy-acento, #7CE04C);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+.flappy-hud__chip::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--flappy-acento, #7CE04C);
+    box-shadow: 0 0 8px rgba(124, 224, 76, 0.8);
+}
+
+.flappy-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(6, 19, 17, 0.78);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+.flappy-overlay--oculto {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.flappy-modal {
+    box-sizing: border-box;
+    width: min(90%, 430px);
+    max-height: calc(100% - 16px);
+    overflow-y: auto;
+    padding: 30px 34px;
+    border: 3px solid var(--flappy-acento, #7CE04C);
+    border-radius: 18px;
+    background: linear-gradient(145deg, var(--flappy-fondo, #0B2422), var(--flappy-fondo-oscuro, #061311));
+    text-align: center;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.8), 0 0 24px rgba(124, 224, 76, 0.3);
+    animation: flappy-pop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.flappy-modal__etiqueta {
+    margin: 0 0 8px;
+    color: var(--flappy-acento, #7CE04C);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.flappy-modal__titulo {
+    margin: 0 0 12px;
+    color: #FFFFFF;
+    font-size: 2rem;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.flappy-modal__mensaje {
+    margin: 0 0 22px;
+    color: #E0E8F5;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.flappy-btn {
+    padding: 12px 30px;
+    border: 2px solid transparent;
+    border-radius: 999px;
+    background: linear-gradient(180deg, var(--flappy-acento, #7CE04C), var(--flappy-acento-oscuro, #3E9E2C));
+    color: #061311;
+    font-family: inherit;
+    font-size: 1.05rem;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(124, 224, 76, 0.4);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.flappy-btn:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 6px 20px rgba(124, 224, 76, 0.6);
+}
+
+.flappy-btn:active {
+    transform: translateY(0) scale(0.98);
+}
+
+.flappy-btn:focus-visible {
+    outline: 3px solid #FFFFFF;
+    outline-offset: 3px;
+}
+
+.flappy-modal__ayuda {
+    margin: 16px 0 0;
+    color: rgba(224, 232, 245, 0.65);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+@keyframes flappy-pop {
+    0% {
+        opacity: 0;
+        transform: scale(0.7);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* ============================================================
+   DETALLES DE LA PÁGINA
+   ============================================================ */
+
+.info-categoria--flappy::after {
+    -webkit-mask-image: url("../assets/icons/arcade.svg");
+    mask-image: url("../assets/icons/arcade.svg");
+}
+
+.flappy-controles {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-top: 36px;
+}
+
+.flappy-tecla {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 56px;
+    padding: 8px 12px;
+    border: 2px solid var(--flappy-acento, #7CE04C);
+    border-bottom-width: 4px;
+    border-radius: 8px;
+    background-color: var(--flappy-fondo-oscuro, #061311);
+    color: var(--textoWhite, #FFFFFF);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.juego-card--flappy .juego-barra__titulo {
+    font-size: clamp(24px, 4vw, 40px);
+}
+
+@media (max-width: 600px), (max-height: 520px) {
+    .juego-card--flappy {
+        width: 100%;
+    }
+
+    .juego-card--flappy .juego-barra {
+        padding: 0 12px;
+    }
+
+    .juego-card--flappy .juego-barra__icono {
+        width: 24px;
+        height: 36px;
+    }
+
+    .juego-card--flappy .juego-barra__botones {
+        gap: 6px;
+    }
+
+    .flappy-hud {
+        top: 10px;
+        left: 10px;
+    }
+
+    .flappy-hud__chip {
+        padding: 4px 9px;
+        font-size: 10px;
+    }
+
+    .flappy-overlay {
+        padding: 8px;
+    }
+
+    /* El marco es corto (16:9): compactar el modal para que no se recorte. */
+    .flappy-modal {
+        padding: 12px 16px;
+        border-width: 2px;
+    }
+
+    .flappy-modal__etiqueta,
+    .flappy-modal__ayuda {
+        display: none;
+    }
+
+    .flappy-modal__titulo {
+        margin-bottom: 6px;
+        font-size: 1.15rem;
+    }
+
+    .flappy-modal__mensaje {
+        margin-bottom: 10px;
+        font-size: 0.78rem;
+        line-height: 1.35;
+    }
+
+    .flappy-btn {
+        padding: 8px 20px;
+        font-size: 0.9rem;
+    }
+}
