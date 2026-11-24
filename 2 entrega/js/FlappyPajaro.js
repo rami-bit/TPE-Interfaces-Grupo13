@@ -43,19 +43,20 @@
     const CONFIG = {
         ANCHO_LIENZO: 1024,
         ALTO_LIENZO: 576,
-        ANCHO_SPRITE: 96,
-        ALTO_SPRITE: 96,
+        ANCHO_SPRITE: 64,
+        ALTO_SPRITE: 64,
         X_PANTALLA: 220,
         Y_INICIAL: 230,
         SUELO_Y: 535,
-        OFFSET_PIES: 45,
-        OFFSET_CABEZA: 44,
-        HITBOX_ANCHO: 36,
+        OFFSET_PIES: 30,
+        OFFSET_CABEZA: 29,
+        HITBOX_ANCHO: 26,
+        HITBOX_ALTO: 26,
         TIEMPO_ALETEO: 0.28,
         PASO: FlappyFisica.PASO
     };
 
-    // Centro visible del pájaro dentro del frame renderizado de 96x96.
+    // Centro visible del pájaro dentro del frame renderizado de 64x64.
     const ANCLA_X = CONFIG.ANCHO_SPRITE * 0.54;
     const ANCLA_Y = CONFIG.ALTO_SPRITE * 0.53;
 
@@ -166,6 +167,21 @@
                 this.estado.y = yMin;
                 this.estado.vy = 0;
             }
+        }
+
+        /**
+         * Caja de colisión (AABB) centrada en el cuerpo del pájaro.
+         * @returns {{izq:number, der:number, arriba:number, abajo:number}}
+         */
+        getHitbox() {
+            const mitadAncho = CONFIG.HITBOX_ANCHO / 2;
+            const mitadAlto = CONFIG.HITBOX_ALTO / 2;
+            return {
+                izq: CONFIG.X_PANTALLA - mitadAncho,
+                der: CONFIG.X_PANTALLA + mitadAncho,
+                arriba: this.estado.y - mitadAlto,
+                abajo: this.estado.y + mitadAlto
+            };
         }
 
         get distancia() {

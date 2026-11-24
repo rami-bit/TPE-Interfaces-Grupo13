@@ -119,10 +119,59 @@
     pointer-events: none;
 }
 
+.flappy-tubo-par {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 96px;
+    height: 100%;
+    will-change: transform;
+}
+
+.flappy-tubo {
+    position: absolute;
+    left: 0;
+    width: 96px;
+    display: flex;
+    flex-direction: column;
+}
+
+.flappy-tubo--arriba {
+    top: 0;
+}
+
+.flappy-tubo__cuerpo {
+    flex: 1;
+    width: 96px;
+    background-image: url("../img/flappyBird/pipes/PipeStyle4.png");
+    background-repeat: no-repeat;
+    background-size: 384px 600%;
+    background-position: 0 20%;
+    image-rendering: pixelated;
+}
+
+.flappy-tubo__boca {
+    flex: none;
+    width: 96px;
+    height: 48px;
+    background-image: url("../img/flappyBird/pipes/PipeStyle4.png");
+    background-repeat: no-repeat;
+    background-size: 384px 288px;
+    image-rendering: pixelated;
+}
+
+.flappy-tubo__boca--arriba {
+    background-position: 0 -96px;
+}
+
+.flappy-tubo__boca--abajo {
+    background-position: 0 0;
+}
+
 /* ============================================================
    PÁJARO
    El sprite nuevo es una tira de 4 frames de 16x16. Se muestra a
-   96x96 (escala 6x) y se recorre con background-position. El
+   64x64 (escala 4x) y se recorre con background-position. El
    padre lo posiciona/rota; el sprite cambia de frame con
    animaciones keyframe.
    ============================================================ */
@@ -132,8 +181,8 @@
     top: 0;
     left: 0;
     z-index: 9;
-    width: 96px;
-    height: 96px;
+    width: 64px;
+    height: 64px;
     pointer-events: none;
     transform-origin: 54% 53%;
     will-change: transform;
@@ -164,7 +213,7 @@
 
 /* Sin impulso / cayendo: frame con el ala extendida. */
 .flappy-pajaro__sprite--planeo {
-    background-position: -96px 0;
+    background-position: -64px 0;
     animation: flappy-planeo-flotar 1.4s ease-in-out infinite;
 }
 
@@ -204,17 +253,17 @@
 
     25%,
     49.9% {
-        background-position: -96px 0;
+        background-position: -64px 0;
     }
 
     50%,
     74.9% {
-        background-position: -192px 0;
+        background-position: -128px 0;
     }
 
     75%,
     100% {
-        background-position: -288px 0;
+        background-position: -192px 0;
     }
 }
 
@@ -237,17 +286,17 @@
 
     25%,
     49.9% {
-        background-position: -96px 0;
+        background-position: -64px 0;
     }
 
     50%,
     74.9% {
-        background-position: -192px 0;
+        background-position: -128px 0;
     }
 
     75%,
     100% {
-        background-position: -288px 0;
+        background-position: -192px 0;
     }
 }
 
@@ -270,17 +319,17 @@
 
     25%,
     49.9% {
-        background-position: -96px 0;
+        background-position: -64px 0;
     }
 
     50%,
     74.9% {
-        background-position: -192px 0;
+        background-position: -128px 0;
     }
 
     75%,
     100% {
-        background-position: -288px 0;
+        background-position: -192px 0;
     }
 }
 

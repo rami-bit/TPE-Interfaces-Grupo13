@@ -12,7 +12,8 @@
         const marco = document.getElementById('flappy-marco');
         const lienzo = document.getElementById('flappy-lienzo');
         const pajaroEl = document.getElementById('flappy-pajaro');
-        if (!marco || !lienzo || !pajaroEl) return;
+        const tuberiasEl = document.getElementById('flappy-tuberias');
+        if (!marco || !lienzo || !pajaroEl || !tuberiasEl) return;
 
         const overlay = document.getElementById('flappy-overlay');
         const overlayTitulo = document.getElementById('flappy-overlay-titulo');
@@ -25,10 +26,13 @@
 
         const config = window.FLAPPY_CONFIG;
         const pajaro = new FlappyPajaro(pajaroEl);
+        const fabricaTuberias = new FabricaTuberias(tuberiasEl, config.SUELO_Y, config.ALTO_LIENZO);
         const PASO = config.PASO;
 
         let estadoJuego = 'listo'; // listo | jugando | pausado | impacto | gameover
         let velocidadActual = FlappyFisica.VEL_MUNDO;
+        let tuberias = [];
+        let distanciaProximoTubo = 0;
         let acumulador = 0;
         let ultimo = 0;
         let rafId = null;
@@ -94,6 +98,51 @@
                 capas[i].x = 0;
             }
             dibujarParallax();
+        }
+
+        /* ------------------------------------------------------------
+           Tuberías: creación con Factory Method, movimiento y limpieza
+           ------------------------------------------------------------ */
+        function actualizarTuberias(dt, velocidad) {
+            distanciaProximoTubo -= velocidad * dt;
+            if (distanciaProximoTubo <= 0) {
+                const nuevoPar = fabricaTuberias.crear(config.ANCHO_LIENZO + 20);
+                tuberias.push(nuevoPar);
+                distanciaProximoTubo = fabricaTuberias.siguienteDistancia();
+            }
+
+            for (let i = tuberias.length - 1; i >= 0; i--) {
+                const tubo = tuberias[i];
+                tubo.actualizar(dt, velocidad);
+
+                if (tubo.estaFueraDePantalla()) {
+                    tubo.destruir();
+                    tuberias.splice(i, 1);
+                }
+            }
+        }
+
+        function dibujarTuberias() {
+            for (let i = 0; i < tuberias.length; i++) {
+                tuberias[i].render();
+            }
+        }
+
+        function hayColisionConTuberias() {
+            const hitbox = pajaro.getHitbox();
+            for (let i = 0; i < tuberias.length; i++) {
+                if (tuberias[i].colisionaCon(hitbox)) return true;
+            }
+            return false;
+        }
+
+        function limpiarTuberias() {
+            for (let i = 0; i < tuberias.length; i++) {
+                tuberias[i].destruir();
+            }
+            tuberias = [];
+            fabricaTuberias.reset();
+            distanciaProximoTubo = 120;
         }
 
         /* ------------------------------------------------------------
@@ -166,6 +215,7 @@
             while (acumulador >= PASO) {
                 pajaro.actualizar(PASO, velocidadActual);
                 actualizarParallax(PASO, velocidadActual);
+                actualizarTuberias(PASO, velocidadActual);
                 acumulador -= PASO;
                 pasos += 1;
 
@@ -173,16 +223,26 @@
                     pajaro.limitarAlSuelo();
                     pajaro.render();
                     dibujarParallax();
-                    terminarPartida();
+                    dibujarTuberias();
+                    terminarPartida('suelo');
                     return;
                 }
 
                 pajaro.limitarAlTecho();
+
+                if (hayColisionConTuberias()) {
+                    pajaro.render();
+                    dibujarParallax();
+                    dibujarTuberias();
+                    terminarPartida('tubo');
+                    return;
+                }
             }
 
             if (pasos > 0) {
                 pajaro.render();
                 dibujarParallax();
+                dibujarTuberias();
             }
         }
 
@@ -212,13 +272,17 @@
             marco.focus({ preventScroll: true });
         }
 
-        function terminarPartida() {
+        function terminarPartida(motivo) {
             if (estadoJuego !== 'jugando') return;
 
             estadoJuego = 'impacto';
             pajaro.impactar();
             actualizarHud('¡Ay!');
             detenerLoop();
+
+            const mensajeChoque = motivo === 'tubo'
+                ? 'El pájaro chocó contra una tubería. ¿Probamos otra vez?'
+                : 'El pájaro tocó el suelo del bosque. ¿Probamos otra vez?';
 
             if (timeoutOverlay !== null) clearTimeout(timeoutOverlay);
             timeoutOverlay = window.setTimeout(function () {
@@ -227,7 +291,7 @@
                 actualizarHud('Partida terminada');
                 mostrarOverlay(
                     '¡Te estrellaste!',
-                    'El pájaro tocó el suelo del bosque. ¿Probamos otra vez?',
+                    mensajeChoque,
                     'Reintentar',
                     true
                 );
@@ -247,6 +311,7 @@
             ultimo = 0;
             pajaro.reset();
             reiniciarParallax();
+            limpiarTuberias();
             actualizarHud('Listo para volar');
             mostrarOverlay(
                 'Flappy Bird',
