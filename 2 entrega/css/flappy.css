@@ -107,9 +107,7 @@
 }
 
 /* ============================================================
-   PÁJARO
-   El padre lo posiciona/rota la física. El sprite cambia de
-   frame con animaciones keyframe.
+   TUBERÍAS
    ============================================================ */
 
 .flappy-tuberias {
@@ -202,13 +200,13 @@
 /* Estado inicial: aleteo lento + flotación suave. */
 .flappy-pajaro__sprite--inicio {
     animation:
-        flappy-sprite-inicio 1.2s step-end infinite,
+        flappy-sprite-ciclo 1.2s step-end infinite,
         flappy-inicio-flotar 1.8s ease-in-out infinite;
 }
 
 /* Impulso: los 4 frames de la tira. */
 .flappy-pajaro__sprite--aleteo {
-    animation: flappy-sprite-aleteo 0.28s step-end infinite;
+    animation: flappy-sprite-ciclo 0.28s step-end infinite;
 }
 
 /* Sin impulso / cayendo: frame con el ala extendida. */
@@ -222,7 +220,7 @@
    mismos 4 frames y los efectos de abajo. */
 .flappy-pajaro__sprite--impacto {
     animation:
-        flappy-sprite-impacto 0.55s step-end forwards,
+        flappy-sprite-ciclo 0.55s step-end forwards,
         flappy-impacto-sacudida 0.55s ease-out;
 }
 
@@ -245,7 +243,7 @@
     animation: flappy-impacto-destello 0.55s ease-out forwards;
 }
 
-@keyframes flappy-sprite-inicio {
+@keyframes flappy-sprite-ciclo {
     0%,
     24.9% {
         background-position: 0 0;
@@ -278,28 +276,6 @@
     }
 }
 
-@keyframes flappy-sprite-aleteo {
-    0%,
-    24.9% {
-        background-position: 0 0;
-    }
-
-    25%,
-    49.9% {
-        background-position: -64px 0;
-    }
-
-    50%,
-    74.9% {
-        background-position: -128px 0;
-    }
-
-    75%,
-    100% {
-        background-position: -192px 0;
-    }
-}
-
 @keyframes flappy-planeo-flotar {
     0%,
     100% {
@@ -308,28 +284,6 @@
 
     50% {
         transform: translateY(2px);
-    }
-}
-
-@keyframes flappy-sprite-impacto {
-    0%,
-    24.9% {
-        background-position: 0 0;
-    }
-
-    25%,
-    49.9% {
-        background-position: -64px 0;
-    }
-
-    50%,
-    74.9% {
-        background-position: -128px 0;
-    }
-
-    75%,
-    100% {
-        background-position: -192px 0;
     }
 }
 

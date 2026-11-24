@@ -96,7 +96,7 @@
         impulsar() {
             if (this.modo === 'impacto') return false;
             if (this.modo === 'listo') this.modo = 'jugando';
-            this.estado.vy = FlappyFisica.IMPULSO;
+            FlappyFisica.impulsar(this.estado);
             this.estado.tiempoAleteo = CONFIG.TIEMPO_ALETEO;
             this.setSprite('aleteo', true);
             return true;
@@ -182,14 +182,6 @@
                 arriba: this.estado.y - mitadAlto,
                 abajo: this.estado.y + mitadAlto
             };
-        }
-
-        get distancia() {
-            return this.estado.xMundo;
-        }
-
-        get y() {
-            return this.estado.y;
         }
     }
 

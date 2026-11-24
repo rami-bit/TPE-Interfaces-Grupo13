@@ -157,6 +157,12 @@
             distanciaProximoTubo = 120;
         }
 
+        function dibujarEscena() {
+            pajaro.render();
+            dibujarParallax();
+            dibujarTuberias();
+        }
+
         /* ------------------------------------------------------------
            Overlay de inicio / fin de partida
            ------------------------------------------------------------ */
@@ -261,9 +267,7 @@
 
                 if (pajaro.estaEnSuelo()) {
                     pajaro.limitarAlSuelo();
-                    pajaro.render();
-                    dibujarParallax();
-                    dibujarTuberias();
+                    dibujarEscena();
                     terminarPartida('suelo');
                     return;
                 }
@@ -271,26 +275,20 @@
                 pajaro.limitarAlTecho();
 
                 if (hayColisionConTuberias()) {
-                    pajaro.render();
-                    dibujarParallax();
-                    dibujarTuberias();
+                    dibujarEscena();
                     terminarPartida('tubo');
                     return;
                 }
 
                 if (tiempoRestante <= 0) {
-                    pajaro.render();
-                    dibujarParallax();
-                    dibujarTuberias();
+                    dibujarEscena();
                     terminarPorTiempo();
                     return;
                 }
             }
 
             if (pasos > 0) {
-                pajaro.render();
-                dibujarParallax();
-                dibujarTuberias();
+                dibujarEscena();
             }
         }
 
@@ -392,36 +390,42 @@
         /* ------------------------------------------------------------
            Input
            ------------------------------------------------------------ */
-        function alPresionar(e) {
-            if (e.target.closest && e.target.closest('button, a, input, textarea, select')) {
-                return;
+        function esElementoInteractivo(target) {
+            return Boolean(
+                target && target.closest &&
+                target.closest('button, a, input, textarea, select')
+            );
+        }
+
+        function ejecutarAccionVuelo() {
+            if (estadoJuego === 'jugando') {
+                pajaro.impulsar();
+                return true;
             }
+            if (estadoJuego === 'listo') {
+                iniciarPartida();
+                return true;
+            }
+            return false;
+        }
+
+        function alPresionar(e) {
+            if (esElementoInteractivo(e.target)) return;
             if (e.pointerType === 'mouse' && e.button !== 0) return;
 
-            if (estadoJuego === 'jugando') {
+            if (ejecutarAccionVuelo()) {
                 e.preventDefault();
-                pajaro.impulsar();
-            } else if (estadoJuego === 'listo') {
-                e.preventDefault();
-                iniciarPartida();
             }
         }
 
         function alTeclear(e) {
             if (e.code !== 'Space' && e.code !== 'ArrowUp') return;
-            if (e.target && e.target.closest &&
-                e.target.closest('input, textarea, select, button, a')) {
-                return;
-            }
+            if (esElementoInteractivo(e.target)) return;
 
             e.preventDefault();
             if (e.repeat) return;
 
-            if (estadoJuego === 'jugando') {
-                pajaro.impulsar();
-            } else if (estadoJuego === 'listo') {
-                iniciarPartida();
-            }
+            ejecutarAccionVuelo();
         }
 
         marco.addEventListener('pointerdown', alPresionar);
