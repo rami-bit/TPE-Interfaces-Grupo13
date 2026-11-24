@@ -165,6 +165,10 @@
 
                     <div class="flappy-hud" aria-hidden="true">
                         <span class="flappy-hud__chip" id="flappy-hud-estado">Listo para volar</span>
+                        <div class="flappy-hud__metricas">
+                            <span class="flappy-hud__chip flappy-hud__chip--puntos" id="flappy-hud-puntos">Puntos: 0</span>
+                            <span class="flappy-hud__chip flappy-hud__chip--tiempo" id="flappy-hud-tiempo">01:00</span>
+                        </div>
                     </div>
 
                     <div class="flappy-overlay" id="flappy-overlay" role="dialog" aria-modal="true"
@@ -222,8 +226,8 @@
                         clic, toque o Espacio le da un impulso hacia arriba; si dejás de aletear, la gravedad lo hace
                         caer.</p>
                     <p class="info-card__texto">Mantené el vuelo, evitá estrellarte contra el suelo del bosque y pasá
-                        por los obstáculos que van a llegar en la próxima entrega. La clave está en encontrar el ritmo
-                        de los aleteos.</p>
+                        entre las tuberías, cuyo hueco cambia de altura y se va achicando a medida que avanzás. Cada
+                        par superado suma puntos antes de que se cumplan los 60 segundos.</p>
                     <p class="info-card__texto">El escenario se mueve con vos: el cartel y el tronco pasan rápido, los
                         árboles avanzan a ritmo medio y el verde del fondo casi queda quieto. Ese es el efecto
                         parallax.</p>
@@ -246,7 +250,8 @@
                     <h3 class="info-card__titulo info-card__titulo--sub">Controles</h3>
                     <p class="info-card__texto">Click, toque, Espacio o flecha arriba: aletear.</p>
                     <p class="info-card__texto">Botón ↻ de la barra: reiniciar la partida en cualquier momento.</p>
-                    <p class="info-card__texto">Los tubos y sus colisiones se agregan en la próxima etapa.</p>
+                    <p class="info-card__texto">Objetivo: superá la mayor cantidad de tuberías posibles dentro del
+                        límite de 60 segundos sin tocar los obstáculos ni el suelo.</p>
                 </article>
             </section>
 

@@ -22,15 +22,21 @@
         const btnReiniciar = document.getElementById('flappy-btn-reiniciar-barra');
         const btnFull = document.getElementById('flappy-btn-full');
         const hudEstado = document.getElementById('flappy-hud-estado');
+        const hudPuntos = document.getElementById('flappy-hud-puntos');
+        const hudTiempo = document.getElementById('flappy-hud-tiempo');
         const modal = overlay ? overlay.querySelector('.flappy-modal') : null;
 
         const config = window.FLAPPY_CONFIG;
         const pajaro = new FlappyPajaro(pajaroEl);
         const fabricaTuberias = new FabricaTuberias(tuberiasEl, config.SUELO_Y, config.ALTO_LIENZO);
         const PASO = config.PASO;
+        const TIEMPO_PARTIDA = 60; // segundos de límite de partida
 
         let estadoJuego = 'listo'; // listo | jugando | pausado | impacto | gameover
         let velocidadActual = FlappyFisica.VEL_MUNDO;
+        let puntos = 0;
+        let tiempoRestante = TIEMPO_PARTIDA;
+        let ultimoSegundoMostrado = TIEMPO_PARTIDA;
         let tuberias = [];
         let distanciaProximoTubo = 0;
         let acumulador = 0;
@@ -115,6 +121,12 @@
                 const tubo = tuberias[i];
                 tubo.actualizar(dt, velocidad);
 
+                // Suma +1 punto cuando el pájaro supera completamente el par de tuberías
+                if (!tubo.superado && tubo.x + tubo.ancho < config.X_PANTALLA) {
+                    tubo.superado = true;
+                    sumarPuntos(1);
+                }
+
                 if (tubo.estaFueraDePantalla()) {
                     tubo.destruir();
                     tuberias.splice(i, 1);
@@ -182,6 +194,27 @@
             if (hudEstado) hudEstado.textContent = texto;
         }
 
+        function formatearTiempo(segundos) {
+            const total = Math.ceil(Math.max(0, segundos));
+            const min = Math.floor(total / 60);
+            const seg = total % 60;
+            return String(min).padStart(2, '0') + ':' + String(seg).padStart(2, '0');
+        }
+
+        function sumarPuntos(cantidad) {
+            puntos = Math.max(0, puntos + cantidad);
+            if (hudPuntos) hudPuntos.textContent = 'Puntos: ' + puntos;
+        }
+
+        function dibujarTiempo() {
+            if (!hudTiempo) return;
+            hudTiempo.textContent = formatearTiempo(tiempoRestante);
+            hudTiempo.classList.toggle(
+                'flappy-hud__chip--peligro',
+                tiempoRestante <= 10 && tiempoRestante > 0
+            );
+        }
+
         /* ------------------------------------------------------------
            Loop con timestep fijo
            ------------------------------------------------------------ */
@@ -216,8 +249,15 @@
                 pajaro.actualizar(PASO, velocidadActual);
                 actualizarParallax(PASO, velocidadActual);
                 actualizarTuberias(PASO, velocidadActual);
+                tiempoRestante = Math.max(0, tiempoRestante - PASO);
                 acumulador -= PASO;
                 pasos += 1;
+
+                const segundoActual = Math.ceil(tiempoRestante);
+                if (segundoActual !== ultimoSegundoMostrado) {
+                    ultimoSegundoMostrado = segundoActual;
+                    dibujarTiempo();
+                }
 
                 if (pajaro.estaEnSuelo()) {
                     pajaro.limitarAlSuelo();
@@ -235,6 +275,14 @@
                     dibujarParallax();
                     dibujarTuberias();
                     terminarPartida('tubo');
+                    return;
+                }
+
+                if (tiempoRestante <= 0) {
+                    pajaro.render();
+                    dibujarParallax();
+                    dibujarTuberias();
+                    terminarPorTiempo();
                     return;
                 }
             }
@@ -281,8 +329,8 @@
             detenerLoop();
 
             const mensajeChoque = motivo === 'tubo'
-                ? 'El pájaro chocó contra una tubería. ¿Probamos otra vez?'
-                : 'El pájaro tocó el suelo del bosque. ¿Probamos otra vez?';
+                ? 'El pájaro chocó contra una tubería. Puntaje final: ' + puntos + '.'
+                : 'El pájaro tocó el suelo del bosque. Puntaje final: ' + puntos + '.';
 
             if (timeoutOverlay !== null) clearTimeout(timeoutOverlay);
             timeoutOverlay = window.setTimeout(function () {
@@ -298,6 +346,21 @@
             }, 600);
         }
 
+        function terminarPorTiempo() {
+            if (estadoJuego !== 'jugando') return;
+
+            estadoJuego = 'gameover';
+            detenerLoop();
+            pajaro.setSprite('inicio', false);
+            actualizarHud('¡Tiempo cumplido!');
+            mostrarOverlay(
+                '¡Tiempo cumplido!',
+                'Completaste los ' + TIEMPO_PARTIDA + ' segundos con ' + puntos + ' puntos.',
+                'Jugar de nuevo',
+                true
+            );
+        }
+
         function reiniciarPartida() {
             if (timeoutOverlay !== null) {
                 clearTimeout(timeoutOverlay);
@@ -307,11 +370,16 @@
             detenerLoop();
             estadoJuego = 'listo';
             velocidadActual = FlappyFisica.VEL_MUNDO;
+            puntos = 0;
+            tiempoRestante = TIEMPO_PARTIDA;
+            ultimoSegundoMostrado = TIEMPO_PARTIDA;
             acumulador = 0;
             ultimo = 0;
             pajaro.reset();
             reiniciarParallax();
             limpiarTuberias();
+            sumarPuntos(0);
+            dibujarTiempo();
             actualizarHud('Listo para volar');
             mostrarOverlay(
                 'Flappy Bird',

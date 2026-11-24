@@ -380,8 +380,19 @@
     position: absolute;
     top: 16px;
     left: 16px;
+    right: 16px;
     z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
     pointer-events: none;
+}
+
+.flappy-hud__metricas {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .flappy-hud__chip {
@@ -407,6 +418,20 @@
     border-radius: 50%;
     background: var(--flappy-acento, #7CE04C);
     box-shadow: 0 0 8px rgba(124, 224, 76, 0.8);
+}
+
+.flappy-hud__chip--puntos::before,
+.flappy-hud__chip--tiempo::before {
+    display: none;
+}
+
+.flappy-hud__chip--puntos {
+    color: #FFFFFF;
+}
+
+.flappy-hud__chip--peligro {
+    border-color: rgba(255, 92, 92, 0.85);
+    color: #FF6B6B;
 }
 
 .flappy-overlay {
@@ -574,6 +599,7 @@
     .flappy-hud {
         top: 10px;
         left: 10px;
+        right: 10px;
     }
 
     .flappy-hud__chip {
