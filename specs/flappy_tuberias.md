@@ -51,7 +51,7 @@ Al reiniciar la partida, `fabricaTuberias.reset()` vuelve `creadas = 0` y `ultim
 
 ## 4. Movimiento, colisión y limpieza en el `loop()`
 
-Dentro del bucle de paso fijo (`PASO = 1/120 s`) de [`flappy.js`](../2%20entrega/js/flappy.js):
+Dentro del bucle de timestep variable (`dt` real de cada frame, acotado a 33 ms) de [`flappy.js`](../2%20entrega/js/flappy.js):
 
 1. **Spawn y movimiento (`actualizarTuberias`):** descuenta `distanciaProximoTubo -= velocidadActual * dt`. Cuando llega a `0`, crea un nuevo par fuera del borde derecho (`x = 1044`) y sortea la próxima distancia. Todos los tubos activos restan `this.x -= velocidadActual * dt`.
 2. **Borrado automático:** cuando un tubo sale por la izquierda (`this.x + 96 < 0`), se llama a `tubo.destruir()` (lo elimina del DOM con `.remove()`) y se saca del array `tuberias` para no acumular basura en memoria.
@@ -59,4 +59,4 @@ Dentro del bucle de paso fijo (`PASO = 1/120 s`) de [`flappy.js`](../2%20entrega
    * `pajaro.getHitbox()` devuelve una caja justa de `26×26px` centrada en el cuerpo del pájaro (más chica que el sprite de `64×64` para no chocar con el aire).
    * Un tubo choca si hay superposición en X (`hitbox.der > this.x && hitbox.izq < this.x + this.ancho`) **y** el pájaro sale del hueco vertical (`hitbox.arriba < this.huecoArriba || hitbox.abajo > this.huecoAbajo`).
    * Si choca, se dispara `pajaro.impactar()` y `terminarPartida('tubo')`.
-4. **Render (`dibujarTuberias`):** una sola vez por frame (al salir del `while`), cada tubo actualiza su posición con `translate3d(${this.x}px, 0, 0)`.
+4. **Render (`dibujarTuberias`):** una sola vez por frame (al final del `loop`), cada tubo actualiza su posición con `translate3d(${this.x}px, 0, 0)`.

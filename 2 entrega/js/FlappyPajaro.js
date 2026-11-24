@@ -12,7 +12,6 @@
         IMPULSO: -450,         // px/s
         VEL_MAX_CAIDA: 650,    // px/s
         VEL_MUNDO: 150,        // px/s de avance horizontal
-        PASO: 1 / 120,         // paso fijo de simulación
 
         factorVelocidad(velMundo) {
             const velocidad = velMundo !== undefined ? velMundo : FlappyFisica.VEL_MUNDO;
@@ -20,7 +19,7 @@
         },
 
         /**
-         * Actualiza el estado del pájaro en un paso de tiempo fijo.
+         * Actualiza el estado del pájaro con el tiempo transcurrido.
          * @param {{y:number, vy:number, xMundo:number, rot:number}} estado
          * @param {number} dt segundos
          * @param {number} [velMundo] velocidad horizontal actual en px/s
@@ -65,8 +64,7 @@
         ESCALA_INICIAL: 1,
         ESCALA_MAXIMA: 1.5,
         AUMENTO_ESCALA: 0.1,
-        TIEMPO_ALETEO: 0.28,
-        PASO: FlappyFisica.PASO
+        TIEMPO_ALETEO: 0.28
     };
 
     // Centro visible del pájaro dentro del frame renderizado de 64x64.

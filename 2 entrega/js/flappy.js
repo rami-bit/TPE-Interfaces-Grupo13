@@ -1,8 +1,7 @@
 /* ============================================================
    FLAPPY BIRD - CONTROLADOR PRINCIPAL
-   Loop con timestep fijo + acumulador (opción A):
-   la física avanza siempre en pasos de 1/120 s, sin importar
-   los FPS reales del equipo.
+   Loop con timestep variable: la física avanza con el tiempo
+   real de cada frame, acotado para evitar saltos tras un tirón.
    ============================================================ */
 
 (function () {
@@ -31,7 +30,7 @@
         const pajaro = new FlappyPajaro(pajaroEl);
         const fabricaTuberias = new FabricaTuberias(tuberiasEl, config.SUELO_Y, config.ALTO_LIENZO);
         const fabricaAvesBonus = new FabricaAvesBonus(avesBonusEl, avesTuberiaEl);
-        const PASO = config.PASO;
+        const DT_MAXIMO = 1 / 30; // 33 ms: evita saltos y mantiene estable la colisión
         const TIEMPO_PARTIDA = 120; // segundos de límite de partida
         const PUNTAJE_META = 50;
         const TUBERIAS_POR_NIVEL = 15;
@@ -47,8 +46,7 @@
         let tuberias = [];
         let avesBonus = [];
         let distanciaProximoTubo = 0;
-        let acumulador = 0;
-        let ultimo = 0;
+        let ultimo = null;
         let rafId = null;
         let timeoutOverlay = null;
 
@@ -295,11 +293,11 @@
         }
 
         /* ------------------------------------------------------------
-           Loop con timestep fijo
+           Loop con timestep variable
            ------------------------------------------------------------ */
         function iniciarLoop() {
             if (rafId !== null) return;
-            ultimo = performance.now();
+            ultimo = null;
             rafId = requestAnimationFrame(loop);
         }
 
@@ -315,26 +313,22 @@
 
             if (estadoJuego !== 'jugando') return;
 
+            if (ultimo === null) ultimo = ahora;
             let dt = (ahora - ultimo) / 1000;
             ultimo = ahora;
 
             if (!Number.isFinite(dt) || dt < 0) dt = 0;
-            dt = Math.min(dt, 0.1);
+            dt = Math.min(dt, DT_MAXIMO);
 
-            acumulador += dt;
-            let pasos = 0;
-
-            while (acumulador >= PASO) {
-                const velocidadPaso = velocidadActual;
-                pajaro.actualizar(PASO, velocidadPaso);
-                actualizarParallax(PASO, velocidadPaso);
-                actualizarTuberias(PASO, velocidadPaso);
+            if (dt > 0) {
+                const velocidadFrame = velocidadActual;
+                pajaro.actualizar(dt, velocidadFrame);
+                actualizarParallax(dt, velocidadFrame);
+                actualizarTuberias(dt, velocidadFrame);
                 if (estadoJuego !== 'jugando') return;
-                actualizarAvesBonus(PASO, velocidadPaso);
+                actualizarAvesBonus(dt, velocidadFrame);
                 if (estadoJuego !== 'jugando') return;
-                tiempoRestante = Math.max(0, tiempoRestante - PASO);
-                acumulador -= PASO;
-                pasos += 1;
+                tiempoRestante = Math.max(0, tiempoRestante - dt);
 
                 const segundoActual = Math.ceil(tiempoRestante);
                 if (segundoActual !== ultimoSegundoMostrado) {
@@ -364,9 +358,7 @@
                 }
             }
 
-            if (pasos > 0) {
-                dibujarEscena();
-            }
+            dibujarEscena();
         }
 
         /* ------------------------------------------------------------
@@ -387,7 +379,6 @@
             }
 
             estadoJuego = 'jugando';
-            acumulador = 0;
             ocultarOverlay();
             actualizarHud('En vuelo');
             pajaro.impulsar(velocidadActual);
@@ -464,8 +455,7 @@
             tuberiasSuperadas = 0;
             tiempoRestante = TIEMPO_PARTIDA;
             ultimoSegundoMostrado = TIEMPO_PARTIDA;
-            acumulador = 0;
-            ultimo = 0;
+            ultimo = null;
             pajaro.reset();
             reiniciarParallax();
             limpiarTuberias();
@@ -570,8 +560,6 @@
             } else if (estadoJuego === 'pausado') {
                 estadoJuego = 'jugando';
                 actualizarHud('En vuelo');
-                ultimo = performance.now();
-                acumulador = 0;
                 iniciarLoop();
             }
         });
