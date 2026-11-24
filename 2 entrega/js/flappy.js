@@ -281,6 +281,7 @@
             }
 
             e.preventDefault();
+            if (e.repeat) return;
 
             if (estadoJuego === 'jugando') {
                 pajaro.impulsar();
