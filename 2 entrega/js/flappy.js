@@ -28,6 +28,7 @@
         const PASO = config.PASO;
 
         let estadoJuego = 'listo'; // listo | jugando | pausado | impacto | gameover
+        let velocidadActual = FlappyFisica.VEL_MUNDO;
         let acumulador = 0;
         let ultimo = 0;
         let rafId = null;
@@ -57,44 +58,42 @@
         }
 
         /* ------------------------------------------------------------
-           Parallax: duración = tile / (velocidad del mundo * factor)
-           La misma VEL_MUNDO de la física alimenta las animaciones.
+           Parallax controlado por JS: avanza con velocidadActual * factor * dt
+           para mantenerse siempre sincronizado si el juego acelera o frena.
            ------------------------------------------------------------ */
         // Una entrada por capa del bosque, de atrás hacia adelante.
         // tile = 1024px (ancho del lienzo lógico, al que se escala cada imagen).
         const capas = [
-            { selector: '.flappy-capa--fondo', tile: 1024, factor: 0.05 },
-            { selector: '.flappy-capa--copas-lejanas', tile: 1024, factor: 0.12 },
-            { selector: '.flappy-capa--copas-medias', tile: 1024, factor: 0.20 },
-            { selector: '.flappy-capa--arboles-medios', tile: 1024, factor: 0.32 },
-            { selector: '.flappy-capa--arboles-cercanos', tile: 1024, factor: 0.50 },
-            { selector: '.flappy-capa--tronco', tile: 1024, factor: 0.75 },
-            { selector: '.flappy-capa--cartel', tile: 1024, factor: 1.00 }
+            { el: lienzo.querySelector('.flappy-capa--fondo'), tile: 1024, factor: 0.05, x: 0 },
+            { el: lienzo.querySelector('.flappy-capa--copas-lejanas'), tile: 1024, factor: 0.12, x: 0 },
+            { el: lienzo.querySelector('.flappy-capa--copas-medias'), tile: 1024, factor: 0.20, x: 0 },
+            { el: lienzo.querySelector('.flappy-capa--arboles-medios'), tile: 1024, factor: 0.32, x: 0 },
+            { el: lienzo.querySelector('.flappy-capa--arboles-cercanos'), tile: 1024, factor: 0.50, x: 0 },
+            { el: lienzo.querySelector('.flappy-capa--tronco'), tile: 1024, factor: 0.75, x: 0 },
+            { el: lienzo.querySelector('.flappy-capa--cartel'), tile: 1024, factor: 1.00, x: 0 }
         ];
 
-        capas.forEach(function (capa) {
-            const el = lienzo.querySelector(capa.selector);
-            if (!el) return;
-
-            const duracion = capa.tile / (FlappyFisica.VEL_MUNDO * capa.factor);
-            el.style.animationDuration = duracion + 's';
-        });
-
-        function pausarParallax() {
-            lienzo.classList.add('flappy-lienzo--pausado');
+        function actualizarParallax(dt, velocidad) {
+            for (let i = 0; i < capas.length; i++) {
+                const capa = capas[i];
+                capa.x = (capa.x + velocidad * capa.factor * dt) % capa.tile;
+            }
         }
 
-        function reanudarParallax() {
-            lienzo.classList.remove('flappy-lienzo--pausado');
+        function dibujarParallax() {
+            for (let i = 0; i < capas.length; i++) {
+                const capa = capas[i];
+                if (capa.el) {
+                    capa.el.style.backgroundPositionX = -capa.x + 'px';
+                }
+            }
         }
 
         function reiniciarParallax() {
-            lienzo.classList.add('flappy-lienzo--pausado');
-            lienzo.querySelectorAll('.flappy-capa').forEach(function (capa) {
-                capa.getAnimations().forEach(function (animacion) {
-                    animacion.currentTime = 0;
-                });
-            });
+            for (let i = 0; i < capas.length; i++) {
+                capas[i].x = 0;
+            }
+            dibujarParallax();
         }
 
         /* ------------------------------------------------------------
@@ -165,13 +164,15 @@
             let pasos = 0;
 
             while (acumulador >= PASO) {
-                pajaro.actualizar(PASO);
+                pajaro.actualizar(PASO, velocidadActual);
+                actualizarParallax(PASO, velocidadActual);
                 acumulador -= PASO;
                 pasos += 1;
 
                 if (pajaro.estaEnSuelo()) {
                     pajaro.limitarAlSuelo();
                     pajaro.render();
+                    dibujarParallax();
                     terminarPartida();
                     return;
                 }
@@ -181,6 +182,7 @@
 
             if (pasos > 0) {
                 pajaro.render();
+                dibujarParallax();
             }
         }
 
@@ -204,7 +206,6 @@
             estadoJuego = 'jugando';
             acumulador = 0;
             ocultarOverlay();
-            reanudarParallax();
             actualizarHud('En vuelo');
             pajaro.impulsar();
             iniciarLoop();
@@ -216,7 +217,6 @@
 
             estadoJuego = 'impacto';
             pajaro.impactar();
-            pausarParallax();
             actualizarHud('¡Ay!');
             detenerLoop();
 
@@ -242,6 +242,7 @@
 
             detenerLoop();
             estadoJuego = 'listo';
+            velocidadActual = FlappyFisica.VEL_MUNDO;
             acumulador = 0;
             ultimo = 0;
             pajaro.reset();
@@ -340,13 +341,11 @@
             if (document.hidden) {
                 if (estadoJuego === 'jugando') {
                     estadoJuego = 'pausado';
-                    pausarParallax();
                     detenerLoop();
                     actualizarHud('En pausa');
                 }
             } else if (estadoJuego === 'pausado') {
                 estadoJuego = 'jugando';
-                reanudarParallax();
                 actualizarHud('En vuelo');
                 ultimo = performance.now();
                 acumulador = 0;

@@ -56,10 +56,8 @@
    CAPAS DEL PARALLAX
    Siete imágenes transparentes de 576x324 (misma proporción 16:9
    que el lienzo) apiladas de atrás hacia adelante. Cada una
-   repite en X y recorre exactamente un tile de 1024px, que es el
-   ancho renderizado dentro del lienzo lógico.
-   La duración la calcula flappy.js según VEL_MUNDO y el factor de
-   cada capa; los valores de acá son el fallback.
+   repite en X sobre un tile de 1024px y su desplazamiento lo
+   actualiza flappy.js en el loop usando la velocidad actual.
    ============================================================ */
 
 .flappy-capa {
@@ -71,65 +69,41 @@
     image-rendering: pixelated;
     pointer-events: none;
     will-change: background-position-x;
-    animation-name: flappy-scroll;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
 }
 
 .flappy-capa--fondo {
     z-index: 1;
     background-image: url("../img/flappyBird/elementosParallax/1.png");
-    animation-duration: 136.53s;
 }
 
 .flappy-capa--copas-lejanas {
     z-index: 2;
     background-image: url("../img/flappyBird/elementosParallax/2.png");
-    animation-duration: 56.89s;
 }
 
 .flappy-capa--copas-medias {
     z-index: 3;
     background-image: url("../img/flappyBird/elementosParallax/3.png");
-    animation-duration: 34.13s;
 }
 
 .flappy-capa--arboles-medios {
     z-index: 4;
     background-image: url("../img/flappyBird/elementosParallax/4.png");
-    animation-duration: 21.33s;
 }
 
 .flappy-capa--arboles-cercanos {
     z-index: 5;
     background-image: url("../img/flappyBird/elementosParallax/5.png");
-    animation-duration: 13.65s;
 }
 
 .flappy-capa--tronco {
     z-index: 6;
     background-image: url("../img/flappyBird/elementosParallax/6.png");
-    animation-duration: 9.1s;
 }
 
 .flappy-capa--cartel {
     z-index: 7;
     background-image: url("../img/flappyBird/elementosParallax/7.png");
-    animation-duration: 6.83s;
-}
-
-.flappy-lienzo--pausado .flappy-capa {
-    animation-play-state: paused;
-}
-
-@keyframes flappy-scroll {
-    from {
-        background-position-x: 0;
-    }
-
-    to {
-        background-position-x: -1024px;
-    }
 }
 
 /* ============================================================

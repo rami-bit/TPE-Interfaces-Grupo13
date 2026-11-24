@@ -18,14 +18,16 @@
          * Actualiza el estado del pájaro en un paso de tiempo fijo.
          * @param {{y:number, vy:number, xMundo:number, rot:number}} estado
          * @param {number} dt segundos
+         * @param {number} [velMundo] velocidad horizontal actual en px/s
          */
-        actualizar(estado, dt) {
+        actualizar(estado, dt, velMundo) {
+            const vel = velMundo !== undefined ? velMundo : FlappyFisica.VEL_MUNDO;
             estado.vy = Math.min(
                 estado.vy + FlappyFisica.GRAVEDAD * dt,
                 FlappyFisica.VEL_MAX_CAIDA
             );
             estado.y += estado.vy * dt;
-            estado.xMundo += FlappyFisica.VEL_MUNDO * dt;
+            estado.xMundo += vel * dt;
             estado.rot = Math.max(-25, Math.min(75, estado.vy * 0.12));
         },
 
@@ -102,11 +104,12 @@
         /**
          * Solo actualiza el estado; el render se hace una vez por frame.
          * @param {number} dt
+         * @param {number} [velMundo] velocidad horizontal actual en px/s
          */
-        actualizar(dt) {
+        actualizar(dt, velMundo) {
             if (this.modo !== 'jugando') return;
 
-            FlappyFisica.actualizar(this.estado, dt);
+            FlappyFisica.actualizar(this.estado, dt, velMundo);
 
             if (this.estado.tiempoAleteo > 0) {
                 this.estado.tiempoAleteo = Math.max(0, this.estado.tiempoAleteo - dt);
