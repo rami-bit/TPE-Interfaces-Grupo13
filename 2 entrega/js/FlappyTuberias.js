@@ -150,18 +150,35 @@
         }
 
         calcularCentroY(gap) {
-            const minY = TUBERIAS_CONFIG.MARGEN_VERTICAL + gap / 2;
-            const maxY = this.sueloY - TUBERIAS_CONFIG.MARGEN_VERTICAL - gap / 2;
+            const minY = Math.ceil(TUBERIAS_CONFIG.MARGEN_VERTICAL + gap / 2);
+            const maxY = Math.floor(this.sueloY - TUBERIAS_CONFIG.MARGEN_VERTICAL - gap / 2);
 
             let centroY = aleatorioEntre(minY, maxY);
 
-            // Evita que dos tuberías seguidas queden alineadas a la misma altura
-            if (this.ultimoCentroY !== null) {
-                for (let intentos = 0; intentos < 8; intentos++) {
-                    if (Math.abs(centroY - this.ultimoCentroY) >= TUBERIAS_CONFIG.CAMBIO_ALTURA_MIN) {
-                        break;
-                    }
-                    centroY = aleatorioEntre(minY, maxY);
+            // Elige únicamente alturas separadas del centro anterior al menos 55px.
+            if (
+                this.ultimoCentroY !== null &&
+                Math.abs(centroY - this.ultimoCentroY) < TUBERIAS_CONFIG.CAMBIO_ALTURA_MIN
+            ) {
+                const maximoSuperior = Math.floor(Math.min(
+                    maxY,
+                    this.ultimoCentroY - TUBERIAS_CONFIG.CAMBIO_ALTURA_MIN
+                ));
+                const minimoInferior = Math.ceil(Math.max(
+                    minY,
+                    this.ultimoCentroY + TUBERIAS_CONFIG.CAMBIO_ALTURA_MIN
+                ));
+                const hayAlturaSuperior = maximoSuperior >= minY;
+                const hayAlturaInferior = minimoInferior <= maxY;
+
+                if (hayAlturaSuperior && hayAlturaInferior) {
+                    centroY = Math.random() < 0.5
+                        ? aleatorioEntre(minY, maximoSuperior)
+                        : aleatorioEntre(minimoInferior, maxY);
+                } else if (hayAlturaSuperior) {
+                    centroY = aleatorioEntre(minY, maximoSuperior);
+                } else {
+                    centroY = aleatorioEntre(minimoInferior, maxY);
                 }
             }
 

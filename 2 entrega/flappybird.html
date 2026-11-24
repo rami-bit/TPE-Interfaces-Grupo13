@@ -154,8 +154,14 @@
                         <div class="flappy-capa flappy-capa--tronco" aria-hidden="true"></div>
                         <div class="flappy-capa flappy-capa--cartel" aria-hidden="true"></div>
 
+                        <!-- Ave que sale de las tuberías: queda debajo para ocultarse al entrar. -->
+                        <div class="flappy-aves-tuberia" id="flappy-aves-tuberia" aria-hidden="true"></div>
+
                         <!-- Obstáculos (tuberías) -->
                         <div class="flappy-tuberias" id="flappy-tuberias" aria-hidden="true"></div>
+
+                        <!-- Enemigo del escenario, dibujado por delante de las tuberías. -->
+                        <div class="flappy-aves-bonus" id="flappy-aves-bonus" aria-hidden="true"></div>
 
                         <div class="flappy-pajaro" id="flappy-pajaro" role="img"
                             aria-label="Pájaro volando por el bosque">
@@ -166,8 +172,8 @@
                     <div class="flappy-hud" aria-hidden="true">
                         <span class="flappy-hud__chip" id="flappy-hud-estado">Listo para volar</span>
                         <div class="flappy-hud__metricas">
-                            <span class="flappy-hud__chip flappy-hud__chip--puntos" id="flappy-hud-puntos">Puntos: 0</span>
-                            <span class="flappy-hud__chip flappy-hud__chip--tiempo" id="flappy-hud-tiempo">01:00</span>
+                            <span class="flappy-hud__chip flappy-hud__chip--puntos" id="flappy-hud-puntos">Puntos: 0 / 50</span>
+                            <span class="flappy-hud__chip flappy-hud__chip--tiempo" id="flappy-hud-tiempo">02:00</span>
                         </div>
                     </div>
 
@@ -176,8 +182,8 @@
                         <div class="flappy-modal">
                             <p class="flappy-modal__etiqueta">Code Play Arcade</p>
                             <h2 id="flappy-overlay-titulo" class="flappy-modal__titulo">Flappy Bird</h2>
-                            <p id="flappy-overlay-mensaje" class="flappy-modal__mensaje">Hacé clic o presioná Espacio
-                                para aletear y mantener el vuelo.</p>
+                            <p id="flappy-overlay-mensaje" class="flappy-modal__mensaje">Aleteá y alcanzá 50 puntos
+                                antes de que se agoten los 120 segundos.</p>
                             <button type="button" id="flappy-btn-accion" class="flappy-btn">Jugar</button>
                             <p class="flappy-modal__ayuda">Click / toque / Espacio / ↑</p>
                         </div>
@@ -190,11 +196,6 @@
                     <span class="juego-barra__titulo">Flappy Bird</span>
                 </div>
                 <div class="juego-barra__botones">
-                    <!-- Botón para reiniciar la partida en cualquier momento -->
-                    <button type="button" id="flappy-btn-reiniciar-barra" class="btn-juego btn-juego--reiniciar"
-                        aria-label="Reiniciar juego" title="Reiniciar partida">
-                        <span class="peg-btn-reiniciar__simbolo">↻</span>
-                    </button>
                     <button type="button" class="btn-juego btn-juego--compartir" aria-label="Compartir">
                         <span class="btn-juego__icono"></span>
                     </button>
@@ -224,10 +225,15 @@
                     <h2 class="info-card__titulo">Como Se Juega</h2>
                     <p class="info-card__texto">El pájaro avanza solo: tu único trabajo es mantenerlo en el aire. Cada
                         clic, toque o Espacio le da un impulso hacia arriba; si dejás de aletear, la gravedad lo hace
-                        caer.</p>
+                        caer. El objetivo es alcanzar 50 puntos antes de que se terminen los 120 segundos.</p>
                     <p class="info-card__texto">Mantené el vuelo, evitá estrellarte contra el suelo del bosque y pasá
-                        entre las tuberías, cuyo hueco cambia de altura y se va achicando a medida que avanzás. Cada
-                        par superado suma puntos antes de que se cumplan los 60 segundos.</p>
+                        entre las tuberías, cuyo hueco cambia de altura y se va achicando. Cada par superado suma un
+                        punto. La velocidad sube un 10% cada 15 tuberías superadas, hasta tres aumentos.</p>
+                    <p class="info-card__texto">Cuando no hay un ave activa, cada nuevo par tiene 1/3 de probabilidad
+                        de activar un evento; solo puede haber una a la vez. Bird 3 sale de la tubería inferior, sube y se oculta al entrar en
+                        la superior. Bird 2 entra por la derecha y cruza la mitad superior; si lo tocás, agranda al
+                        jugador un 10% hasta un máximo de 1,5×. Bird 3 es visual y no cambia el puntaje; ninguna termina
+                        la partida.</p>
                     <p class="info-card__texto">El escenario se mueve con vos: el cartel y el tronco pasan rápido, los
                         árboles avanzan a ritmo medio y el verde del fondo casi queda quieto. Ese es el efecto
                         parallax.</p>
@@ -242,16 +248,15 @@
                 <article class="info-card">
                     <h2 class="info-card__titulo">¿Que es Flappy Bird?</h2>
                     <p class="info-card__texto">Flappy Bird es un juego de habilidad y reflejos: el pájaro avanza en
-                        línea recta y el jugador solo controla la altura. Un impulso bien timed levanta el vuelo; uno
+                        línea recta y el jugador solo controla la altura. Un impulso bien calculado levanta el vuelo; uno
                         tarde o uno de más termina en choque.</p>
                     <p class="info-card__texto">Esta versión transcurre en un bosque: el fondo verde, las copas, los
                         árboles, el tronco y el cartel se mueven en capas a distintas velocidades para dar sensación de
                         profundidad.</p>
                     <h3 class="info-card__titulo info-card__titulo--sub">Controles</h3>
                     <p class="info-card__texto">Click, toque, Espacio o flecha arriba: aletear.</p>
-                    <p class="info-card__texto">Botón ↻ de la barra: reiniciar la partida en cualquier momento.</p>
-                    <p class="info-card__texto">Objetivo: superá la mayor cantidad de tuberías posibles dentro del
-                        límite de 60 segundos sin tocar los obstáculos ni el suelo.</p>
+                    <p class="info-card__texto">Victoria: alcanzá 50 puntos. Derrota: agotás los 120 segundos o chocás
+                        contra una tubería o el suelo. El botón del panel de juego permite iniciar o volver a jugar.</p>
                 </article>
             </section>
 
@@ -480,6 +485,7 @@
     <script src="js/header.js"></script>
     <script src="js/FlappyPajaro.js"></script>
     <script src="js/FlappyTuberias.js"></script>
+    <script src="js/FlappyAvesBonus.js"></script>
     <script src="js/flappy.js"></script>
 
 </body>

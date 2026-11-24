@@ -13,13 +13,14 @@
         const lienzo = document.getElementById('flappy-lienzo');
         const pajaroEl = document.getElementById('flappy-pajaro');
         const tuberiasEl = document.getElementById('flappy-tuberias');
-        if (!marco || !lienzo || !pajaroEl || !tuberiasEl) return;
+        const avesBonusEl = document.getElementById('flappy-aves-bonus');
+        const avesTuberiaEl = document.getElementById('flappy-aves-tuberia');
+        if (!marco || !lienzo || !pajaroEl || !tuberiasEl || !avesBonusEl || !avesTuberiaEl) return;
 
         const overlay = document.getElementById('flappy-overlay');
         const overlayTitulo = document.getElementById('flappy-overlay-titulo');
         const overlayMensaje = document.getElementById('flappy-overlay-mensaje');
         const btnAccion = document.getElementById('flappy-btn-accion');
-        const btnReiniciar = document.getElementById('flappy-btn-reiniciar-barra');
         const btnFull = document.getElementById('flappy-btn-full');
         const hudEstado = document.getElementById('flappy-hud-estado');
         const hudPuntos = document.getElementById('flappy-hud-puntos');
@@ -29,15 +30,22 @@
         const config = window.FLAPPY_CONFIG;
         const pajaro = new FlappyPajaro(pajaroEl);
         const fabricaTuberias = new FabricaTuberias(tuberiasEl, config.SUELO_Y, config.ALTO_LIENZO);
+        const fabricaAvesBonus = new FabricaAvesBonus(avesBonusEl, avesTuberiaEl);
         const PASO = config.PASO;
-        const TIEMPO_PARTIDA = 60; // segundos de límite de partida
+        const TIEMPO_PARTIDA = 120; // segundos de límite de partida
+        const PUNTAJE_META = 50;
+        const TUBERIAS_POR_NIVEL = 15;
+        const NIVELES_VELOCIDAD = 3;
+        const AUMENTO_VELOCIDAD = 0.1;
 
-        let estadoJuego = 'listo'; // listo | jugando | pausado | impacto | gameover
+        let estadoJuego = 'listo'; // listo | jugando | pausado | impacto | gameover | victoria
         let velocidadActual = FlappyFisica.VEL_MUNDO;
         let puntos = 0;
+        let tuberiasSuperadas = 0;
         let tiempoRestante = TIEMPO_PARTIDA;
         let ultimoSegundoMostrado = TIEMPO_PARTIDA;
         let tuberias = [];
+        let avesBonus = [];
         let distanciaProximoTubo = 0;
         let acumulador = 0;
         let ultimo = 0;
@@ -109,11 +117,34 @@
         /* ------------------------------------------------------------
            Tuberías: creación con Factory Method, movimiento y limpieza
            ------------------------------------------------------------ */
+        function actualizarVelocidad() {
+            const niveles = Math.min(
+                NIVELES_VELOCIDAD,
+                Math.floor(tuberiasSuperadas / TUBERIAS_POR_NIVEL)
+            );
+            velocidadActual = FlappyFisica.VEL_MUNDO * (1 + niveles * AUMENTO_VELOCIDAD);
+        }
+
+        function prepararAveBonus(tuberia) {
+            if (avesBonus.length > 0) return;
+
+            const tipo = fabricaAvesBonus.elegirTipo(pajaro.puedeAumentarTamano());
+            if (tipo === 'bird-2') {
+                avesBonus.push(fabricaAvesBonus.crearBird2EnEscenario(
+                    config.ANCHO_LIENZO,
+                    config.ALTO_LIENZO
+                ));
+            } else if (tipo === 'bird-3') {
+                avesBonus.push(fabricaAvesBonus.crearBird3DesdeTuberia(tuberia));
+            }
+        }
+
         function actualizarTuberias(dt, velocidad) {
             distanciaProximoTubo -= velocidad * dt;
             if (distanciaProximoTubo <= 0) {
                 const nuevoPar = fabricaTuberias.crear(config.ANCHO_LIENZO + 20);
                 tuberias.push(nuevoPar);
+                prepararAveBonus(nuevoPar);
                 distanciaProximoTubo = fabricaTuberias.siguienteDistancia();
             }
 
@@ -124,7 +155,10 @@
                 // Suma +1 punto cuando el pájaro supera completamente el par de tuberías
                 if (!tubo.superado && tubo.x + tubo.ancho < config.X_PANTALLA) {
                     tubo.superado = true;
+                    tuberiasSuperadas += 1;
+                    actualizarVelocidad();
                     sumarPuntos(1);
+                    if (estadoJuego !== 'jugando') return;
                 }
 
                 if (tubo.estaFueraDePantalla()) {
@@ -134,9 +168,35 @@
             }
         }
 
+        function actualizarAvesBonus(dt, velocidad) {
+            const hitbox = pajaro.getHitbox();
+
+            for (let i = avesBonus.length - 1; i >= 0; i--) {
+                const ave = avesBonus[i];
+                ave.actualizar(dt, velocidad);
+
+                if (ave.tipo === 'bird-2' && ave.colisionaCon(hitbox)) {
+                    pajaro.aumentarTamano();
+                    pajaro.mostrarPenalizacion();
+                    ave.destruir();
+                    avesBonus.splice(i, 1);
+                    if (estadoJuego !== 'jugando') return;
+                } else if (ave.terminoRecorrido()) {
+                    ave.destruir();
+                    avesBonus.splice(i, 1);
+                }
+            }
+        }
+
         function dibujarTuberias() {
             for (let i = 0; i < tuberias.length; i++) {
                 tuberias[i].render();
+            }
+        }
+
+        function dibujarAvesBonus() {
+            for (let i = 0; i < avesBonus.length; i++) {
+                avesBonus[i].render();
             }
         }
 
@@ -157,10 +217,18 @@
             distanciaProximoTubo = 120;
         }
 
+        function limpiarAvesBonus() {
+            for (let i = 0; i < avesBonus.length; i++) {
+                avesBonus[i].destruir();
+            }
+            avesBonus = [];
+        }
+
         function dibujarEscena() {
             pajaro.render();
             dibujarParallax();
             dibujarTuberias();
+            dibujarAvesBonus();
         }
 
         /* ------------------------------------------------------------
@@ -209,7 +277,12 @@
 
         function sumarPuntos(cantidad) {
             puntos = Math.max(0, puntos + cantidad);
-            if (hudPuntos) hudPuntos.textContent = 'Puntos: ' + puntos;
+            if (hudPuntos) {
+                hudPuntos.textContent = 'Puntos: ' + puntos + ' / ' + PUNTAJE_META;
+            }
+            if (estadoJuego === 'jugando' && puntos >= PUNTAJE_META) {
+                ganarPartida();
+            }
         }
 
         function dibujarTiempo() {
@@ -252,9 +325,13 @@
             let pasos = 0;
 
             while (acumulador >= PASO) {
-                pajaro.actualizar(PASO, velocidadActual);
-                actualizarParallax(PASO, velocidadActual);
-                actualizarTuberias(PASO, velocidadActual);
+                const velocidadPaso = velocidadActual;
+                pajaro.actualizar(PASO, velocidadPaso);
+                actualizarParallax(PASO, velocidadPaso);
+                actualizarTuberias(PASO, velocidadPaso);
+                if (estadoJuego !== 'jugando') return;
+                actualizarAvesBonus(PASO, velocidadPaso);
+                if (estadoJuego !== 'jugando') return;
                 tiempoRestante = Math.max(0, tiempoRestante - PASO);
                 acumulador -= PASO;
                 pasos += 1;
@@ -297,13 +374,13 @@
            ------------------------------------------------------------ */
         function iniciarPartida() {
             if (estadoJuego === 'jugando') {
-                pajaro.impulsar();
+                pajaro.impulsar(velocidadActual);
                 return;
             }
 
             if (estadoJuego === 'impacto') return;
 
-            if (estadoJuego === 'gameover') {
+            if (estadoJuego === 'gameover' || estadoJuego === 'victoria') {
                 reiniciarPartida();
                 iniciarPartida();
                 return;
@@ -313,7 +390,7 @@
             acumulador = 0;
             ocultarOverlay();
             actualizarHud('En vuelo');
-            pajaro.impulsar();
+            pajaro.impulsar(velocidadActual);
             iniciarLoop();
             marco.focus({ preventScroll: true });
         }
@@ -327,8 +404,8 @@
             detenerLoop();
 
             const mensajeChoque = motivo === 'tubo'
-                ? 'El pájaro chocó contra una tubería. Puntaje final: ' + puntos + '.'
-                : 'El pájaro tocó el suelo del bosque. Puntaje final: ' + puntos + '.';
+                ? 'El pájaro chocó contra una tubería. Puntaje final: ' + puntos + ' de ' + PUNTAJE_META + '.'
+                : 'El pájaro tocó el suelo del bosque. Puntaje final: ' + puntos + ' de ' + PUNTAJE_META + '.';
 
             if (timeoutOverlay !== null) clearTimeout(timeoutOverlay);
             timeoutOverlay = window.setTimeout(function () {
@@ -344,6 +421,20 @@
             }, 600);
         }
 
+        function ganarPartida() {
+            if (estadoJuego !== 'jugando') return;
+
+            estadoJuego = 'victoria';
+            detenerLoop();
+            actualizarHud('¡Victoria!');
+            mostrarOverlay(
+                '¡Ganaste!',
+                'Alcanzaste ' + puntos + ' puntos y superaste el desafío.',
+                'Jugar de nuevo',
+                true
+            );
+        }
+
         function terminarPorTiempo() {
             if (estadoJuego !== 'jugando') return;
 
@@ -353,7 +444,8 @@
             actualizarHud('¡Tiempo cumplido!');
             mostrarOverlay(
                 '¡Tiempo cumplido!',
-                'Completaste los ' + TIEMPO_PARTIDA + ' segundos con ' + puntos + ' puntos.',
+                'Se agotaron los ' + TIEMPO_PARTIDA + ' segundos. Sumaste ' + puntos +
+                    ' de ' + PUNTAJE_META + ' puntos.',
                 'Jugar de nuevo',
                 true
             );
@@ -369,6 +461,7 @@
             estadoJuego = 'listo';
             velocidadActual = FlappyFisica.VEL_MUNDO;
             puntos = 0;
+            tuberiasSuperadas = 0;
             tiempoRestante = TIEMPO_PARTIDA;
             ultimoSegundoMostrado = TIEMPO_PARTIDA;
             acumulador = 0;
@@ -376,12 +469,13 @@
             pajaro.reset();
             reiniciarParallax();
             limpiarTuberias();
+            limpiarAvesBonus();
             sumarPuntos(0);
             dibujarTiempo();
             actualizarHud('Listo para volar');
             mostrarOverlay(
                 'Flappy Bird',
-                'Hacé clic o presioná Espacio para aletear y mantener el vuelo.',
+                'Aleteá y alcanzá 50 puntos antes de que se agoten los 120 segundos.',
                 'Jugar',
                 false
             );
@@ -399,7 +493,7 @@
 
         function ejecutarAccionVuelo() {
             if (estadoJuego === 'jugando') {
-                pajaro.impulsar();
+                pajaro.impulsar(velocidadActual);
                 return true;
             }
             if (estadoJuego === 'listo') {
@@ -435,20 +529,12 @@
             btnAccion.addEventListener('click', function (e) {
                 e.stopPropagation();
 
-                if (estadoJuego === 'gameover') {
+                if (estadoJuego === 'gameover' || estadoJuego === 'victoria') {
                     reiniciarPartida();
                     iniciarPartida();
                 } else if (estadoJuego === 'listo') {
                     iniciarPartida();
                 }
-            });
-        }
-
-        if (btnReiniciar) {
-            btnReiniciar.addEventListener('click', function (e) {
-                e.stopPropagation();
-                reiniciarPartida();
-                iniciarPartida();
             });
         }
 
@@ -489,6 +575,33 @@
                 iniciarLoop();
             }
         });
+
+        function debugCasiGanar() {
+            reiniciarPartida();
+
+            tuberiasSuperadas = TUBERIAS_POR_NIVEL * NIVELES_VELOCIDAD;
+            actualizarVelocidad();
+            puntos = PUNTAJE_META - 1;
+            sumarPuntos(0);
+
+            const tubo = fabricaTuberias.crear(config.X_PANTALLA);
+            // Queda un paso antes de cruzar la línea que suma el último punto.
+            tubo.x = config.X_PANTALLA - tubo.ancho + 1;
+            tubo.render();
+            tuberias.push(tubo);
+
+            pajaro.prepararParaDebug(tubo.centroY);
+            estadoJuego = 'jugando';
+            distanciaProximoTubo = config.ANCHO_LIENZO;
+            ocultarOverlay();
+            actualizarHud('Debug: casi victoria');
+            dibujarEscena();
+            iniciarLoop();
+        }
+
+        window.FlappyDebug = {
+            debugCasiGanar: debugCasiGanar
+        };
 
         /* ------------------------------------------------------------
            Arranque

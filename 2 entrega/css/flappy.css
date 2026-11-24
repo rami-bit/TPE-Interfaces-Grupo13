@@ -167,6 +167,101 @@
 }
 
 /* ============================================================
+   AVES BONUS
+   Cada tira tiene cuatro frames de 16x16, mostrados a 32x32.
+   ============================================================ */
+
+.flappy-aves-tuberia {
+    position: absolute;
+    inset: 0;
+    z-index: 7;
+    pointer-events: none;
+}
+
+.flappy-aves-bonus {
+    position: absolute;
+    inset: 0;
+    z-index: 9;
+    pointer-events: none;
+}
+
+.flappy-ave-bonus {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 32px;
+    height: 32px;
+    will-change: transform;
+}
+
+.flappy-ave-bonus__orientacion {
+    width: 100%;
+    height: 100%;
+    transform-origin: center;
+}
+
+.flappy-ave-bonus--bird-2 .flappy-ave-bonus__orientacion {
+    transform: scaleX(-1);
+}
+
+.flappy-ave-bonus--bird-3 .flappy-ave-bonus__orientacion {
+    transform: rotate(-90deg);
+}
+
+.flappy-ave-bonus__sprite {
+    width: 100%;
+    height: 100%;
+    background-repeat: no-repeat;
+    background-size: 400% 100%;
+    image-rendering: pixelated;
+    animation: flappy-ave-aletear 0.48s steps(1, end) infinite;
+}
+
+.flappy-ave-bonus--bird-2 .flappy-ave-bonus__sprite {
+    background-image: url("../img/flappyBird/sprites/Bird2-2.png");
+    animation:
+        flappy-ave-aletear 0.48s steps(1, end) infinite,
+        flappy-ave-flotar 0.8s ease-in-out infinite;
+}
+
+.flappy-ave-bonus--bird-3 .flappy-ave-bonus__sprite {
+    background-image: url("../img/flappyBird/sprites/Bird2-3.png");
+}
+
+@keyframes flappy-ave-aletear {
+    0%,
+    24.9% {
+        background-position: 0 0;
+    }
+
+    25%,
+    49.9% {
+        background-position: -32px 0;
+    }
+
+    50%,
+    74.9% {
+        background-position: -64px 0;
+    }
+
+    75%,
+    100% {
+        background-position: -96px 0;
+    }
+}
+
+@keyframes flappy-ave-flotar {
+    0%,
+    100% {
+        transform: translateY(-5px);
+    }
+
+    50% {
+        transform: translateY(5px);
+    }
+}
+
+/* ============================================================
    PÁJARO
    El sprite nuevo es una tira de 4 frames de 16x16. Se muestra a
    64x64 (escala 4x) y se recorre con background-position. El
@@ -184,6 +279,20 @@
     pointer-events: none;
     transform-origin: 54% 53%;
     will-change: transform;
+}
+
+.flappy-pajaro::after {
+    content: "";
+    position: absolute;
+    inset: -5px;
+    border: 3px solid rgba(255, 107, 107, 0.9);
+    border-radius: 50%;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.flappy-pajaro--penalizado::after {
+    animation: flappy-penalizacion-destello 0.28s ease-out;
 }
 
 .flappy-pajaro__sprite {
@@ -323,6 +432,18 @@
     100% {
         opacity: 0;
         transform: scale(3);
+    }
+}
+
+@keyframes flappy-penalizacion-destello {
+    0% {
+        opacity: 1;
+        transform: scale(0.85);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(1.2);
     }
 }
 

@@ -1,7 +1,7 @@
 /* ============================================================
    FLAPPY BIRD - FÍSICA Y SPRITE DEL PÁJARO
-   La física vive en una función pura para poder probarla o
-   reutilizarla cuando se agreguen los tubos.
+   La física permanece separada del render para adaptarse a cada
+   nivel de velocidad.
    ============================================================ */
 
 (function (global) {
@@ -14,6 +14,11 @@
         VEL_MUNDO: 150,        // px/s de avance horizontal
         PASO: 1 / 120,         // paso fijo de simulación
 
+        factorVelocidad(velMundo) {
+            const velocidad = velMundo !== undefined ? velMundo : FlappyFisica.VEL_MUNDO;
+            return velocidad / FlappyFisica.VEL_MUNDO;
+        },
+
         /**
          * Actualiza el estado del pájaro en un paso de tiempo fijo.
          * @param {{y:number, vy:number, xMundo:number, rot:number}} estado
@@ -22,9 +27,13 @@
          */
         actualizar(estado, dt, velMundo) {
             const vel = velMundo !== undefined ? velMundo : FlappyFisica.VEL_MUNDO;
+            const factor = FlappyFisica.factorVelocidad(vel);
+            const gravedadActual = FlappyFisica.GRAVEDAD * factor * factor;
+            const velocidadMaximaCaida = FlappyFisica.VEL_MAX_CAIDA * factor;
+
             estado.vy = Math.min(
-                estado.vy + FlappyFisica.GRAVEDAD * dt,
-                FlappyFisica.VEL_MAX_CAIDA
+                estado.vy + gravedadActual * dt,
+                velocidadMaximaCaida
             );
             estado.y += estado.vy * dt;
             estado.xMundo += vel * dt;
@@ -35,8 +44,9 @@
          * Aplica un impulso vertical instantáneo.
          * @param {{vy:number}} estado
          */
-        impulsar(estado) {
-            estado.vy = FlappyFisica.IMPULSO;
+        impulsar(estado, velMundo) {
+            const factor = FlappyFisica.factorVelocidad(velMundo);
+            estado.vy = FlappyFisica.IMPULSO * factor;
         }
     };
 
@@ -52,6 +62,9 @@
         OFFSET_CABEZA: 29,
         HITBOX_ANCHO: 26,
         HITBOX_ALTO: 26,
+        ESCALA_INICIAL: 1,
+        ESCALA_MAXIMA: 1.5,
+        AUMENTO_ESCALA: 0.1,
         TIEMPO_ALETEO: 0.28,
         PASO: FlappyFisica.PASO
     };
@@ -74,17 +87,20 @@
                 rot: 0,
                 tiempoAleteo: 0
             };
+            this.escala = CONFIG.ESCALA_INICIAL;
             this.modo = 'listo'; // listo | jugando | impacto
             this.reset();
         }
 
         reset() {
+            this.escala = CONFIG.ESCALA_INICIAL;
             this.estado.xMundo = 0;
             this.estado.y = CONFIG.Y_INICIAL;
             this.estado.vy = 0;
             this.estado.rot = 0;
             this.estado.tiempoAleteo = 0;
             this.modo = 'listo';
+            this.el.classList.remove('flappy-pajaro--penalizado');
             this.setSprite('inicio', true);
             this.render();
         }
@@ -93,10 +109,10 @@
          * Impulso del jugador. Si el juego no empezó, lo inicia.
          * @returns {boolean}
          */
-        impulsar() {
+        impulsar(velMundo) {
             if (this.modo === 'impacto') return false;
             if (this.modo === 'listo') this.modo = 'jugando';
-            FlappyFisica.impulsar(this.estado);
+            FlappyFisica.impulsar(this.estado, velMundo);
             this.estado.tiempoAleteo = CONFIG.TIEMPO_ALETEO;
             this.setSprite('aleteo', true);
             return true;
@@ -124,7 +140,38 @@
             const x = CONFIG.X_PANTALLA - ANCLA_X;
             const y = this.estado.y - ANCLA_Y;
             this.el.style.transform =
-                `translate3d(${x}px, ${y}px, 0) rotate(${this.estado.rot}deg)`;
+                `translate3d(${x}px, ${y}px, 0) rotate(${this.estado.rot}deg) scale(${this.escala})`;
+        }
+
+        puedeAumentarTamano() {
+            return this.escala < CONFIG.ESCALA_MAXIMA;
+        }
+
+        aumentarTamano() {
+            if (!this.puedeAumentarTamano()) return false;
+
+            this.escala = Math.min(
+                CONFIG.ESCALA_MAXIMA,
+                Math.round((this.escala + CONFIG.AUMENTO_ESCALA) * 100) / 100
+            );
+            this.render();
+            return true;
+        }
+
+        mostrarPenalizacion() {
+            this.el.classList.remove('flappy-pajaro--penalizado');
+            void this.el.offsetWidth;
+            this.el.classList.add('flappy-pajaro--penalizado');
+        }
+
+        prepararParaDebug(y) {
+            this.modo = 'jugando';
+            this.estado.y = y;
+            this.estado.vy = 0;
+            this.estado.rot = 0;
+            this.estado.tiempoAleteo = 0;
+            this.setSprite('planeo', true);
+            this.render();
         }
 
         /**
@@ -154,15 +201,15 @@
         }
 
         estaEnSuelo() {
-            return this.estado.y + CONFIG.OFFSET_PIES >= CONFIG.SUELO_Y;
+            return this.estado.y + CONFIG.OFFSET_PIES * this.escala >= CONFIG.SUELO_Y;
         }
 
         limitarAlSuelo() {
-            this.estado.y = CONFIG.SUELO_Y - CONFIG.OFFSET_PIES;
+            this.estado.y = CONFIG.SUELO_Y - CONFIG.OFFSET_PIES * this.escala;
         }
 
         limitarAlTecho() {
-            const yMin = CONFIG.OFFSET_CABEZA;
+            const yMin = CONFIG.OFFSET_CABEZA * this.escala;
             if (this.estado.y < yMin) {
                 this.estado.y = yMin;
                 this.estado.vy = 0;
@@ -174,8 +221,8 @@
          * @returns {{izq:number, der:number, arriba:number, abajo:number}}
          */
         getHitbox() {
-            const mitadAncho = CONFIG.HITBOX_ANCHO / 2;
-            const mitadAlto = CONFIG.HITBOX_ALTO / 2;
+            const mitadAncho = CONFIG.HITBOX_ANCHO * this.escala / 2;
+            const mitadAlto = CONFIG.HITBOX_ALTO * this.escala / 2;
             return {
                 izq: CONFIG.X_PANTALLA - mitadAncho,
                 der: CONFIG.X_PANTALLA + mitadAncho,
