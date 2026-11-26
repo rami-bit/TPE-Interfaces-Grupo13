@@ -11,13 +11,12 @@
     const ALTO_BOCA = 48;
 
     const TUBERIAS_CONFIG = {
-        GAP_INICIAL: 185,       // abertura inicial (px)
+        GAP_INICIAL: 500,       // abertura inicial (px)
         GAP_MINIMO: 125,        // abertura mínima jugable (px)
-        REDUCCION_GAP: 4,       // px que se achica por cada tubería creada
+        REDUCCION_GAP: 200,       // px que se achica por cada tubería creada
         DIST_MIN: 290,          // separación horizontal mínima entre pares (px)
         DIST_MAX: 420,          // separación horizontal máxima entre pares (px)
         MARGEN_VERTICAL: 75,    // margen libre arriba y abajo para el hueco (px)
-        CAMBIO_ALTURA_MIN: 55   // diferencia mínima en Y respecto al tubo anterior
     };
 
     function aleatorioEntre(min, max) {
@@ -139,7 +138,6 @@
 
         reset() {
             this.creadas = 0;
-            this.ultimoCentroY = null;
         }
 
         calcularGap() {
@@ -152,37 +150,29 @@
         calcularCentroY(gap) {
             const minY = Math.ceil(TUBERIAS_CONFIG.MARGEN_VERTICAL + gap / 2);
             const maxY = Math.floor(this.sueloY - TUBERIAS_CONFIG.MARGEN_VERTICAL - gap / 2);
+            const centroBase = (minY + maxY) / 2;
 
-            let centroY = aleatorioEntre(minY, maxY);
-
-            // Elige únicamente alturas separadas del centro anterior al menos 55px.
-            if (
-                this.ultimoCentroY !== null &&
-                Math.abs(centroY - this.ultimoCentroY) < TUBERIAS_CONFIG.CAMBIO_ALTURA_MIN
-            ) {
-                const maximoSuperior = Math.floor(Math.min(
-                    maxY,
-                    this.ultimoCentroY - TUBERIAS_CONFIG.CAMBIO_ALTURA_MIN
-                ));
-                const minimoInferior = Math.ceil(Math.max(
-                    minY,
-                    this.ultimoCentroY + TUBERIAS_CONFIG.CAMBIO_ALTURA_MIN
-                ));
-                const hayAlturaSuperior = maximoSuperior >= minY;
-                const hayAlturaInferior = minimoInferior <= maxY;
-
-                if (hayAlturaSuperior && hayAlturaInferior) {
-                    centroY = Math.random() < 0.5
-                        ? aleatorioEntre(minY, maximoSuperior)
-                        : aleatorioEntre(minimoInferior, maxY);
-                } else if (hayAlturaSuperior) {
-                    centroY = aleatorioEntre(minY, maximoSuperior);
-                } else {
-                    centroY = aleatorioEntre(minimoInferior, maxY);
-                }
+            // Antes de llegar al gap mínimo, las tuberías salen centradas
+            if (gap > TUBERIAS_CONFIG.GAP_MINIMO) {
+                return Math.round(centroBase);
             }
 
-            return Math.round(centroY);
+            // Cantidad de tuberías creadas desde que el gap llegó al mínimo
+            const tuberiasHastaGapMin = Math.min(
+                Math.floor((TUBERIAS_CONFIG.GAP_INICIAL - TUBERIAS_CONFIG.GAP_MINIMO) / TUBERIAS_CONFIG.REDUCCION_GAP),
+                this.creadas
+            );
+            const progresoDesdeMin = Math.max(1, this.creadas - tuberiasHastaGapMin + 1);
+
+            // El umbral empieza con una variación muy chica y crece a medida que se crean más tuberías (hasta 1)
+            const factorCrecimiento = Math.min(1, progresoDesdeMin * 0.8);
+            const umbral = Math.random() * factorCrecimiento;
+
+            const amplitudMaxima = (maxY - minY) / 2;
+            const direccion = Math.random() < 0.5 ? -1 : 1;
+            const desplazamiento = direccion * umbral * amplitudMaxima;
+
+            return Math.round(centroBase + desplazamiento);
         }
 
         siguienteDistancia() {
@@ -199,7 +189,6 @@
             const centroY = this.calcularCentroY(gap);
 
             this.creadas += 1;
-            this.ultimoCentroY = centroY;
 
             return new ParTuberias(this.contenedor, x, centroY, gap, this.sueloY, this.altoLienzo);
         }
